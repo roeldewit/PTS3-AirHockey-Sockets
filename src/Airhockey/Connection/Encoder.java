@@ -22,7 +22,19 @@ public class Encoder {
         connectionManger.sendCommand(command);
     }
 
-    public synchronized void sendBatLocation(String bat, float x, float y) {
+    public synchronized void sendLeftBatLocation(float x, float y) {
+        sendBatLocation(Protocol.LEFT_BAT_LOCATION, x, y);
+    }
+
+    public synchronized void sendRightBatLocation(float x, float y) {
+        sendBatLocation(Protocol.RIGHT_BAT_LOCATION, x, y);
+    }
+
+    public synchronized void sendBottomBatLocation(float x, float y) {
+        sendBatLocation(Protocol.BOTTOM_BAT_LOCATION, x, y);
+    }
+
+    private synchronized void sendBatLocation(String bat, float x, float y) {
         String command = bat
                 + Protocol.SEPERATOR
                 + x

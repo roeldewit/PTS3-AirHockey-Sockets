@@ -20,6 +20,10 @@ public interface IRenderer {
 
     public void setRightBatLocation(float x, float y);
 
+    public void setGoalMade();
+
+    public void setUpGame(String p1Name, String p2Name, String p3Name);
+
     public void setEncoder(Encoder encoder);
 
     public void connectionMade();

@@ -26,17 +26,33 @@ public class Decoder {
                 break;
 
             case Protocol.BOTTOM_BAT_LOCATION:
-                renderer.setBottomBatLocation(Float.parseFloat(splitter[1]), Float.parseFloat(splitter[2]));
+                Platform.runLater(() -> {
+                    renderer.setBottomBatLocation(Float.parseFloat(splitter[1]), Float.parseFloat(splitter[2]));
+                });
                 break;
 
             case Protocol.LEFT_BAT_LOCATION:
-                renderer.setLeftBatLocation(Float.parseFloat(splitter[1]), Float.parseFloat(splitter[2]));
+                Platform.runLater(() -> {
+                    renderer.setLeftBatLocation(Float.parseFloat(splitter[1]), Float.parseFloat(splitter[2]));
+                });
                 break;
 
             case Protocol.RIGHT_BAT_LOCATION:
-                renderer.setRightBatLocation(Float.parseFloat(splitter[1]), Float.parseFloat(splitter[2]));
+                Platform.runLater(() -> {
+                    renderer.setRightBatLocation(Float.parseFloat(splitter[1]), Float.parseFloat(splitter[2]));
+                });
                 break;
 
+            case Protocol.GOAL_MADE:
+                Platform.runLater(() -> {
+                    renderer.setGoalMade();
+                });
+                break;
+            case Protocol.SET_UP_GAME:
+                Platform.runLater(() -> {
+                    renderer.setUpGame(splitter[1], splitter[1], splitter[1]);
+                });
+                break;
         }
     }
 

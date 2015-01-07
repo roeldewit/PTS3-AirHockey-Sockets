@@ -95,6 +95,21 @@ public final class ClientRenderer extends BaseRenderer {
         puck.setPosition(x, y);
     }
 
+    @Override
+    public void setBottomBatLocation(float x, float y) {
+        bat.setPosition(x, y);
+    }
+
+    @Override
+    public void setLeftBatLocation(float x, float y) {
+        //leftBat.setPosition(x, y);
+    }
+
+    @Override
+    public void setRightBatLocation(float x, float y) {
+
+    }
+
     private void createMovableItems() {
         puck = new Puck(50, 45);
 
@@ -133,51 +148,4 @@ public final class ClientRenderer extends BaseRenderer {
         ft.playFromStart();
     }
 
-//    public void update(GameData[] gamedata) {
-//        Airhockey.Rmi.Goal goal = (Airhockey.Rmi.Goal) gamedata[4];
-//
-//        if (goal != null) {
-//            switch (goal.madeBy) {
-//                case 0:
-//                    player1ScoreLabel.setText((Integer.parseInt(player1ScoreLabel.getText()) - 1) + "");
-//                    break;
-//                case 1:
-//                    player2ScoreLabel.setText((Integer.parseInt(player2ScoreLabel.getText()) - 1) + "");
-//                    break;
-//                case 2:
-//                    player3ScoreLabel.setText((Integer.parseInt(player3ScoreLabel.getText()) - 1) + "");
-//                    break;
-//            }
-//
-//            switch (goal.against) {
-//                case 0:
-//                    player1ScoreLabel.setText((Integer.parseInt(player1ScoreLabel.getText()) + 1) + "");
-//                    break;
-//                case 1:
-//                    player2ScoreLabel.setText((Integer.parseInt(player2ScoreLabel.getText()) + 1) + "");
-//                    break;
-//                case 2:
-//                    player3ScoreLabel.setText((Integer.parseInt(player3ScoreLabel.getText()) + 1) + "");
-//                    break;
-//            }
-//            newRoundTransition(goal.round);
-//            return;
-//        }
-//        Location locationPuck = (Location) gamedata[0];
-//        Location locationBat1 = (Location) gamedata[1];
-//        Location locationBat2 = (Location) gamedata[2];
-//        Location locationBat3 = (Location) gamedata[3];
-//
-    // to do zorgen dat ze omgewisseld worden
-//        if (playerNumber == 1) {
-//            bat.setPosition(rendererUtilities.batPositionSideToBottom((int) locationBat2.y), locationBat2.x);
-//        } else {
-//            bat.setPosition(rendererUtilities.batPositionSideToBottom((int) locationBat3.y), locationBat3.x);
-//        }
-//        puck.setPosition(locationPuck.x, locationPuck.y);
-//        bat.setPosition(locationBat1.x, locationBat1.y);
-//        leftBat.setPosition(locationBat2.x, locationBat2.y);
-//        rightBat.setPosition(locationBat3.x, locationBat3.y);
-//
-//    }
 }

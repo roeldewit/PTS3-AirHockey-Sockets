@@ -309,6 +309,18 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
+    public void setGoalMade() {
+
+    }
+
+    @Override
+    public void setUpGame(String p1Name, String p2Name, String p3Name) {
+        player1NameLabel.setText(p1Name);
+        player2NameLabel.setText(p2Name);
+        player3NameLabel.setText(p3Name);
+    }
+
+    @Override
     public void setEncoder(Encoder encoder) {
         this.encoder = encoder;
     }

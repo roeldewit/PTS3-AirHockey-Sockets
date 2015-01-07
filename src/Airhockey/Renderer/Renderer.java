@@ -1,5 +1,6 @@
 package Airhockey.Renderer;
 
+import Airhockey.Connection.Protocol;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
 import Airhockey.Main.Login;
@@ -60,11 +61,6 @@ public class Renderer extends BaseRenderer {
     private Timeline timeline;
     private final ExecutorService threadPool;
     //private RmiServer rmiServer;
-
-    private float puckBodyPosX;
-    private float puckBodyPosY;
-    private float batBodyPosX;
-    private float batBodyPosY;
 
     public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
@@ -203,12 +199,20 @@ public class Renderer extends BaseRenderer {
                 Utils.world.step(1.0f / 40.f, 8, 3);
 
                 threadPool.execute(new CalulationTask());
-
             }
         }
     }
 
     private class CalulationTask extends Task<Void> {
+
+        private float puckBodyPosX;
+        private float puckBodyPosY;
+        private float batBodyPosX;
+        private float batBodyPosY;
+        private float leftBatBodyPosX;
+        private float leftBatBodyPosY;
+        private float rightBatBodyPosX;
+        private float rightBatBodyPosY;
 
         public CalulationTask() {
             call();
@@ -234,8 +238,17 @@ public class Renderer extends BaseRenderer {
             batBodyPosX = Utils.toPixelPosX(batBody.getPosition().x);
             batBodyPosY = Utils.toPixelPosY(batBody.getPosition().y);
 
+            leftBatBodyPosX = Utils.toPixelPosX(leftBatBody.getPosition().x);
+            leftBatBodyPosY = Utils.toPixelPosX(leftBatBody.getPosition().y);
+
+            rightBatBodyPosX = Utils.toPixelPosX(rightBatBody.getPosition().x);
+            rightBatBodyPosY = Utils.toPixelPosX(rightBatBody.getPosition().y);
+
             if (isMultiplayer) {
                 encoder.sendPuckLocation(puckBodyPosX, puckBodyPosY);
+                encoder.sendBottomBatLocation(batBodyPosX, batBodyPosY);
+                encoder.sendLeftBatLocation(leftBatBodyPosX, leftBatBodyPosY);
+                encoder.sendRightBatLocation(rightBatBodyPosX, rightBatBodyPosY);
             }
 
             if (canCorrectPuckSpeed) {
@@ -252,11 +265,11 @@ public class Renderer extends BaseRenderer {
         @Override
         protected void succeeded() {
             super.succeeded();
-            threadCallback();
+            threadCallback(puckBodyPosX, puckBodyPosY, batBodyPosX, batBodyPosY);
         }
     }
 
-    private synchronized void threadCallback() {
+    private synchronized void threadCallback(float puckBodyPosX, float puckBodyPosY, float batBodyPosX, float batBodyPosY) {
         if (canUpdate) {
             puck.setPosition(puckBodyPosX, puckBodyPosY);
             bat.setPosition(batBodyPosX, batBodyPosY);
