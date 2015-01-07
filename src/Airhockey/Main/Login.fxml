@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.*?>
+
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Airhockey.Main.Login" >
+    <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+            <children>
+                <Label layoutX="65.0" layoutY="45.0" text="SINGLEPLAYER">
+                    <font>
+                        <Font size="43.0" />
+                    </font>
+                </Label>
+                <Label layoutX="80.0" layoutY="133.0" text="DIFFICULTY">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+                <fx:define>  
+                    <ToggleGroup fx:id="RB_LEFT_Group" /> 
+                    <ToggleGroup fx:id="RB_Group" />  
+                </fx:define> 
+                <RadioButton fx:id="rbEasyLeft" layoutX="80.0" layoutY="180.0" mnemonicParsing="false"      text="      EASY" selected="true" toggleGroup="$RB_LEFT_Group" />
+                <RadioButton fx:id="rbNormalLeft" layoutX="80.0" layoutY="215.0" mnemonicParsing="false"    text="   NORMAL" toggleGroup="$RB_LEFT_Group"/>
+                <RadioButton fx:id="rbHardLeft" layoutX="80.0" layoutY="250.0" mnemonicParsing="false"      text="      HARD" toggleGroup="$RB_LEFT_Group" />
+                <RadioButton fx:id="rbVeryHardLeft" layoutX="80.0" layoutY="285.0" mnemonicParsing="false"  text=" VERY HARD" toggleGroup="$RB_LEFT_Group" />
+                
+ 
+                <RadioButton fx:id="rbEasyRight" layoutX="190.0" layoutY="180.0" mnemonicParsing="false" text=" "  selected="true" toggleGroup="$RB_Group" />
+                <RadioButton fx:id="rbNormaRight" layoutX="190.0" layoutY="215.0" mnemonicParsing="false" text=" "  toggleGroup="$RB_Group"/>
+                <RadioButton fx:id="rbHardRight" layoutX="190.0" layoutY="250.0" mnemonicParsing="false" text=" "  toggleGroup="$RB_Group" />
+                <RadioButton fx:id="rbVeryHardRight" layoutX="190.0" layoutY="285.0" mnemonicParsing="false" text=" "   toggleGroup="$RB_Group" />
+                
+                <Button fx:id="btStartSingleGameLeft" layoutX="90.0" layoutY="332.0" mnemonicParsing="false" onAction="#startSingleGame" prefHeight="31.0"  text="START GAME" />
+            </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+            <children>
+                <Label layoutX="75.0" layoutY="45.0" text="MULTIPLAYER">
+                    <font>
+                        <Font size="43.0" />
+                    </font>
+                </Label>
+                <Label layoutX="120.0" layoutY="132.0" text="LOGIN" >
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="tfUsername" layoutX="73.0" layoutY="207.0" promptText="Username" />
+                <PasswordField fx:id="tfPassword" layoutX="73.0" layoutY="270.0" promptText="Password" />
+                <Button fx:id="btLogin" layoutX="26.0" layoutY="331.0" mnemonicParsing="false" onAction="#actionlogin" prefHeight="31.0" prefWidth="94.0" text="LOGIN" />
+                <Button fx:id="btCreateAccount" layoutX="150.0" layoutY="331.0" mnemonicParsing="false" onAction="#actionCreateAccount" prefHeight="31.0"  text="CREATE ACCOUNT" />
+            </children>
+        </AnchorPane>
+    </items>
+    
+    <stylesheets>
+        <URL value="@Login.css" />
+    </stylesheets>
+</SplitPane>

@@ -1,0 +1,45 @@
+/* 
+    Created on : 17-dec-2014, 13:39:04
+    Author     : Sam
+*/
+
+.root{
+    -fx-background-color: #373737;
+}
+
+.label{
+    -fx-font: 26px "Roboto";
+    -fx-text-fill: #33CCFF;
+    -fx-alignment: CENTER;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 2,2,2,2 );
+}
+
+.button {
+    -fx-font: 14px "Roboto";
+    -fx-padding: 2 10 2 10;
+    -fx-background-color: #D23641;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );
+}
+
+.text-field {
+    -fx-font-size: 10pt;
+    -fx-font-family: "Roboto";
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );
+}
+
+.button:hover {
+    -fx-background-color: #A82B34;
+}
+
+.radio-button{
+    -fx-font-family: "Roboto";
+    -fx-font-size: 10pt;
+    -fx-text-fill: white;
+    -fx-text-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );
+    -fx-color: #D23641;
+}
+
+.radio-button:hover{
+    -fx-color: #A82B34;
+}
