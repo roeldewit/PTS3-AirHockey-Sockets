@@ -19,13 +19,12 @@ public class Server extends Thread implements IConnectionManager {
     private ObjectOutputStream objectOutputStream;
 
     private boolean interrupted = false;
-    private Socket socket;
-    private Decoder decoder;
+    private final Socket socket;
+    private final Decoder decoder;
 
     public Server(Socket socket, IRenderer renderer) {
         this.socket = socket;
         decoder = new Decoder(renderer);
-        renderer.setEncoder(new Encoder(this));
     }
 
     @Override
@@ -42,11 +41,17 @@ public class Server extends Thread implements IConnectionManager {
             while (!interrupted) {
                 String command = (String) ois.readObject();
                 System.out.println("Received command: " + command);
-
                 decoder.receiveCommand(command);
             }
         } catch (IOException | ClassNotFoundException e) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            try {
+                objectOutputStream.close();
+                socket.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -58,5 +63,9 @@ public class Server extends Thread implements IConnectionManager {
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void cancel() {
+        interrupted = true;
     }
 }

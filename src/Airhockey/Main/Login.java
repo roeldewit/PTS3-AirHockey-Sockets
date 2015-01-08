@@ -95,11 +95,11 @@ public class Login extends Application {
 
         if (levelString.equals("yes")) {
             primaryStage = (Stage) btLogin.getScene().getWindow();
-            primaryStage.close();
+            //primaryStage.close();
             Game g = new Game(primaryStage, true, true);
         } else {
             primaryStage = (Stage) btLogin.getScene().getWindow();
-            primaryStage.close();
+            //primaryStage.close();
             Game g = new Game(primaryStage, false, true);
         }
     }

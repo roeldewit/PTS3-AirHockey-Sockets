@@ -1,6 +1,7 @@
 package Airhockey.Renderer;
 
 import Airhockey.Connection.Encoder;
+import Airhockey.Connection.IConnectionManager;
 
 /**
  *
@@ -8,23 +9,24 @@ import Airhockey.Connection.Encoder;
  */
 public interface IRenderer {
 
+    /**
+     * Used by clients.
+     */
     public void setTextFields(String field, String value);
 
     public void resetRound(int round);
 
-    public void setPuckLocation(float x, float y);
+    public void setPuckLocation(int x, int y);
 
-    public void setBottomBatLocation(float x, float y);
+    public void setBottomBatLocation(int x, int y);
 
-    public void setLeftBatLocation(float x, float y);
+    public void setLeftBatLocation(int x, int y);
 
-    public void setRightBatLocation(float x, float y);
+    public void setRightBatLocation(int x, int y);
 
-    public void setGoalMade();
+    public void setGoalMade(int newRound, int scorer, int against);
 
     public void setUpGame(String p1Name, String p2Name, String p3Name);
 
-    public void setEncoder(Encoder encoder);
-
-    public void connectionMade();
+    public void start(Encoder encoder);
 }

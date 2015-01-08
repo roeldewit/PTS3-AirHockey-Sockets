@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 public class ConnectionListener extends Thread {
 
     private boolean acceptMore = true;
-    private IRenderer renderer;
-    private Game game;
+    private final IRenderer renderer;
+    private final Game game;
 
-    public ConnectionListener(IRenderer renderer) {
+    public ConnectionListener(Game game, IRenderer renderer) {
         this.renderer = renderer;
         this.game = game;
     }
@@ -32,9 +32,11 @@ public class ConnectionListener extends Thread {
 
             while (acceptMore) {
                 Socket socket = serverSocket.accept();
-                renderer.connectionMade();
-                new Thread(new Server(socket, renderer)).start();
                 System.out.println("Server bound");
+
+                Server server = new Server(socket, renderer);
+                game.clientConnected(server);
+                new Thread(server).start();
             }
 
         } catch (IOException e) {
@@ -48,5 +50,10 @@ public class ConnectionListener extends Thread {
                 Logger.getLogger(ConnectionListener.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public void cancel() {
+        acceptMore = false;
+        System.out.println("ConnectionListener cancelled");
     }
 }

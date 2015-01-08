@@ -1,11 +1,9 @@
 package Airhockey.Renderer;
 
-//import Airhockey.Client.ClientController;
 //import Airhockey.Utils.ClientKeyListener;
+import Airhockey.Connection.Encoder;
 import Airhockey.Elements.*;
 import Airhockey.Main.*;
-//import Airhockey.Rmi.GameData;
-//import Airhockey.Rmi.Location;
 import Airhockey.Utils.Utils;
 import javafx.animation.*;
 import javafx.scene.Scene;
@@ -24,20 +22,18 @@ public final class ClientRenderer extends BaseRenderer {
     private int xPosition = 100;
     private int yPosition = 100;
 
-    private final RenderUtilities rendererUtilities;
-    //private final ClientController clientController;
+    private RenderUtilities rendererUtilities;
 
-    //private final int playerNumber;
     public ClientRenderer(Stage primaryStage, Game game) {
         super(primaryStage, game);
-
-        //clientController = game.getClientController();
-        //playerNumber = clientController.getPlayerNumber();
-        start();
-        rendererUtilities = new RenderUtilities(triangle);
     }
 
-    private void start() {
+    @Override
+    public void start(Encoder encoder) {
+        super.start(encoder);
+
+        rendererUtilities = new RenderUtilities(triangle);
+
         primaryStage.setTitle("AirhockeyClient");
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
@@ -90,26 +86,6 @@ public final class ClientRenderer extends BaseRenderer {
 //            });
 //        }
 //    }
-    @Override
-    public void setPuckLocation(float x, float y) {
-        puck.setPosition(x, y);
-    }
-
-    @Override
-    public void setBottomBatLocation(float x, float y) {
-        bat.setPosition(x, y);
-    }
-
-    @Override
-    public void setLeftBatLocation(float x, float y) {
-        //leftBat.setPosition(x, y);
-    }
-
-    @Override
-    public void setRightBatLocation(float x, float y) {
-
-    }
-
     private void createMovableItems() {
         puck = new Puck(50, 45);
 
@@ -122,6 +98,31 @@ public final class ClientRenderer extends BaseRenderer {
         root.getChildren().addAll(bat.node, bat.imageNode);
         root.getChildren().addAll(leftBat.node, leftBat.imageNode);
         root.getChildren().addAll(rightBat.node, rightBat.imageNode);
+    }
+
+    @Override
+    public void setPuckLocation(int x, int y) {
+        puck.setPosition(x, y);
+    }
+
+    @Override
+    public void setBottomBatLocation(int x, int y) {
+        bat.setPosition(x, y);
+    }
+
+    @Override
+    public void setLeftBatLocation(int x, int y) {
+        leftBat.setPosition(rendererUtilities.batPositionSideToBottom((int) y), Constants.CENTER_BAT_Y);
+    }
+
+    @Override
+    public void setRightBatLocation(int x, int y) {
+        rightBat.setPosition(x, y);
+    }
+
+    @Override
+    public void setGoalMade(int newRound, int scorer, int against) {
+        resetRound(newRound);
     }
 
     @Override

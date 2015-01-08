@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Airhockey.Renderer;
 
 import Airhockey.Connection.Encoder;
@@ -29,11 +24,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcTo;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.FillRule;
-import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
@@ -85,15 +75,20 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
+    public void start(Encoder encoder) {
+        this.encoder = encoder;
+    }
+
+    @Override
     public void setTextFields(String field, String value) {
         switch (field) {
-            case "PLAYER1_SCORE":
+            case Constants.P1_SCORE:
                 player1ScoreLabel.setText(value);
                 break;
-            case "PLAYER2_SCORE":
+            case Constants.P2_SCORE:
                 player2ScoreLabel.setText(value);
                 break;
-            case "PLAYER3_SCORE":
+            case Constants.P3_SCORE:
                 player3ScoreLabel.setText(value);
                 break;
         }
@@ -217,6 +212,8 @@ class BaseRenderer implements IRenderer {
     }
 
     protected void newRoundTransition(int round) {
+        roundNumberLabel.setText(Integer.toString(round));
+
         Label roundLabel = new Label();
         roundLabel.setText("Round " + round);
         roundLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
@@ -289,28 +286,28 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
-    public void setPuckLocation(float x, float y) {
-
+    public void setPuckLocation(int x, int y) {
+        //Implemented in child cass.
     }
 
     @Override
-    public void setBottomBatLocation(float x, float y) {
-
+    public void setBottomBatLocation(int x, int y) {
+        //Implemented in child cass.
     }
 
     @Override
-    public void setLeftBatLocation(float x, float y) {
-
+    public void setLeftBatLocation(int x, int y) {
+        //Implemented in child cass.
     }
 
     @Override
-    public void setRightBatLocation(float x, float y) {
-
+    public void setRightBatLocation(int x, int y) {
+        //Implemented in child cass.
     }
 
     @Override
-    public void setGoalMade() {
-
+    public void setGoalMade(int newRound, int scorer, int against) {
+        //Implemented in child cass.
     }
 
     @Override
@@ -320,13 +317,4 @@ class BaseRenderer implements IRenderer {
         player3NameLabel.setText(p3Name);
     }
 
-    @Override
-    public void setEncoder(Encoder encoder) {
-        this.encoder = encoder;
-    }
-
-    @Override
-    public void connectionMade() {
-
-    }
 }

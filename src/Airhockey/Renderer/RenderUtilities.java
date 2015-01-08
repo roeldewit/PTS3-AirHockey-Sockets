@@ -9,6 +9,8 @@ import Airhockey.Elements.TriangleLine;
  */
 class RenderUtilities {
 
+    protected static final int TRIANGLE_HEIGHT = 693;
+
     private final int bottomLeftX;
     private final int bottomRightX;
 
@@ -32,6 +34,9 @@ class RenderUtilities {
         bottomRightX = triangleLine.getBottomRightX();
 
         centerLineHeight = bottomY - centerTopY;
+
+        System.out.println("CENTER_TOP_Y: " + centerTopY);
+        System.out.println("CENTER LINE HEIGHT: " + centerLineHeight);
         baseLineWidth = bottomRightX - bottomLeftX;
 
         //Create MovinglineLists
@@ -59,7 +64,7 @@ class RenderUtilities {
         System.out.println("POS: " + positionY);
 
         double heightPercentage = (100.0 / (double) centerLineHeight) * (double) (positionY - centerTopY + 60);
-        double positionX = (((double) baseLineWidth / 100.0) * heightPercentage) + bottomLeftX;
+        double positionX = (((double) baseLineWidth / 100.0) * heightPercentage) + bottomLeftX - (Constants.BAT_RADIUS * 2);
 
         System.out.println("I: " + heightPercentage);
         System.out.println("L: " + positionX);

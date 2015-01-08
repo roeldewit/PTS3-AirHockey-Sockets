@@ -3,12 +3,15 @@ package Airhockey.Main;
 import Airhockey.Connection.Client;
 import Airhockey.Connection.ConnectionListener;
 import Airhockey.Connection.Encoder;
+import Airhockey.Connection.IConnectionManager;
 import Airhockey.Elements.Bat;
 import Airhockey.Renderer.*;
 import Airhockey.User.*;
 import Airhockey.Utils.ScoreCalculator;
+import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -25,6 +28,9 @@ public class Game {
     private ArrayList<User> users;
     private Player currentPlayer;
 
+    private int numberOfClientsConnected = 0;
+    private Encoder encoder;
+
     private Client client;
 
 //    private ArrayList<Spectator> spectators;
@@ -38,6 +44,8 @@ public class Game {
     private String ipHost;
     private int port;
 
+    private ConnectionListener connectionListener;
+
     public Game(Stage primaryStage, boolean isHost, boolean isMultiplayer) {
         this.isHost = isHost;
         this.isMultiplayer = isMultiplayer;
@@ -47,10 +55,12 @@ public class Game {
         addPlayer(new User("Com1"));
         addPlayer(new User("Com2"));
 
+        encoder = new Encoder();
+
         //renderer = new Renderer(primaryStage, this, isMultiplayer);
         if (isHost) {
             this.renderer = new Renderer(primaryStage, this, true);
-            ConnectionListener connectionListener = new ConnectionListener(renderer);
+            connectionListener = new ConnectionListener(this, renderer);
             connectionListener.start();
         } else {
             this.renderer = new ClientRenderer(primaryStage, this);
@@ -75,9 +85,7 @@ public class Game {
         this.currentPlayer = players.get(0);
 
         this.renderer = new Renderer(primaryStage, this, true);
-        ConnectionListener connectionListener = new ConnectionListener(renderer);
-
-//this.rmiServer = new RmiServer((Renderer) renderer, chatbox, users);
+        connectionListener = new ConnectionListener(this, renderer);
     }
 
     /**
@@ -99,8 +107,23 @@ public class Game {
 
         this.renderer = new ClientRenderer(primaryStage, this);
         client = new Client(renderer);
-        //joinGame(ipHost, port, currentPlayer.user.getUsername());
 
+    }
+
+    public synchronized void clientConnected(IConnectionManager manager) {
+        encoder.addManager(manager);
+
+        numberOfClientsConnected++;
+
+        System.out.println("NOCC: " + numberOfClientsConnected);
+        if (numberOfClientsConnected == 2) {
+            System.out.println("joajoa");
+            Platform.runLater(() -> {
+                System.out.println("PFRL joajoa");
+                renderer.start(encoder);
+            });
+            connectionListener.cancel();
+        }
     }
 
     public void addPlayer(User user) {
@@ -136,35 +159,22 @@ public class Game {
         }
     }
 
-    public void setGoal(Bat batWhoMadeGoal, Bat batWhoFailed) {
-        System.out.println("o: " + owner);
-        System.out.println("c: " + currentPlayer);
-
-        Player playerWhoFailed = batWhoFailed.getPlayer();
-        playerWhoFailed.downScore();
-        renderer.setTextFields("PLAYER" + playerWhoFailed.getId() + "_SCORE", playerWhoFailed.getScore() + "");
-
-        if (batWhoMadeGoal != null) {
-            Player playerWhoMadeGoal = batWhoMadeGoal.getPlayer();
-            playerWhoMadeGoal.upScore();
-            renderer.setTextFields("PLAYER" + playerWhoMadeGoal.getId() + "_SCORE", playerWhoMadeGoal.getScore() + "");
-        }
-
+    public synchronized void setGoal(Bat scorer, Bat against, Encoder encoder) {
         round++;
 
-//        if (isMultiplayer) {
-//            if (owner.equals(currentPlayer)) {
-//                try {
-//                    if (batWhoMadeGoal == null) {
-//                        rmiServer.getPublisher().informListeners(new Goal(-99, playerWhoFailed.getId() - 1, round));
-//                    } else {
-//                        rmiServer.getPublisher().informListeners(new Goal(batWhoMadeGoal.getPlayer().getId() - 1, playerWhoFailed.getId() - 1, round));
-//                    }
-//                } catch (RemoteException e) {
-//                    stop();
-//                }
-//            }
-//        }
+        Player playerAgainst = against.getPlayer();
+        playerAgainst.downScore();
+        renderer.setTextFields("PLAYER" + playerAgainst.getId() + "_SCORE", String.valueOf(playerAgainst.getScore()));
+
+        if (scorer != null) {
+            Player playerScorer = scorer.getPlayer();
+            playerScorer.upScore();
+            renderer.setTextFields("PLAYER" + playerScorer.getId() + "_SCORE", String.valueOf(playerScorer.getScore()));
+            encoder.sendGoalMade(round, playerScorer.getId(), playerAgainst.getId());
+        } else {
+            encoder.sendGoalMade(round, -1, playerAgainst.getId());
+        }
+
         if (round == 10) {
             stop();
         } else {
@@ -177,21 +187,8 @@ public class Game {
         return players.get(id - 1).user.getUsername();
     }
 
-//    public RmiServer getRmiServer() {
-//        return rmiServer;
-//    }
-//
-//    public ClientController getClientController() {
-//        return clientController;
-//    }
-//
     private void stop() {
         //renderer.resetRound();
     }
-//
-//    private void joinGame(String iphost, int port, String username) throws RemoteException {
-//        this.clientListener = new ClientListener((ClientRenderer) renderer);
-//        this.clientListener.connectToHost(iphost, port);
-//        this.clientController = new ClientController(ipHost, port, username);
-//    }
+
 }

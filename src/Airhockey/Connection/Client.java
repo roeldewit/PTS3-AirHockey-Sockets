@@ -16,44 +16,60 @@ import java.util.logging.Logger;
  */
 public class Client extends Thread implements IConnectionManager {
 
-    private ObjectOutputStream ous;
-    private Decoder decoder;
+    private ObjectOutputStream objectOutputStream;
+    private final Decoder decoder;
     private boolean interrupted;
 
     public Client(IRenderer renderer) {
         System.out.println("New Client");
         decoder = new Decoder(renderer);
-        renderer.setEncoder(new Encoder(this));
     }
 
     @Override
     public void run() {
+        Socket socket = null;
+
         try {
             System.out.println("Starting client....");
-            Socket socket = new Socket("localhost", 8189);
+            socket = new Socket("localhost", 8189);
 
             System.out.println("Client bound");
 
             OutputStream outputStream = socket.getOutputStream();
             InputStream inputStream = socket.getInputStream();
 
-            ous = new ObjectOutputStream(outputStream);
+            objectOutputStream = new ObjectOutputStream(outputStream);
             ObjectInputStream ois = new ObjectInputStream(inputStream);
 
             while (!interrupted) {
                 String command = (String) ois.readObject();
+                System.out.println("Command Received: " + command);
                 decoder.receiveCommand(command);
-
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | ClassNotFoundException e) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
     @Override
     public synchronized void sendCommand(String command) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            System.out.println("Sending Command: " + command);
+            objectOutputStream.writeObject(command);
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void cancel() {
+        interrupted = false;
     }
 }

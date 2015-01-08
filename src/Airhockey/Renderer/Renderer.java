@@ -1,5 +1,6 @@
 package Airhockey.Renderer;
 
+import Airhockey.Connection.Encoder;
 import Airhockey.Connection.Protocol;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
@@ -65,17 +66,15 @@ public class Renderer extends BaseRenderer {
     public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
         this.batController = new BatController(this);
-        this.isMultiplayer = true;
+        this.isMultiplayer = isMultiplayer;
         this.threadPool = Executors.newCachedThreadPool();
 
-        if (isMultiplayer) {
-            //rmiServer = game.getRmiServer();
-        }
-
-        start();
     }
 
-    public final void start() {
+    @Override
+    public final void start(Encoder encoder) {
+        super.start(encoder);
+
         primaryStage.setTitle("Airhockey");
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
@@ -176,17 +175,17 @@ public class Renderer extends BaseRenderer {
         greenGoalShape = (Shape) greenGoal.collisionNode;
     }
 
-    private void checkGoal() {
+    private synchronized void checkGoal() {
         Shape redGoalIntersect = Shape.intersect(redGoalShape, puckShape);
         Shape blueGoalIntersect = Shape.intersect(blueGoalShape, puckShape);
         Shape greenGoalIntersect = Shape.intersect(greenGoalShape, puckShape);
 
         if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, bat);
+            game.setGoal(lastHittedBat, bat, encoder);
         } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftBat);
+            game.setGoal(lastHittedBat, leftBat, encoder);
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftBat);
+            game.setGoal(lastHittedBat, leftBat, encoder);
         }
     }
 
@@ -239,16 +238,16 @@ public class Renderer extends BaseRenderer {
             batBodyPosY = Utils.toPixelPosY(batBody.getPosition().y);
 
             leftBatBodyPosX = Utils.toPixelPosX(leftBatBody.getPosition().x);
-            leftBatBodyPosY = Utils.toPixelPosX(leftBatBody.getPosition().y);
+            leftBatBodyPosY = Utils.toPixelPosY(leftBatBody.getPosition().y);
 
             rightBatBodyPosX = Utils.toPixelPosX(rightBatBody.getPosition().x);
-            rightBatBodyPosY = Utils.toPixelPosX(rightBatBody.getPosition().y);
+            rightBatBodyPosY = Utils.toPixelPosY(rightBatBody.getPosition().y);
 
             if (isMultiplayer) {
-                encoder.sendPuckLocation(puckBodyPosX, puckBodyPosY);
-                encoder.sendBottomBatLocation(batBodyPosX, batBodyPosY);
-                encoder.sendLeftBatLocation(leftBatBodyPosX, leftBatBodyPosY);
-                encoder.sendRightBatLocation(rightBatBodyPosX, rightBatBodyPosY);
+                encoder.sendPuckLocation((int) puckBodyPosX, (int) puckBodyPosY);
+                encoder.sendBottomBatLocation((int) batBodyPosX, (int) batBodyPosY);
+                encoder.sendLeftBatLocation((int) leftBatBodyPosX, (int) leftBatBodyPosY);
+                encoder.sendRightBatLocation((int) rightBatBodyPosX, (int) rightBatBodyPosY);
             }
 
             if (canCorrectPuckSpeed) {
@@ -276,7 +275,7 @@ public class Renderer extends BaseRenderer {
 
             batController.controlCenterBat(batBodyPosX);
 
-            if (isMultiplayer) {
+            if (false) {
                 batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
                 batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
             } else {
@@ -334,7 +333,6 @@ public class Renderer extends BaseRenderer {
         root.getChildren().removeAll(rightBat.node, rightBat.imageNode);
 
         newRoundTransition(round);
-        roundNumberLabel.setText(Integer.toString(round));
 
         createMovableItems();
         linkPlayersToBats();
