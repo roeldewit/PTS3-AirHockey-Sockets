@@ -1,6 +1,9 @@
 package Airhockey.Connection;
 
+import Airhockey.Main.Game;
 import Airhockey.Renderer.IRenderer;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -22,20 +25,22 @@ public class Server extends Thread implements IConnectionManager {
     private final Socket socket;
     private final Decoder decoder;
 
-    public Server(Socket socket, IRenderer renderer) {
+    public Server(Socket socket, IRenderer renderer, Game game) {
         this.socket = socket;
-        decoder = new Decoder(renderer);
+        decoder = new Decoder(renderer, game);
     }
 
     @Override
     public void run() {
         try {
             System.out.println("Starting server");
+            socket.setTcpNoDelay(true);
+
+            objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            objectOutputStream.flush();
 
             InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
-
-            objectOutputStream = new ObjectOutputStream(outputStream);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
             ObjectInputStream ois = new ObjectInputStream(inputStream);
 
             while (!interrupted) {
@@ -60,6 +65,7 @@ public class Server extends Thread implements IConnectionManager {
         try {
             System.out.println("Sending Command: " + command);
             objectOutputStream.writeObject(command);
+            objectOutputStream.flush();
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -34,7 +34,7 @@ public class ConnectionListener extends Thread {
                 Socket socket = serverSocket.accept();
                 System.out.println("Server bound");
 
-                Server server = new Server(socket, renderer);
+                Server server = new Server(socket, renderer, game);
                 game.clientConnected(server);
                 new Thread(server).start();
             }

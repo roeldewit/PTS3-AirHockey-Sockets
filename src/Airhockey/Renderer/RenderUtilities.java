@@ -66,8 +66,8 @@ class RenderUtilities {
         double heightPercentage = (100.0 / (double) centerLineHeight) * (double) (positionY - centerTopY + 60);
         double positionX = (((double) baseLineWidth / 100.0) * heightPercentage) + bottomLeftX - (Constants.BAT_RADIUS * 2);
 
-        System.out.println("I: " + heightPercentage);
-        System.out.println("L: " + positionX);
+//        System.out.println("I: " + heightPercentage);
+//        System.out.println("L: " + positionX);
         return (int) Math.floor(positionX);
     }
 
@@ -78,10 +78,10 @@ class RenderUtilities {
      * @return a new Position object with X and Y cooridnates
      */
     protected Position batPositionBottomToLeft(int bottomPositionX) {
-        int positionY = xPositionBottomToYPositionSide(bottomPositionX - 40);
+        int positionY = xPositionBottomToYPositionSide(bottomPositionX - (int) Constants.BAT_RADIUS);
         int positionX = movingLineXLeft[(int) Math.floor(positionY)];
 
-        return new Position(positionX + 95, (int) Math.floor(positionY));
+        return new Position(positionX + (int) (Constants.BAT_RADIUS / 2), (int) Math.floor(positionY));
     }
 
     /**
@@ -91,10 +91,10 @@ class RenderUtilities {
      * @return a new Position object with X and Y cooridnates
      */
     protected Position batPositionBottomToRight(int bottomPositionX) {
-        int positionY = xPositionBottomToYPositionSide(bottomPositionX - 40);
+        int positionY = xPositionBottomToYPositionSide(bottomPositionX - (int) Constants.BAT_RADIUS);
         int positionX = movingLineXRight[positionY];
 
-        return new Position(positionX - 80, (int) Math.floor(positionY));
+        return new Position(positionX - (int) (Constants.BAT_RADIUS), (int) Math.floor(positionY));
     }
 
     /**

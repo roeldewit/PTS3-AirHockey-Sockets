@@ -2,6 +2,7 @@ package Airhockey.Main;
 
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Renderer.Constants;
+import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -96,11 +97,11 @@ public class Login extends Application {
         if (levelString.equals("yes")) {
             primaryStage = (Stage) btLogin.getScene().getWindow();
             //primaryStage.close();
-            Game g = new Game(primaryStage, true, true);
+            Game g = new Game(primaryStage, true, true, new User("SERVER"));
         } else {
             primaryStage = (Stage) btLogin.getScene().getWindow();
             //primaryStage.close();
-            Game g = new Game(primaryStage, false, true);
+            Game g = new Game(primaryStage, false, true, new User("CLIENT"));
         }
     }
 

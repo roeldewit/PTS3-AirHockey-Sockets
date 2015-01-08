@@ -5,6 +5,7 @@ import Airhockey.Elements.*;
 import Airhockey.Main.Game;
 import Airhockey.Utils.Utils;
 import javafx.animation.FadeTransition;
+import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
@@ -24,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
@@ -54,9 +56,9 @@ class BaseRenderer implements IRenderer {
     protected final Game game;
 
     protected Puck puck;
-    protected Bat bat;
-    protected LeftBat leftBat;
-    protected RightBat rightBat;
+    protected Bat redBat;
+    protected LeftBat blueBat;
+    protected RightBat greenBat;
     protected TriangleLine triangle;
     protected TriangleLeftLine triangleLeft;
     protected Goal redGoal;
@@ -99,9 +101,9 @@ class BaseRenderer implements IRenderer {
     }
 
     protected void createScreenStuff() {
-        player1NameLabel = new Label(game.getUsername(1).toUpperCase() + ": ");
-        player2NameLabel = new Label(game.getUsername(2).toUpperCase() + ": ");
-        player3NameLabel = new Label(game.getUsername(3).toUpperCase() + ": ");
+        player1NameLabel = new Label();
+        player2NameLabel = new Label();
+        player3NameLabel = new Label();
         player1ScoreLabel = new Label("20");
         player2ScoreLabel = new Label("20");
         player3ScoreLabel = new Label("20");
@@ -139,6 +141,13 @@ class BaseRenderer implements IRenderer {
         root.getChildren().addAll(roundTextLabel, roundNumberLabel);
     }
 
+    @Override
+    public void setLabelNames(String p1Name, String p2Name, String p3Name) {
+        player1NameLabel.setText(p1Name.toUpperCase() + ": ");
+        player2NameLabel.setText(p2Name.toUpperCase() + ": ");
+        player3NameLabel.setText(p3Name.toUpperCase() + ": ");
+    }
+
     protected void drawShapes() {
         Canvas canvas = new Canvas(Utils.WIDTH, Utils.HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -154,7 +163,7 @@ class BaseRenderer implements IRenderer {
         //gc.strokeArc(600, 200, 100, 300, 140, 180, ArcType.ROUND);
     }
 
-    protected void showPopupWindow() {
+    protected void showGameOverPopupWindow() {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(primaryStage.getScene().getWindow());
@@ -286,22 +295,37 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
+    public void stop() {
+        showGameOverPopupWindow();
+
+        Rectangle rect = new Rectangle(0, 0, 0, 0);
+        rect.setWidth(Utils.WIDTH);
+        rect.setHeight(Utils.HEIGHT);
+        rect.setArcWidth(50);
+
+        root.getChildren().add(rect);
+
+        FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
+        ft.playFromStart();
+    }
+
+    @Override
     public void setPuckLocation(int x, int y) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setBottomBatLocation(int x, int y) {
+    public void setRedBatLocation(int x, int y) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setLeftBatLocation(int x, int y) {
+    public void setBlueBatLocation(int x, int y) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setRightBatLocation(int x, int y) {
+    public void setGreenBatLocation(int x, int y) {
         //Implemented in child cass.
     }
 
@@ -311,10 +335,8 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
-    public void setUpGame(String p1Name, String p2Name, String p3Name) {
-        player1NameLabel.setText(p1Name);
-        player2NameLabel.setText(p2Name);
-        player3NameLabel.setText(p3Name);
+    public void setUpGame(int playerNumber, String p1Name, String p2Name, String p3Name) {
+        //Implemented in child cass.
     }
 
 }

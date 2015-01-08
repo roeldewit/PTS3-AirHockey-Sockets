@@ -118,9 +118,9 @@ public class Renderer extends BaseRenderer {
     }
 
     private void linkPlayersToBats() {
-        game.addPlayerToBat(1, bat);
-        game.addPlayerToBat(2, leftBat);
-        game.addPlayerToBat(3, rightBat);
+        game.addPlayerToBat(1, redBat);
+        game.addPlayerToBat(2, blueBat);
+        game.addPlayerToBat(3, greenBat);
     }
 
     @Override
@@ -146,24 +146,24 @@ public class Renderer extends BaseRenderer {
         puck = new Puck(50, 45);
 
         if (batBody != null) {
-            bat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
+            redBat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
         } else {
-            bat = new Bat(50f, 15f, Constants.COLOR_RED);
+            redBat = new Bat(50f, 15f, Constants.COLOR_RED);
         }
-        leftBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
-        rightBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
+        blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
+        greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
         root.getChildren().addAll(puck.node);
-        root.getChildren().addAll(bat.node, bat.imageNode);
-        root.getChildren().addAll(leftBat.node, leftBat.imageNode);
-        root.getChildren().addAll(rightBat.node, rightBat.imageNode);
+        root.getChildren().addAll(redBat.node, redBat.imageNode);
+        root.getChildren().addAll(blueBat.node, blueBat.imageNode);
+        root.getChildren().addAll(greenBat.node, greenBat.imageNode);
 
         puckShape = (Shape) puck.node;
 
         puckBody = (Body) puck.node.getUserData();
-        batBody = (Body) bat.node.getUserData();
-        leftBatBody = (Body) leftBat.node.getUserData();
-        rightBatBody = (Body) rightBat.node.getUserData();
+        batBody = (Body) redBat.node.getUserData();
+        leftBatBody = (Body) blueBat.node.getUserData();
+        rightBatBody = (Body) greenBat.node.getUserData();
     }
 
     @Override
@@ -181,11 +181,11 @@ public class Renderer extends BaseRenderer {
         Shape greenGoalIntersect = Shape.intersect(greenGoalShape, puckShape);
 
         if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, bat, encoder);
+            game.setGoal(lastHittedBat, redBat, encoder);
         } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftBat, encoder);
+            game.setGoal(lastHittedBat, blueBat, encoder);
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftBat, encoder);
+            game.setGoal(lastHittedBat, blueBat, encoder);
         }
     }
 
@@ -245,9 +245,9 @@ public class Renderer extends BaseRenderer {
 
             if (isMultiplayer) {
                 encoder.sendPuckLocation((int) puckBodyPosX, (int) puckBodyPosY);
-                encoder.sendBottomBatLocation((int) batBodyPosX, (int) batBodyPosY);
-                encoder.sendLeftBatLocation((int) leftBatBodyPosX, (int) leftBatBodyPosY);
-                encoder.sendRightBatLocation((int) rightBatBodyPosX, (int) rightBatBodyPosY);
+                encoder.sendRedBatLocation((int) batBodyPosX, (int) batBodyPosY);
+                encoder.sendBlueBatLocation((int) leftBatBodyPosX, (int) leftBatBodyPosY);
+                encoder.sendLeftBatLocation((int) rightBatBodyPosX, (int) rightBatBodyPosY);
             }
 
             if (canCorrectPuckSpeed) {
@@ -271,7 +271,7 @@ public class Renderer extends BaseRenderer {
     private synchronized void threadCallback(float puckBodyPosX, float puckBodyPosY, float batBodyPosX, float batBodyPosY) {
         if (canUpdate) {
             puck.setPosition(puckBodyPosX, puckBodyPosY);
-            bat.setPosition(batBodyPosX, batBodyPosY);
+            redBat.setPosition(batBodyPosX, batBodyPosY);
 
             batController.controlCenterBat(batBodyPosX);
 
@@ -286,33 +286,33 @@ public class Renderer extends BaseRenderer {
     }
 
     private void moveLeftEnemyBat(float puckBodyPosY) {
-        Body leftEnemyBatBody = (Body) leftBat.node.getUserData();
+        Body leftEnemyBatBody = (Body) blueBat.node.getUserData();
         float leftEnemyBatPositionY = Utils.toPixelPosY(leftEnemyBatBody.getPosition().y);
 
-        leftBat.stop();
+        blueBat.stop();
         if (puckBodyPosY > leftEnemyBatPositionY) {
             if (leftEnemyBatPositionY < Constants.BAT_MIN_Y) {
-                leftBat.moveDown(puckBody);
+                blueBat.moveDown(puckBody);
             }
         } else if (puckBodyPosY < leftEnemyBatPositionY) {
             if (leftEnemyBatPositionY > Constants.BAT_MAX_Y) {
-                leftBat.moveUp(puckBody);
+                blueBat.moveUp(puckBody);
             }
         }
     }
 
     private void moveRightEnemyBat(float puckBodyPosY) {
-        Body rightEnemyBatBody = (Body) rightBat.node.getUserData();
+        Body rightEnemyBatBody = (Body) greenBat.node.getUserData();
         float rightEnemyBatPositionY = Utils.toPixelPosY(rightEnemyBatBody.getPosition().y);
 
-        rightBat.stop();
+        greenBat.stop();
         if (puckBodyPosY - 5 > rightEnemyBatPositionY + 5) {
             if (rightEnemyBatPositionY < Constants.BAT_MIN_Y) {
-                rightBat.moveDown(puckBody);
+                greenBat.moveDown(puckBody);
             }
         } else if (puckBodyPosY + 5 < rightEnemyBatPositionY - 5) {
             if (rightEnemyBatPositionY > Constants.BAT_MAX_Y) {
-                rightBat.moveUp(puckBody);
+                greenBat.moveUp(puckBody);
             }
         }
     }
@@ -324,13 +324,13 @@ public class Renderer extends BaseRenderer {
 
         Utils.world.destroyBody(puckBody);
         Utils.world.destroyBody(batBody);
-        Utils.world.destroyBody(leftBat.getBody());
-        Utils.world.destroyBody(rightBat.getBody());
+        Utils.world.destroyBody(blueBat.getBody());
+        Utils.world.destroyBody(greenBat.getBody());
 
         root.getChildren().removeAll(puck.node, puck.imageNode);
-        root.getChildren().removeAll(bat.node, bat.imageNode);
-        root.getChildren().removeAll(leftBat.node, leftBat.imageNode);
-        root.getChildren().removeAll(rightBat.node, rightBat.imageNode);
+        root.getChildren().removeAll(redBat.node, redBat.imageNode);
+        root.getChildren().removeAll(blueBat.node, blueBat.imageNode);
+        root.getChildren().removeAll(greenBat.node, greenBat.imageNode);
 
         newRoundTransition(round);
 
@@ -354,18 +354,11 @@ public class Renderer extends BaseRenderer {
         }
     }
 
-    protected void stop() {
-        Rectangle rect = new Rectangle(0, 0, 0, 0);
-        rect.setWidth(Utils.WIDTH);
-        rect.setHeight(Utils.HEIGHT);
-        rect.setArcWidth(50);
+    @Override
+    public void stop() {
+        super.stop();
 
-        root.getChildren().add(rect);
-
-        FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
-        ft.playFromStart();
-
-        shutDown();
+        //shutDown();
     }
 
     private void shutDown() {
@@ -387,12 +380,12 @@ public class Renderer extends BaseRenderer {
             Fixture fB = contact.getFixtureB();
 
             if (fA == puck.getFixture() || fB == puck.getFixture()) {
-                if (fA == bat.getFixture() || fB == bat.getFixture()) {
-                    lastHittedBat = bat;
-                } else if (fA == leftBat.getFixture() || fB == leftBat.getFixture()) {
-                    lastHittedBat = leftBat;
-                } else if (fA == rightBat.getFixture() || fB == rightBat.getFixture()) {
-                    lastHittedBat = rightBat;
+                if (fA == redBat.getFixture() || fB == redBat.getFixture()) {
+                    lastHittedBat = redBat;
+                } else if (fA == blueBat.getFixture() || fB == blueBat.getFixture()) {
+                    lastHittedBat = blueBat;
+                } else if (fA == greenBat.getFixture() || fB == greenBat.getFixture()) {
+                    lastHittedBat = greenBat;
                 }
             }
         }
