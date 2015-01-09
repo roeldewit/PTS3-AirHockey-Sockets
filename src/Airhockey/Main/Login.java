@@ -6,7 +6,6 @@ import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -97,12 +96,19 @@ public class Login extends Application {
         if (levelString.equals("yes")) {
             primaryStage = (Stage) btLogin.getScene().getWindow();
             //primaryStage.close();
-            Game g = new Game(primaryStage, true, true, new User("SERVER"));
+            Game game = new Game(primaryStage);
+            game.startAsHost(new User("SERVER"));
         } else {
             primaryStage = (Stage) btLogin.getScene().getWindow();
             //primaryStage.close();
-            Game g = new Game(primaryStage, false, true, new User("CLIENT"));
+            Game game = new Game(primaryStage);
+            game.startAsClient(new User("CLIENT"), "localhost");
         }
+
+//        primaryStage = (Stage) btLogin.getScene().getWindow();
+//        //primaryStage.close();
+//        Game game = new Game(primaryStage);
+//        game.startSinglePlayer();
     }
 
     public void actionlogin() {

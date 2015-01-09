@@ -50,14 +50,18 @@ public class Encoder {
         sendCommand(command);
     }
 
-    public synchronized void sendGoalMade(int newRound, int scorer, int against) {
+    public synchronized void sendGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore) {
         String command = Protocol.GOAL_MADE
                 + Protocol.SEPERATOR
                 + newRound
                 + Protocol.SEPERATOR
                 + scorer
                 + Protocol.SEPERATOR
-                + against;
+                + scorerScore
+                + Protocol.SEPERATOR
+                + against
+                + Protocol.SEPERATOR
+                + againstScore;
 
         sendCommand(command);
     }

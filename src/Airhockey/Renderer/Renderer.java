@@ -1,19 +1,16 @@
 package Airhockey.Renderer;
 
 import Airhockey.Connection.Encoder;
-import Airhockey.Connection.Protocol;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
 import Airhockey.Main.Login;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
-import java.rmi.RemoteException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javafx.animation.*;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,7 +18,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -68,12 +64,17 @@ public class Renderer extends BaseRenderer {
         this.batController = new BatController(this);
         this.isMultiplayer = isMultiplayer;
         this.threadPool = Executors.newCachedThreadPool();
-
     }
 
+    /**
+     * Creates the window where the game is played in and adds all the visible items and listeners.
+     *
+     * @param encoder The enoder used to send game data to the clients if this is a multiplayer game.
+     * @param playerNumber The number assingned to each player in a game, used for item positioning.
+     */
     @Override
-    public final void start(Encoder encoder) {
-        super.start(encoder);
+    public final void start(Encoder encoder, int playerNumber) {
+        super.start(encoder, playerNumber);
 
         primaryStage.setTitle("Airhockey");
         primaryStage.setFullScreen(false);
@@ -99,7 +100,7 @@ public class Renderer extends BaseRenderer {
         mainRoot.getChildren().add(mainBorderPane);
 
         Duration duration = Duration.seconds(1.0 / 60.0);
-        MyHandler eventHandler = new MyHandler();
+        FrameTimer eventHandler = new FrameTimer();
         KeyFrame frame = new KeyFrame(duration, eventHandler, null, null);
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -107,11 +108,12 @@ public class Renderer extends BaseRenderer {
 
         PropertiesManager.saveProperty("REB-Difficulty", "HARD");
 
-        drawShapes();
-        createFixedItems();
+        createStaticItems();
         createMovableItems();
-        createScreenStuff();
+
         linkPlayersToBats();
+        super.drawShapes();
+        createStartButton();
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -124,8 +126,8 @@ public class Renderer extends BaseRenderer {
     }
 
     @Override
-    protected void createScreenStuff() {
-        super.createScreenStuff();
+    protected void createStartButton() {
+        super.createStartButton();
 
         startButton = new Button();
         startButton.setLayoutX(30);
@@ -142,6 +144,9 @@ public class Renderer extends BaseRenderer {
         root.getChildren().add(startButton);
     }
 
+    /**
+     * Creates the movable items on the screen which include the puck and the three bats.
+     */
     private void createMovableItems() {
         puck = new Puck(50, 45);
 
@@ -166,15 +171,22 @@ public class Renderer extends BaseRenderer {
         rightBatBody = (Body) greenBat.node.getUserData();
     }
 
+    /**
+     * Creates the static items on the screen which include the goals.
+     */
     @Override
-    protected void createFixedItems() {
-        super.createFixedItems();
+    protected void createStaticItems() {
+        super.createStaticItems();
 
         redGoalShape = (Shape) redGoal.collisionNode;
         blueGoalShape = (Shape) blueGoal.collisionNode;
         greenGoalShape = (Shape) greenGoal.collisionNode;
     }
 
+    /**
+     * This method is called on every game update frame.
+     * It checks whether a goal has been made and gives a notice to the game with the scorer and the one the goal was against.
+     */
     private synchronized void checkGoal() {
         Shape redGoalIntersect = Shape.intersect(redGoalShape, puckShape);
         Shape blueGoalIntersect = Shape.intersect(blueGoalShape, puckShape);
@@ -189,7 +201,10 @@ public class Renderer extends BaseRenderer {
         }
     }
 
-    private class MyHandler implements EventHandler<ActionEvent> {
+    /**
+     * Class that initates each frame.
+     */
+    private class FrameTimer implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent event) {
@@ -202,6 +217,10 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * Background tast that does all the calculation-heavy work.
+     * This class also takes care of sending the data to the clients if this game is a multiplayer game.
+     */
     private class CalulationTask extends Task<Void> {
 
         private float puckBodyPosX;
@@ -268,6 +287,14 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * Receives the calculated data from the background task
+     *
+     * @param puckBodyPosX
+     * @param puckBodyPosY
+     * @param batBodyPosX
+     * @param batBodyPosY
+     */
     private synchronized void threadCallback(float puckBodyPosX, float puckBodyPosY, float batBodyPosX, float batBodyPosY) {
         if (canUpdate) {
             puck.setPosition(puckBodyPosX, puckBodyPosY);
@@ -285,6 +312,12 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * This method controls the movement of the LeftEnemyBat.
+     * The bat is positioned according to the puck's location within a certain height-range.
+     *
+     * @param puckBodyPosY the y-coordinate of the puck
+     */
     private void moveLeftEnemyBat(float puckBodyPosY) {
         Body leftEnemyBatBody = (Body) blueBat.node.getUserData();
         float leftEnemyBatPositionY = Utils.toPixelPosY(leftEnemyBatBody.getPosition().y);
@@ -301,6 +334,12 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * This method controls the movement of the RightEnemyBat.
+     * The bat is positioned according to the puck's location within a certain height-range.
+     *
+     * @param puckBodyPosY the y-coordinate of the puck
+     */
     private void moveRightEnemyBat(float puckBodyPosY) {
         Body rightEnemyBatBody = (Body) greenBat.node.getUserData();
         float rightEnemyBatPositionY = Utils.toPixelPosY(rightEnemyBatBody.getPosition().y);
@@ -317,6 +356,12 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * This method gets called after a goal has been made.
+     * It resets all movable elements to their original position and calls a animation.
+     *
+     * @param round The number of the next round.
+     */
     @Override
     public void resetRound(int round) {
         canUpdate = false;
@@ -338,12 +383,20 @@ public class Renderer extends BaseRenderer {
         linkPlayersToBats();
     }
 
+    /**
+     * Displays an animation with the number of the new round.
+     *
+     * @param round The number of the new round.
+     */
     @Override
     protected void newRoundTransition(int round) {
         super.newRoundTransition(round);
         parallelTransition.setOnFinished(new OnAnimationCompletionListener());
     }
 
+    /**
+     * Checks when the round animation has finished and starts the frame timer again.
+     */
     private class OnAnimationCompletionListener implements EventHandler<ActionEvent> {
 
         @Override
@@ -372,6 +425,9 @@ public class Renderer extends BaseRenderer {
         System.out.println("shutdonwl");
     }
 
+    /**
+     * Checks collisions between the puck and the bats to determine the last bat that hit the puck in the event of a goal.
+     */
     private class BatPuckContactListener implements ContactListener {
 
         @Override
@@ -401,9 +457,5 @@ public class Renderer extends BaseRenderer {
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
         }
-    }
-
-    public BatController getBatController() {
-        return batController;
     }
 }

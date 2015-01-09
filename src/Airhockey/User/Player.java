@@ -1,7 +1,5 @@
 package Airhockey.User;
 
-import Airhockey.Elements.Bat;
-
 /**
  *
  * @author Roel

@@ -1,6 +1,8 @@
 package Airhockey.Renderer;
 
 import Airhockey.Elements.TriangleLine;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 
 /**
  * Used for transforming side and center bat cooridinates
@@ -23,8 +25,11 @@ class RenderUtilities {
     /**
      * Lists to save X coordinates of the corresponding Y Coordinate on the triangle side angles. Input Y gives X.
      */
-    private final int[] movingLineXLeft;
-    private final int[] movingLineXRight;
+    private final int[] batMovingLineXLeft;
+    private final int[] batMovingLineXRight;
+
+    private final int[] puckMovingLineTiltedRight;
+    //private final int[] puckMovingLineTiltedLeft;
 
     public RenderUtilities(TriangleLine triangleLine) {
         centerTopY = triangleLine.getCenterTopY();
@@ -37,6 +42,9 @@ class RenderUtilities {
 
         System.out.println("CENTER_TOP_Y: " + centerTopY);
         System.out.println("CENTER LINE HEIGHT: " + centerLineHeight);
+        System.out.println("CENTER_BOTTOM_Y: " + bottomY);
+        System.out.println("Bottom Right X: " + bottomRightX);
+        System.out.println("Bottom Left X: " + bottomLeftX);
         baseLineWidth = bottomRightX - bottomLeftX;
 
         //Create MovinglineLists
@@ -44,14 +52,55 @@ class RenderUtilities {
         int triangleHalfWidth = baseLineWidth / 2;
         double calc1 = ((double) triangleHalfWidth / (double) centerLineHeight);
 
-        movingLineXLeft = new int[centerLineHeight];
-        movingLineXRight = new int[centerLineHeight];
+        batMovingLineXLeft = new int[centerLineHeight];
+        batMovingLineXRight = new int[centerLineHeight];
 
         for (int i = 0; i < triangleHeight; i++) {
             double calc2 = calc1 * (double) i;
-            movingLineXLeft[i] = (int) Math.floor(bottomLeftX + triangleHalfWidth - calc2);
-            movingLineXRight[i] = (int) Math.floor(bottomLeftX + triangleHalfWidth + calc2);
+            batMovingLineXLeft[i] = (int) Math.floor(bottomLeftX + triangleHalfWidth - calc2);
+            batMovingLineXRight[i] = (int) Math.floor(bottomLeftX + triangleHalfWidth + calc2);
         }
+
+        int triangleHalfHeight = triangleHeight / 2;
+        double calc3 = ((double) triangleHalfHeight + 100.0) / (double) baseLineWidth;
+
+        puckMovingLineTiltedRight = new int[centerLineHeight];
+
+        for (int i = 0; i < centerLineHeight; i++) {
+            double calc4 = calc3 * (double) i;
+            puckMovingLineTiltedRight[i] = (int) Math.floor(bottomY - calc4);
+            System.out.println("X: " + i + "Y: " + puckMovingLineTiltedRight[i]);
+        }
+    }
+
+    public void drawLine(GraphicsContext gc) {
+        //Position p = serverPuckToBlueClientPuck(6);
+        //Position p2 = serverPuckToBlueClientPuck(centerLineHeight + 6);
+
+        //gc.strokeLine(p.x, p.y, p2.x, p2.y);
+    }
+
+    private int translate(int y) {
+        int swagg = (y - centerTopY);
+        System.out.println("SWAGG: " + swagg);
+
+        int value = (y - centerTopY);
+        if (swagg != 0) {
+            value -= 1;
+        }
+
+        System.out.println("Value: " + value);
+        return value;
+    }
+
+    public Position serverPuckToBlueClientPuck(int puckX, int puckY) {
+        int tempY = translate(puckY);
+
+        int x = bottomRightX - tempY;
+        int y = puckMovingLineTiltedRight[tempY];
+
+        Position position = new Position(x, y);
+        return position;
     }
 
     /**
@@ -79,9 +128,9 @@ class RenderUtilities {
      */
     protected Position batPositionBottomToLeft(int bottomPositionX) {
         int positionY = xPositionBottomToYPositionSide(bottomPositionX - (int) Constants.BAT_RADIUS);
-        int positionX = movingLineXLeft[(int) Math.floor(positionY)];
+        int positionX = batMovingLineXLeft[(int) Math.floor(positionY)];
 
-        return new Position(positionX + (int) (Constants.BAT_RADIUS / 2), (int) Math.floor(positionY));
+        return new Position(positionX + (int) (Constants.BAT_RADIUS * 1.5), (int) Math.floor(positionY));
     }
 
     /**
@@ -92,9 +141,10 @@ class RenderUtilities {
      */
     protected Position batPositionBottomToRight(int bottomPositionX) {
         int positionY = xPositionBottomToYPositionSide(bottomPositionX - (int) Constants.BAT_RADIUS);
-        int positionX = movingLineXRight[positionY];
+        int positionX = batMovingLineXRight[positionY];
 
-        return new Position(positionX - (int) (Constants.BAT_RADIUS), (int) Math.floor(positionY));
+        return new Position(positionX - (int) (Constants.BAT_RADIUS * 1
+                ), (int) Math.floor(positionY));
     }
 
     /**
@@ -105,7 +155,7 @@ class RenderUtilities {
      */
     private int xPositionBottomToYPositionSide(int positionX) {
         double widthPercentage = (100.0 / (double) baseLineWidth) * (double) (positionX - bottomLeftX);
-        double positionY = (((double) baseLineWidth / 100.0) * widthPercentage) + centerTopY;
+        double positionY = (((double) baseLineWidth / 100.0) * (widthPercentage * 0.9)) + centerTopY;
         return (int) Math.floor(positionY);
     }
 }

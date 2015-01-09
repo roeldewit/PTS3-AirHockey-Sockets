@@ -54,15 +54,18 @@ public class Decoder {
                 Platform.runLater(() -> {
                     renderer.setGoalMade(Integer.parseInt(splitter[1]),
                             Integer.parseInt(splitter[2]),
-                            Integer.parseInt(splitter[3]));
+                            Integer.parseInt(splitter[3]),
+                            Integer.parseInt(splitter[4]),
+                            Integer.parseInt(splitter[5]));
                 });
                 break;
             case Protocol.SET_UP_GAME:
                 Platform.runLater(() -> {
-                    renderer.setUpGame(Integer.parseInt(splitter[1]),
-                            splitter[2],
+                    game.startGameAsClient(Integer.parseInt(splitter[1]));
+                    renderer.setUpGame(splitter[2],
                             splitter[3],
-                            splitter[4]);
+                            splitter[4]
+                    );
                 });
                 break;
             case Protocol.CLIENT_SEND_GAME_DATA:

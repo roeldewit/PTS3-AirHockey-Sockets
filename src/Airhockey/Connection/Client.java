@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,12 +22,12 @@ public class Client extends Thread implements IConnectionManager {
     private ObjectOutputStream objectOutputStream;
     private final Decoder decoder;
     private final Game game;
+    private final String ipAddress;
 
-    public Client(IRenderer renderer, Game game) {
+    public Client(IRenderer renderer, Game game, String ipAddress) {
         this.game = game;
-
-        System.out.println("New Client");
-        decoder = new Decoder(renderer, game);
+        this.ipAddress = ipAddress;
+        this.decoder = new Decoder(renderer, game);
     }
 
     @Override
@@ -37,7 +36,7 @@ public class Client extends Thread implements IConnectionManager {
 
         try {
             System.out.println("Starting client....");
-            socket = new Socket("localhost", 8189);
+            socket = new Socket(ipAddress, 8189);
             socket.setTcpNoDelay(true);
 
             System.out.println("Client bound");
@@ -45,9 +44,7 @@ public class Client extends Thread implements IConnectionManager {
             objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             objectOutputStream.flush();
 
-            InputStream inputStream = socket.getInputStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            ObjectInputStream ois = new ObjectInputStream(inputStream);
+            ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
             game.connectedToServer();
 

@@ -15,6 +15,10 @@ import org.jbox2d.common.Vec2;
  */
 public class Goal {
 
+    public static final String GOAL_BOTTOM = "bottom";
+    public static final String GOAL_LEFT = "left";
+    public static final String GOAL_RIGHT = "right";
+
     private final int topLeftX;
     private final int topLeftY;
     private final int width = 340;
@@ -26,24 +30,27 @@ public class Goal {
     public Node node;
     public Node collisionNode;
 
-    public Goal(int color, int topLeftX, int topLeftY) {
-        this.topLeftX = topLeftX;
-        this.topLeftY = topLeftY;
+    public Goal(String position, String colorCode) {
 
-        switch (color) {
-            case Constants.GOAL_RED:
+        switch (position) {
+            case GOAL_BOTTOM:
+                topLeftX = 340;
+                topLeftY = 670;
                 rotation = 0;
-                this.color = Color.web(Constants.COLOR_RED);
                 break;
-            case Constants.GOAL_BLUE:
+            case GOAL_LEFT:
+                topLeftX = 124;
+                topLeftY = 330;
                 rotation = -57;
-                this.color = Color.web(Constants.COLOR_BLUE);
                 break;
             default:
+                topLeftX = 548;
+                topLeftY = 330;
                 rotation = 60;
-                this.color = Color.web(Constants.COLOR_GREEN);
                 break;
         }
+
+        color = Color.web(colorCode);
 
         this.node = createRect();
         this.collisionNode = createCollisionNode();

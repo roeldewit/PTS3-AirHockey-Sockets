@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author Roel
+ * @author Sam
  */
 public class Game {
 
@@ -22,45 +22,51 @@ public class Game {
     private int round = 1;
     private User user;
     private int playerNumber;
-    private final IRenderer renderer;
-    private ArrayList<Player> players;
+    private IRenderer renderer;
+    private final ArrayList<Player> players;
 
     private int numberOfClientsConnected = 0;
-    private final Encoder encoder;
+    private Encoder encoder;
     private Client client;
     private ConnectionListener connectionListener;
+
+    private Stage primaryStage;
 
     //private ArrayList<Spectator> spectators;
     private ScoreCalculator scoreCalculator;
 
-    private final boolean isHost;
-    private final boolean isMultiplayer;
-
-    public Game(Stage primaryStage, boolean isHost, boolean isMultiplayer, User user) {
-        this.isHost = isHost;
-        this.isMultiplayer = isMultiplayer;
-        this.user = user;
+    public Game(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         players = new ArrayList<>();
+    }
 
-        if (!isMultiplayer) {
-            addPlayer("Sam");
-            addPlayer("Com1");
-            addPlayer("Com2");
-        }
+    public void startSinglePlayer() {
+        addPlayer("Sam");
+        addPlayer("Com1");
+        addPlayer("Com2");
+
+        renderer = new Renderer(primaryStage, this, false);
+        renderer.start(null, 1);
+    }
+
+    public void startAsHost(User user) {
+        addPlayer(user.getUsername());
+
         encoder = new Encoder();
+        renderer = new Renderer(primaryStage, this, true);
+        connectionListener = new ConnectionListener(this, renderer);
+        connectionListener.start();
+    }
 
-        //renderer = new Renderer(primaryStage, this, isMultiplayer);
-        if (isHost) {
-            addPlayer(user.getUsername());
-            this.renderer = new Renderer(primaryStage, this, true);
-            connectionListener = new ConnectionListener(this, renderer);
-            connectionListener.start();
-        } else {
-            this.renderer = new ClientRenderer(primaryStage, this);
-            client = new Client(renderer, this);
-            encoder.addManager(client);
-            client.start();
-        }
+    public void startAsClient(User user, String ipAddress) {
+        this.user = user;
+
+        encoder = new Encoder();
+        renderer = new ClientRenderer(primaryStage, this);
+        client = new Client(renderer, this, ipAddress);
+        encoder.addManager(client);
+        client.start();
+
     }
 
     public void connectedToServer() {
@@ -89,7 +95,7 @@ public class Game {
                 for (int i = 2; i < 4; i++) {
                     encoder.sendSetUpGame(i, p1Name, p2Name, p3Name);
                 }
-                renderer.start(encoder);
+                renderer.start(encoder, 1);
                 renderer.setLabelNames(p1Name, p2Name, p3Name);
             });
             connectionListener.cancel();
@@ -98,7 +104,7 @@ public class Game {
 
     public void startGameAsClient(int playerNumber) {
         this.playerNumber = playerNumber;
-        renderer.start(encoder);
+        renderer.start(encoder, playerNumber);
     }
 
     public void leaveGame(User user) {
@@ -130,15 +136,15 @@ public class Game {
 
         Player playerAgainst = against.getPlayer();
         playerAgainst.downScore();
-        renderer.setTextFields("PLAYER" + playerAgainst.getId() + "_SCORE", String.valueOf(playerAgainst.getScore()));
+        renderer.setTextFields(playerAgainst.getId(), playerAgainst.getScore());
 
         if (scorer != null) {
             Player playerScorer = scorer.getPlayer();
             playerScorer.upScore();
-            renderer.setTextFields("PLAYER" + playerScorer.getId() + "_SCORE", String.valueOf(playerScorer.getScore()));
-            encoder.sendGoalMade(round, playerScorer.getId(), playerAgainst.getId());
+            renderer.setTextFields(playerScorer.getId(), playerScorer.getScore());
+            encoder.sendGoalMade(round, playerScorer.getId(), playerScorer.getScore(), playerAgainst.getId(), playerAgainst.getScore());
         } else {
-            encoder.sendGoalMade(round, -1, playerAgainst.getId());
+            encoder.sendGoalMade(round, -1, -1, playerAgainst.getId(), playerAgainst.getScore());
         }
 
         if (round == 100) {

@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 public final class ClientRenderer extends BaseRenderer {
 
     private RenderUtilities rendererUtilities;
-    private int playerNumber;
     private Position position;
 
     public ClientRenderer(Stage primaryStage, Game game) {
@@ -25,8 +24,8 @@ public final class ClientRenderer extends BaseRenderer {
     }
 
     @Override
-    public void start(Encoder encoder) {
-        super.start(encoder);
+    public void start(Encoder encoder, int playerNumber) {
+        super.start(encoder, playerNumber);
 
         primaryStage.setTitle("AirhockeyClient");
         primaryStage.setFullScreen(false);
@@ -47,8 +46,8 @@ public final class ClientRenderer extends BaseRenderer {
 
         drawShapes();
         createMovableItems();
-        createFixedItems();
-        createScreenStuff();
+        createStaticItems();
+        createStartButton();
 
         rendererUtilities = new RenderUtilities(triangle);
 
@@ -72,7 +71,8 @@ public final class ClientRenderer extends BaseRenderer {
 
     @Override
     public void setPuckLocation(int x, int y) {
-        puck.setPosition(x, y);
+        Position position = rendererUtilities.serverPuckToBlueClientPuck(x, y);
+        puck.setPosition(position.x, position.y);
     }
 
     @Override
@@ -106,14 +106,15 @@ public final class ClientRenderer extends BaseRenderer {
     }
 
     @Override
-    public void setGoalMade(int newRound, int scorer, int against) {
+    public void setGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore) {
+        setTextFields(scorer, scorerScore);
+        setTextFields(against, againstScore);
+
         resetRound(newRound);
     }
 
     @Override
-    public void setUpGame(int playerNumber, String p1Name, String p2Name, String p3Name) {
-        this.playerNumber = playerNumber;
-        game.startGameAsClient(playerNumber);
+    public void setUpGame(String p1Name, String p2Name, String p3Name) {
         super.setLabelNames(p1Name, p2Name, p3Name);
     }
 

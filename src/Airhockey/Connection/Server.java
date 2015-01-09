@@ -39,9 +39,7 @@ public class Server extends Thread implements IConnectionManager {
             objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             objectOutputStream.flush();
 
-            InputStream inputStream = socket.getInputStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            ObjectInputStream ois = new ObjectInputStream(inputStream);
+            ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
             while (!interrupted) {
                 String command = (String) ois.readObject();

@@ -9,6 +9,7 @@ import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -55,6 +56,8 @@ class BaseRenderer implements IRenderer {
     protected final Stage primaryStage;
     protected final Game game;
 
+    protected int playerNumber;
+
     protected Puck puck;
     protected Bat redBat;
     protected LeftBat blueBat;
@@ -74,15 +77,20 @@ class BaseRenderer implements IRenderer {
     public BaseRenderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
         this.game = game;
+
+        //primaryStage.getOnCloseRequest(new EventHandler<Event>);
     }
 
     @Override
-    public void start(Encoder encoder) {
+    public void start(Encoder encoder, int playerNumber) {
         this.encoder = encoder;
+        this.playerNumber = playerNumber;
     }
 
     @Override
-    public void setTextFields(String field, String value) {
+    public void setTextFields(int field, int score) {
+        String value = String.valueOf(score);
+
         switch (field) {
             case Constants.P1_SCORE:
                 player1ScoreLabel.setText(value);
@@ -96,11 +104,7 @@ class BaseRenderer implements IRenderer {
         }
     }
 
-    @Override
-    public void resetRound(int round) {
-    }
-
-    protected void createScreenStuff() {
+    protected void createStartButton() {
         player1NameLabel = new Label();
         player2NameLabel = new Label();
         player3NameLabel = new Label();
@@ -160,6 +164,8 @@ class BaseRenderer implements IRenderer {
         gc.setLineWidth(3);
         gc.strokeOval(centerPointX - 100, centerPointY - 60, 200, 200);
 
+//        RenderUtilities r = new RenderUtilities(triangle);
+//        r.drawLine(gc);
         //gc.strokeArc(600, 200, 100, 300, 140, 180, ArcType.ROUND);
     }
 
@@ -252,13 +258,27 @@ class BaseRenderer implements IRenderer {
         parallelTransition.playFromStart();
     }
 
-    protected void createFixedItems() {
+    protected void createStaticItems() {
         triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
         triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
 
-        redGoal = new Goal(Constants.GOAL_RED, 340, 670);
-        blueGoal = new Goal(Constants.GOAL_BLUE, 124, 330);
-        greenGoal = new Goal(Constants.GOAL_GREEN, 548, 330);
+        switch (playerNumber) {
+            case 2:
+                redGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_RED);
+                blueGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_BLUE);
+                greenGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_GREEN);
+                break;
+            case 3:
+                redGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_RED);
+                blueGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_BLUE);
+                greenGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_GREEN);
+                break;
+            default:
+                redGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_RED);
+                blueGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_BLUE);
+                greenGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_GREEN);
+                break;
+        }
 
         root.getChildren().add(triangle.node);
         root.getChildren().add(triangleLeft.node);
@@ -310,6 +330,11 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
+    public void resetRound(int round) {
+        //Implemented in child cass.    
+    }
+
+    @Override
     public void setPuckLocation(int x, int y) {
         //Implemented in child cass.
     }
@@ -330,12 +355,12 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
-    public void setGoalMade(int newRound, int scorer, int against) {
+    public void setGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setUpGame(int playerNumber, String p1Name, String p2Name, String p3Name) {
+    public void setUpGame(String p1Name, String p2Name, String p3Name) {
         //Implemented in child cass.
     }
 

@@ -17,7 +17,7 @@ import org.jbox2d.dynamics.FixtureDef;
 
 /**
  *
- * @author Roel
+ * @author Sam
  */
 public class Bat {
 
@@ -79,13 +79,13 @@ public class Bat {
         Image image;
         switch (type) {
             case Constants.COLOR_RED:
-                image = new Image(getClass().getResourceAsStream("Images/RedBatSmaller.png"), diameter, diameter, false, false);
+                image = new Image(getClass().getResourceAsStream("Images/RedBat.png"), diameter, diameter, false, false);
                 break;
             case Constants.COLOR_BLUE:
-                image = new Image(getClass().getResourceAsStream("Images/LightBlueBatSmaller.png"), diameter, diameter, false, false);
+                image = new Image(getClass().getResourceAsStream("Images/LightBlueBat.png"), diameter, diameter, false, false);
                 break;
             default:
-                image = new Image(getClass().getResourceAsStream("Images/GreenBatSmaller.png"), diameter, diameter, false, false);
+                image = new Image(getClass().getResourceAsStream("Images/GreenBat.png"), diameter, diameter, false, false);
                 break;
         }
         ImageView imageView = new ImageView(image);
