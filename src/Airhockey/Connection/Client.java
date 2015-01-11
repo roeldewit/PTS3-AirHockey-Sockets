@@ -5,7 +5,6 @@ import Airhockey.Renderer.IRenderer;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -24,10 +23,10 @@ public class Client extends Thread implements IConnectionManager {
     private final Game game;
     private final String ipAddress;
 
-    public Client(IRenderer renderer, Game game, String ipAddress) {
+    public Client(Decoder decoder, Game game, String ipAddress) {
         this.game = game;
         this.ipAddress = ipAddress;
-        this.decoder = new Decoder(renderer, game);
+        this.decoder = decoder;
     }
 
     @Override

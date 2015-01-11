@@ -1,8 +1,9 @@
 package Airhockey.Elements;
 
-import Airhockey.Renderer.Constants;
 import javafx.animation.RotateTransition;
 import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -62,22 +63,32 @@ public class Goal {
      * @return
      */
     private Node createRect() {
-        Rectangle r = new Rectangle();
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetY(3.0);
+        shadow.setOffsetX(2.0);
+        shadow.setColor(Color.BLACK);
+        
+        InnerShadow is = new InnerShadow();
+        is.setOffsetX(0.5f);
+        is.setOffsetY(0.5f);
 
-        r.setWidth(width);
-        r.setHeight(height);
-        r.setFill(color);
-        r.setLayoutX(topLeftX);
-        r.setLayoutY(topLeftY);
-        r.setArcWidth(10);
-        r.setArcHeight(10);
+        Rectangle goal = new Rectangle();
+        goal.setWidth(width);
+        goal.setHeight(height);
+        goal.setFill(color);
+        goal.setLayoutX(topLeftX);
+        goal.setLayoutY(topLeftY);
+        goal.setArcWidth(10);
+        goal.setArcHeight(10);
+        //goal.setEffect(shadow);
+        goal.setEffect(is);
 
-        RotateTransition t = new RotateTransition(Duration.millis(1), r);
+        RotateTransition t = new RotateTransition(Duration.millis(1), goal);
         t.setByAngle(rotation);
         t.setAutoReverse(false);
         t.play();
 
-        return r;
+        return goal;
     }
 
     private Node createCollisionNode() {

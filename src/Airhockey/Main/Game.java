@@ -2,6 +2,7 @@ package Airhockey.Main;
 
 import Airhockey.Connection.Client;
 import Airhockey.Connection.ConnectionListener;
+import Airhockey.Connection.Decoder;
 import Airhockey.Connection.Encoder;
 import Airhockey.Connection.IConnectionManager;
 import Airhockey.Elements.Bat;
@@ -30,10 +31,11 @@ public class Game {
     private Client client;
     private ConnectionListener connectionListener;
 
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
     //private ArrayList<Spectator> spectators;
     private ScoreCalculator scoreCalculator;
+    private boolean isMultiplayer;
 
     public Game(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -42,28 +44,32 @@ public class Game {
 
     public void startSinglePlayer() {
         addPlayer("Sam");
-        addPlayer("Com1");
-        addPlayer("Com2");
+        addPlayer("PC1");
+        addPlayer("PC2");
+        isMultiplayer = false;
 
-        renderer = new Renderer(primaryStage, this, false);
+        renderer = new Renderer(primaryStage, this, isMultiplayer);
         renderer.start(null, 1);
+        renderer.setLabelNames("SAM", "PC1", "PC2");
     }
 
     public void startAsHost(User user) {
         addPlayer(user.getUsername());
+        isMultiplayer = true;
 
         encoder = new Encoder();
-        renderer = new Renderer(primaryStage, this, true);
-        connectionListener = new ConnectionListener(this, renderer);
+        renderer = new Renderer(primaryStage, this, isMultiplayer);
+        connectionListener = new ConnectionListener(this, new Decoder(renderer, this));
         connectionListener.start();
     }
 
     public void startAsClient(User user, String ipAddress) {
         this.user = user;
+        isMultiplayer = true;
 
         encoder = new Encoder();
         renderer = new ClientRenderer(primaryStage, this);
-        client = new Client(renderer, this, ipAddress);
+        client = new Client(new Decoder(renderer, this), this, ipAddress);
         encoder.addManager(client);
         client.start();
 
@@ -73,7 +79,7 @@ public class Game {
         encoder.sendGameData(user.getUsername());
     }
 
-    public synchronized void clientConnected(IConnectionManager manager) {
+    public void clientConnected(IConnectionManager manager) {
         encoder.addManager(manager);
     }
 
@@ -82,7 +88,7 @@ public class Game {
         players.add(player);
     }
 
-    public void addClientPlayer(String userName) {
+    public synchronized void addClientPlayer(String userName) {
         addPlayer(userName);
 
         numberOfClientsConnected++;
@@ -132,27 +138,35 @@ public class Game {
     }
 
     public synchronized void setGoal(Bat scorer, Bat against, Encoder encoder) {
-        round++;
+        Platform.runLater(() -> {
+            round++;
 
-        Player playerAgainst = against.getPlayer();
-        playerAgainst.downScore();
-        renderer.setTextFields(playerAgainst.getId(), playerAgainst.getScore());
+            Player playerAgainst = against.getPlayer();
+            playerAgainst.downScore();
+            renderer.setTextFields(playerAgainst.getId(), playerAgainst.getScore());
 
-        if (scorer != null) {
-            Player playerScorer = scorer.getPlayer();
-            playerScorer.upScore();
-            renderer.setTextFields(playerScorer.getId(), playerScorer.getScore());
-            encoder.sendGoalMade(round, playerScorer.getId(), playerScorer.getScore(), playerAgainst.getId(), playerAgainst.getScore());
-        } else {
-            encoder.sendGoalMade(round, -1, -1, playerAgainst.getId(), playerAgainst.getScore());
-        }
+            if (scorer != null) {
+                Player playerScorer = scorer.getPlayer();
+                playerScorer.upScore();
+                renderer.setTextFields(playerScorer.getId(), playerScorer.getScore());
+                if (isMultiplayer) {
+                    encoder.sendGoalMade(round, playerScorer.getId(), playerScorer.getScore(), playerAgainst.getId(), playerAgainst.getScore());
+                }
+            } else {
+                if (isMultiplayer) {
+                    encoder.sendGoalMade(round, -1, -1, playerAgainst.getId(), playerAgainst.getScore());
+                }
+            }
 
-        if (round == 100) {
-            encoder.sendGameOver();
-            gameOver();
-        } else {
-            renderer.resetRound(round);
-        }
+            if (round == 100) {
+                if (isMultiplayer) {
+                    encoder.sendGameOver();
+                }
+                gameOver();
+            } else {
+                renderer.resetRound(round);
+            }
+        });
     }
 
     public void gameOver() {

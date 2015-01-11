@@ -140,11 +140,10 @@ class RenderUtilities {
      * @return a new Position object with X and Y cooridnates
      */
     protected Position batPositionBottomToRight(int bottomPositionX) {
-        int positionY = xPositionBottomToYPositionSide(bottomPositionX - (int) Constants.BAT_RADIUS);
+        int positionY = centerLineHeight - xPositionBottomToYPositionSide(bottomPositionX - (int) Constants.BAT_RADIUS) + (int) (Constants.BAT_RADIUS * 2);
         int positionX = batMovingLineXRight[positionY];
 
-        return new Position(positionX - (int) (Constants.BAT_RADIUS * 1
-                ), (int) Math.floor(positionY));
+        return new Position(positionX - (int) Constants.BAT_RADIUS, (int) Math.floor(positionY));
     }
 
     /**

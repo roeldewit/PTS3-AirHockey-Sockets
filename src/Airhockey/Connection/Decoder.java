@@ -50,6 +50,13 @@ public class Decoder {
                 });
                 break;
 
+            case Protocol.CLIENT_BAT_MOVEMENT_DIRECTION:
+                Platform.runLater(() -> {
+                    renderer.moveClientBat(Integer.parseInt(splitter[1]),
+                            Integer.parseInt(splitter[2]));
+                });
+                break;
+
             case Protocol.GOAL_MADE:
                 Platform.runLater(() -> {
                     renderer.setGoalMade(Integer.parseInt(splitter[1]),
@@ -68,9 +75,11 @@ public class Decoder {
                     );
                 });
                 break;
+
             case Protocol.CLIENT_SEND_GAME_DATA:
                 game.addClientPlayer(splitter[1]);
                 break;
+
             case Protocol.GAME_OVER:
                 Platform.runLater(() -> {
                     game.gameOver();
@@ -78,5 +87,4 @@ public class Decoder {
                 break;
         }
     }
-
 }

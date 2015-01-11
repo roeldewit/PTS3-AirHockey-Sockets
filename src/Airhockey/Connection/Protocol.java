@@ -15,6 +15,8 @@ public class Protocol {
     protected static final String BLUE_BAT_LOCATION = "blue_bat_location";
     protected static final String GREEN_BAT_LOCATION = "green_bat_location";
 
+    protected static final String CLIENT_BAT_MOVEMENT_DIRECTION = "client_bat_movement_direction";
+
     protected static final String GOAL_MADE = "goal_made";
 
     protected static final String CHAT_LINE = "chat_line";

@@ -9,8 +9,6 @@ import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -21,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
@@ -105,6 +104,11 @@ class BaseRenderer implements IRenderer {
     }
 
     protected void createStartButton() {
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetY(1.0);
+        shadow.setOffsetX(1.0);
+        shadow.setColor(Color.BLACK);
+
         player1NameLabel = new Label();
         player2NameLabel = new Label();
         player3NameLabel = new Label();
@@ -141,7 +145,21 @@ class BaseRenderer implements IRenderer {
         roundTextLabel.relocate(30, 10);
         roundNumberLabel.relocate(140, 10);
 
-        root.getChildren().addAll(player1NameLabel, player2NameLabel, player3NameLabel, player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
+        player1NameLabel.setEffect(shadow);
+        player2NameLabel.setEffect(shadow);
+        player3NameLabel.setEffect(shadow);
+        player1ScoreLabel.setEffect(shadow);
+        player2ScoreLabel.setEffect(shadow);
+        player3ScoreLabel.setEffect(shadow);
+        roundTextLabel.setEffect(shadow);
+        roundNumberLabel.setEffect(shadow);
+
+        root.getChildren().addAll(player1NameLabel,
+                player2NameLabel,
+                player3NameLabel,
+                player1ScoreLabel,
+                player2ScoreLabel,
+                player3ScoreLabel);
         root.getChildren().addAll(roundTextLabel, roundNumberLabel);
     }
 
@@ -162,7 +180,7 @@ class BaseRenderer implements IRenderer {
 
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(3);
-        gc.strokeOval(centerPointX - 100, centerPointY - 60, 200, 200);
+        gc.strokeOval(centerPointX - 100, centerPointY - 40, 200, 200);
 
 //        RenderUtilities r = new RenderUtilities(triangle);
 //        r.drawLine(gc);
@@ -176,12 +194,8 @@ class BaseRenderer implements IRenderer {
         dialogStage.centerOnScreen();
 
         Button okButton = new Button("Close");
-        okButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent arg0) {
-                dialogStage.close();
-            }
+        okButton.setOnAction((ActionEvent arg0) -> {
+            dialogStage.close();
         });
 
         Label label = new Label("GAME OVER");
@@ -361,6 +375,11 @@ class BaseRenderer implements IRenderer {
 
     @Override
     public void setUpGame(String p1Name, String p2Name, String p3Name) {
+        //Implemented in child cass.
+    }
+
+    @Override
+    public void moveClientBat(int playerNumber, int direction) {
         //Implemented in child cass.
     }
 

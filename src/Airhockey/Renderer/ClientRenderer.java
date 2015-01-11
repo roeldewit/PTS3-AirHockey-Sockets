@@ -1,9 +1,9 @@
 package Airhockey.Renderer;
 
-//import Airhockey.Utils.ClientKeyListener;
 import Airhockey.Connection.Encoder;
 import Airhockey.Elements.*;
 import Airhockey.Main.*;
+import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -36,9 +36,9 @@ public final class ClientRenderer extends BaseRenderer {
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
-        //ClientKeyListener keyListener = new ClientKeyListener(this, clientController);
-//        scene.setOnKeyPressed(keyListener);
-//        scene.setOnKeyReleased(keyListener);
+        KeyListener keyListener = new KeyListener(null, playerNumber, encoder);
+        scene.setOnKeyPressed(keyListener);
+        scene.setOnKeyReleased(keyListener);
         BorderPane mainBorderPane = new BorderPane();
         mainBorderPane.setCenter(root);
         mainBorderPane.setRight(createChatBox());
@@ -56,7 +56,7 @@ public final class ClientRenderer extends BaseRenderer {
     }
 
     private void createMovableItems() {
-        puck = new Puck(50, 45);
+        puck = new Puck();
 
         redBat = new Bat(50f, 15f, Constants.COLOR_RED);
 

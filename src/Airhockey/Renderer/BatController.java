@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Airhockey.Renderer;
 
 import org.jbox2d.common.Vec2;
@@ -17,6 +12,7 @@ public class BatController {
     public static final int RIGHT = 2;
     public static final int UP = 3;
     public static final int DOWN = 4;
+    public static final int STOP = 5;
 
     private final Renderer renderer;
 

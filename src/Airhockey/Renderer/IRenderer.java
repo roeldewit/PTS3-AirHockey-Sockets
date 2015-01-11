@@ -22,6 +22,8 @@ public interface IRenderer {
     public void setBlueBatLocation(int x, int y);
 
     public void setGreenBatLocation(int x, int y);
+    
+    public void moveClientBat(int playerNumber, int direction);
 
     public void setGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore);
 

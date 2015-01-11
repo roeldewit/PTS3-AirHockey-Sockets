@@ -56,8 +56,7 @@ public class Renderer extends BaseRenderer {
 
     private final BatController batController;
     private Timeline timeline;
-    private final ExecutorService threadPool;
-    //private RmiServer rmiServer;
+    private ExecutorService threadPool;
 
     public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
@@ -89,7 +88,7 @@ public class Renderer extends BaseRenderer {
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
-        KeyListener keyListener = new KeyListener(batController);
+        KeyListener keyListener = new KeyListener(batController, playerNumber, encoder);
         scene.setOnKeyPressed(keyListener);
         scene.setOnKeyReleased(keyListener);
         Utils.world.setContactListener(new BatPuckContactListener());
@@ -108,11 +107,11 @@ public class Renderer extends BaseRenderer {
 
         PropertiesManager.saveProperty("REB-Difficulty", "HARD");
 
+        super.drawShapes();
         createStaticItems();
         createMovableItems();
-
         linkPlayersToBats();
-        super.drawShapes();
+
         createStartButton();
 
         primaryStage.setScene(scene);
@@ -133,7 +132,7 @@ public class Renderer extends BaseRenderer {
         startButton.setLayoutX(30);
         startButton.setLayoutY((45));
         startButton.setText("Start");
-        startButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );");
+        startButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 2,2,1,1 );");
         startButton.setOnAction((ActionEvent event) -> {
             canUpdate = true;
             timeline.playFromStart();
@@ -148,7 +147,7 @@ public class Renderer extends BaseRenderer {
      * Creates the movable items on the screen which include the puck and the three bats.
      */
     private void createMovableItems() {
-        puck = new Puck(50, 45);
+        puck = new Puck();
 
         if (batBody != null) {
             redBat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
@@ -158,7 +157,7 @@ public class Renderer extends BaseRenderer {
         blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
         greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
-        root.getChildren().addAll(puck.node);
+        root.getChildren().addAll(puck.node, puck.imageNode);
         root.getChildren().addAll(redBat.node, redBat.imageNode);
         root.getChildren().addAll(blueBat.node, blueBat.imageNode);
         root.getChildren().addAll(greenBat.node, greenBat.imageNode);
@@ -231,10 +230,6 @@ public class Renderer extends BaseRenderer {
         private float leftBatBodyPosY;
         private float rightBatBodyPosX;
         private float rightBatBodyPosY;
-
-        public CalulationTask() {
-            call();
-        }
 
         @Override
         protected Void call() {
@@ -312,6 +307,29 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    @Override
+    public void moveClientBat(int playerNumber, int direction) {
+        if (direction == BatController.STOP) {
+            switch (playerNumber) {
+                case 2:
+                    batController.stopLeftBatMovement();
+                    break;
+                case 3:
+                    batController.stopRightBatMovement();
+                    break;
+            }
+        } else {
+            switch (playerNumber) {
+                case 2:
+                    batController.startLeftBatMovement(direction);
+                    break;
+                case 3:
+                    batController.startRightBatMovement(direction);
+                    break;
+            }
+        }
+    }
+
     /**
      * This method controls the movement of the LeftEnemyBat.
      * The bat is positioned according to the puck's location within a certain height-range.
@@ -366,6 +384,9 @@ public class Renderer extends BaseRenderer {
     public void resetRound(int round) {
         canUpdate = false;
         timeline.stop();
+        threadPool.shutdownNow();
+
+        lastHittedBat = null;
 
         Utils.world.destroyBody(puckBody);
         Utils.world.destroyBody(batBody);
@@ -381,6 +402,8 @@ public class Renderer extends BaseRenderer {
 
         createMovableItems();
         linkPlayersToBats();
+
+        threadPool = Executors.newCachedThreadPool();
     }
 
     /**
@@ -448,14 +471,17 @@ public class Renderer extends BaseRenderer {
 
         @Override
         public void endContact(Contact contact) {
+            //Not used
         }
 
         @Override
         public void preSolve(Contact contact, Manifold oldManifold) {
+            //Not used
         }
 
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
+            //Not used
         }
     }
 }

@@ -5,10 +5,8 @@ import Airhockey.Renderer.IRenderer;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,9 +23,9 @@ public class Server extends Thread implements IConnectionManager {
     private final Socket socket;
     private final Decoder decoder;
 
-    public Server(Socket socket, IRenderer renderer, Game game) {
+    public Server(Socket socket, Decoder decoder, Game game) {
         this.socket = socket;
-        decoder = new Decoder(renderer, game);
+        this.decoder = decoder;
     }
 
     @Override
@@ -50,7 +48,6 @@ public class Server extends Thread implements IConnectionManager {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             try {
-                objectOutputStream.close();
                 socket.close();
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
