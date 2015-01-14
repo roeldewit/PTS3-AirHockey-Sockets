@@ -120,7 +120,7 @@ public class Renderer extends BaseRenderer {
         createMovableItems();
         linkPlayersToBats();
 
-        createStartButton();
+        createOtherItems();
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -133,8 +133,8 @@ public class Renderer extends BaseRenderer {
     }
 
     @Override
-    protected void createStartButton() {
-        super.createStartButton();
+    protected void createOtherItems() {
+        super.createOtherItems();
 
         startButton = new Button();
         startButton.setLayoutX(30);

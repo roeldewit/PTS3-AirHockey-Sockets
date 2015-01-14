@@ -1,6 +1,5 @@
 package Airhockey.Main;
 
-import Airhockey.Rmi.SerializableGame;
 import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
@@ -32,7 +31,7 @@ public class Lobby {
     private int portMainServer = 1099;
     Database database;
 
-    private ArrayList<SerializableGame> games;
+    //private ArrayList<SerializableGame> games;
 
     HashMap<String, User> hashMapUsernameToUser;
 
@@ -44,7 +43,7 @@ public class Lobby {
 //        database = new Database();
         hashMapUsernameToUser = new HashMap();
 
-        games = new ArrayList<>();
+        //games = new ArrayList<>();
 
         users = new ArrayList<>();
 
@@ -84,9 +83,9 @@ public class Lobby {
     }
 
     public void addWaitingGame(int id, String description, String portIP, String username) {
-        SerializableGame serializableGame = new SerializableGame(id, description, portIP, username);
+        //SerializableGame serializableGame = new SerializableGame(id, description, portIP, username);
 
-        games.add(serializableGame);
+        //games.add(serializableGame);
     }
 
     private void LobbySetUp(Stage primaryStage) {

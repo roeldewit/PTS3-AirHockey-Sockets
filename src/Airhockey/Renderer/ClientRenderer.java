@@ -19,8 +19,9 @@ public final class ClientRenderer extends BaseRenderer {
 
     private RenderUtilities rendererUtilities;
     private Position position;
+    private boolean isSpectator;
 
-    public ClientRenderer(Stage primaryStage, Game game) {
+    public ClientRenderer(Stage primaryStage, Game game, boolean isSpectator) {
         super(primaryStage, game);
 
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
@@ -33,7 +34,11 @@ public final class ClientRenderer extends BaseRenderer {
     public void start(Encoder encoder, int playerNumber) {
         super.start(encoder, playerNumber);
 
-        primaryStage.setTitle("AirhockeyClient");
+        if (isSpectator) {
+            primaryStage.setTitle("Airhockey Spectating");
+        } else {
+            primaryStage.setTitle("Airhockey Client");
+        }
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
         primaryStage.setWidth(Utils.WIDTH + 250);
@@ -42,18 +47,21 @@ public final class ClientRenderer extends BaseRenderer {
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
-        KeyListener keyListener = new KeyListener(null, playerNumber, encoder);
-        scene.setOnKeyPressed(keyListener);
-        scene.setOnKeyReleased(keyListener);
+        if (!isSpectator) {
+            KeyListener keyListener = new KeyListener(null, playerNumber, encoder);
+            scene.setOnKeyPressed(keyListener);
+            scene.setOnKeyReleased(keyListener);
+        }
+
         BorderPane mainBorderPane = new BorderPane();
         mainBorderPane.setCenter(root);
         mainBorderPane.setRight(createChatBox());
         mainRoot.getChildren().add(mainBorderPane);
 
         drawShapes();
-        createMovableItems();
         createStaticItems();
-        createStartButton();
+        createMovableItems(false);
+        createOtherItems();
 
         rendererUtilities = new RenderUtilities(triangle);
 
@@ -61,24 +69,30 @@ public final class ClientRenderer extends BaseRenderer {
         primaryStage.show();
     }
 
-    private void createMovableItems() {
+    private void createMovableItems(boolean itemsAlreadyOnScreen) {
         puck = new Puck();
-
-        redBat = new Bat(50f, 15f, Constants.COLOR_RED);
-
-        blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
-        greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
-
         root.getChildren().addAll(puck.node, puck.imageNode);
-        root.getChildren().addAll(redBat.node, redBat.imageNode);
-        root.getChildren().addAll(blueBat.node, blueBat.imageNode);
-        root.getChildren().addAll(greenBat.node, greenBat.imageNode);
+
+        if (!itemsAlreadyOnScreen) {
+            redBat = new Bat(50f, 15f, Constants.COLOR_RED);
+
+            blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
+            greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
+
+            root.getChildren().addAll(redBat.node, redBat.imageNode);
+            root.getChildren().addAll(blueBat.node, blueBat.imageNode);
+            root.getChildren().addAll(greenBat.node, greenBat.imageNode);
+        }
     }
 
     @Override
     public void setPuckLocation(int x, int y) {
-        position = rendererUtilities.serverPuckToBlueClientPuck(x, y);
-        puck.setPosition(position.x, position.y);
+        if (playerNumber > 3) {
+            puck.setPosition(x, y);
+        } else {
+            position = rendererUtilities.serverPuckToBlueClientPuck(x, y);
+            puck.setPosition(position.x, position.y);
+        }
     }
 
     @Override
@@ -89,6 +103,8 @@ public final class ClientRenderer extends BaseRenderer {
         } else if (playerNumber == 3) {
             position = rendererUtilities.batPositionBottomToLeft(x);
             redBat.setPosition(position.x, position.y);
+        } else if (playerNumber > 3) {
+            redBat.setPosition(x, y);
         }
     }
 
@@ -127,12 +143,7 @@ public final class ClientRenderer extends BaseRenderer {
     @Override
     public void resetRound(int round) {
         root.getChildren().removeAll(puck.node, puck.imageNode);
-        root.getChildren().removeAll(redBat.node, redBat.imageNode);
-        root.getChildren().removeAll(blueBat.node, blueBat.imageNode);
-        root.getChildren().removeAll(greenBat.node, greenBat.imageNode);
-
         newRoundTransition(round);
-
-        createMovableItems();
+        createMovableItems(true);
     }
 }

@@ -66,7 +66,7 @@ public class Decoder {
                             Integer.parseInt(splitter[5]));
                 });
                 break;
-            case Protocol.SET_UP_GAME:
+            case Protocol.CLIENT_SET_UP_GAME:
                 Platform.runLater(() -> {
                     game.startGameAsClient(Integer.parseInt(splitter[1]));
                     renderer.setUpGame(splitter[2],
@@ -76,8 +76,26 @@ public class Decoder {
                 });
                 break;
 
+            case Protocol.SPECTATOR_SET_UP_GAME:
+                Platform.runLater(() -> {
+                    game.startGameAsSpectator(Integer.parseInt(splitter[1]));
+                    renderer.setUpGame(splitter[2],
+                            splitter[3],
+                            splitter[4]
+                    );
+                });
+                break;
+
             case Protocol.CLIENT_SEND_GAME_DATA:
-                game.addClientPlayer(splitter[1]);
+                Platform.runLater(() -> {
+                    game.addClientPlayer(splitter[1]);
+                });
+                break;
+
+            case Protocol.SPECTATOR_SEND_GAME_DATA:
+                Platform.runLater(() -> {
+                    game.addSpectator(splitter[1]);
+                });
                 break;
 
             case Protocol.GAME_OVER:

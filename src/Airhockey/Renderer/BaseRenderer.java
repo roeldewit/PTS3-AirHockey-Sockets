@@ -49,6 +49,7 @@ class BaseRenderer implements IRenderer {
     protected Label player3ScoreLabel;
     protected Label roundTextLabel;
     protected Label roundNumberLabel;
+    protected Label spectatorLabel;
 
     protected final Group root = new Group();
     protected final Group mainRoot = new Group();
@@ -102,7 +103,7 @@ class BaseRenderer implements IRenderer {
         }
     }
 
-    protected void createStartButton() {
+    protected void createOtherItems() {
         DropShadow shadow = new DropShadow();
         shadow.setOffsetY(1.0);
         shadow.setOffsetX(1.0);
@@ -116,6 +117,11 @@ class BaseRenderer implements IRenderer {
         player3ScoreLabel = new Label("20");
         roundTextLabel = new Label("ROUND:");
         roundNumberLabel = new Label("1");
+        if (playerNumber > 3) {
+            spectatorLabel = new Label("SPECTATING");
+        } else {
+            spectatorLabel = new Label("");
+        }
 
         player1NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         player2NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
@@ -125,6 +131,7 @@ class BaseRenderer implements IRenderer {
         player3ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         roundTextLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         roundNumberLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        spectatorLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
 
         player1NameLabel.setTextFill(Color.web(Constants.COLOR_RED));
         player2NameLabel.setTextFill(Color.web(Constants.COLOR_BLUE));
@@ -134,6 +141,7 @@ class BaseRenderer implements IRenderer {
         player3ScoreLabel.setTextFill(Color.WHITE);
         roundTextLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
         roundNumberLabel.setTextFill(Color.WHITE);
+        spectatorLabel.setTextFill(Color.WHITE);
 
         player1NameLabel.relocate(850, 10);
         player2NameLabel.relocate(850, 40);
@@ -143,6 +151,7 @@ class BaseRenderer implements IRenderer {
         player3ScoreLabel.relocate(970, 70);
         roundTextLabel.relocate(30, 10);
         roundNumberLabel.relocate(140, 10);
+        spectatorLabel.relocate(30, 40);
 
         player1NameLabel.setEffect(shadow);
         player2NameLabel.setEffect(shadow);
@@ -152,14 +161,17 @@ class BaseRenderer implements IRenderer {
         player3ScoreLabel.setEffect(shadow);
         roundTextLabel.setEffect(shadow);
         roundNumberLabel.setEffect(shadow);
+        spectatorLabel.setEffect(shadow);
 
         root.getChildren().addAll(player1NameLabel,
                 player2NameLabel,
                 player3NameLabel,
                 player1ScoreLabel,
                 player2ScoreLabel,
-                player3ScoreLabel);
-        root.getChildren().addAll(roundTextLabel, roundNumberLabel);
+                player3ScoreLabel,
+                roundTextLabel,
+                roundNumberLabel,
+                spectatorLabel);
     }
 
     @Override

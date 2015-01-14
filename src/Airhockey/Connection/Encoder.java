@@ -1,6 +1,7 @@
 package Airhockey.Connection;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -8,14 +9,14 @@ import java.util.HashMap;
  */
 public class Encoder {
 
-    private final HashMap<Integer, IConnectionManager> connectionMangerMap;
+    private final LinkedHashMap<IConnectionManager, Boolean> connectionMangerMap;
 
     public Encoder() {
-        this.connectionMangerMap = new HashMap<>();
+        this.connectionMangerMap = new LinkedHashMap<>();
     }
 
-    public void addManager(IConnectionManager connectionManager) {
-        connectionMangerMap.put(connectionMangerMap.size(), connectionManager);
+    public void addManager(IConnectionManager connectionManager, boolean ready) {
+        connectionMangerMap.put(connectionManager, ready);
     }
 
     public synchronized void sendPuckLocation(int x, int y) {
@@ -76,8 +77,16 @@ public class Encoder {
         sendCommand(command);
     }
 
-    public synchronized void sendSetUpGame(int clientNumber, String p1Name, String p2Name, String p3Name) {
-        String command = Protocol.SET_UP_GAME
+    public synchronized void sendSetUpGameAsClient(int clientNumber, String p1Name, String p2Name, String p3Name) {
+        sendSetUpGame(Protocol.CLIENT_SET_UP_GAME, clientNumber, p1Name, p2Name, p3Name);
+    }
+    
+    public synchronized void sendSetUpGameAsSpectator(int clientNumber, String p1Name, String p2Name, String p3Name) {
+        sendSetUpGame(Protocol.SPECTATOR_SET_UP_GAME, clientNumber, p1Name, p2Name, p3Name);
+    }
+
+    private synchronized void sendSetUpGame(String type, int clientNumber, String p1Name, String p2Name, String p3Name) {
+        String command = type
                 + Protocol.SEPERATOR
                 + clientNumber
                 + Protocol.SEPERATOR
@@ -87,7 +96,8 @@ public class Encoder {
                 + Protocol.SEPERATOR
                 + p3Name;
 
-        sendCommandToOneClient(clientNumber - 2, command);
+        sendCommandToOneClient(clientNumber - 2, command, true);
+        setManagerReady(clientNumber - 2);
     }
 
     public void sendGameOver() {
@@ -103,8 +113,16 @@ public class Encoder {
     /**
      * CLIENT
      */
-    public void sendGameData(String name) {
+    public void sendClientDataToServer(String name) {
         String command = Protocol.CLIENT_SEND_GAME_DATA
+                + Protocol.SEPERATOR
+                + name;
+
+        sendCommand(command);
+    }
+
+    public void sendSpectatorDataToServer(String name) {
+        String command = Protocol.SPECTATOR_SEND_GAME_DATA
                 + Protocol.SEPERATOR
                 + name;
 
@@ -119,19 +137,41 @@ public class Encoder {
         sendCommand(command);
     }
 
-    private synchronized void sendCommandToOneClient(int clientNumber, String command) {
-        connectionMangerMap.get(clientNumber).sendCommand(command);
+    private synchronized void sendCommandToOneClient(int clientNumber, String command, boolean force) {
+        int i = 0;
+        for (Map.Entry<IConnectionManager, Boolean> value : connectionMangerMap.entrySet()) {
+            if (i == clientNumber) {
+                if (force || value.getValue() == true) {
+                    value.getKey().sendCommand(command);
+                }
+            }
+            i++;
+        }
     }
 
     private synchronized void sendCommand(String command) {
         connectionMangerMap.entrySet().stream().forEach((value) -> {
-            value.getValue().sendCommand(command);
+            if (value.getValue() == true) {
+                value.getKey().sendCommand(command);
+            }
         });
     }
 
     public void shutDownManagers() {
         connectionMangerMap.entrySet().stream().forEach((value) -> {
-            value.getValue().cancel();
+            if (value.getValue() == true) {
+                value.getKey().cancel();
+            }
         });
+    }
+
+    private void setManagerReady(int managerNumber) {
+        int i = 0;
+        for (Map.Entry<IConnectionManager, Boolean> value : connectionMangerMap.entrySet()) {
+            if (i == managerNumber) {
+                value.setValue(true);
+            }
+            i++;
+        }
     }
 }
