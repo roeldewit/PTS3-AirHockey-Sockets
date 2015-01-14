@@ -31,7 +31,7 @@ public interface IRenderer {
 
     public void start(Encoder encoder, int playerNumber);
 
-    public void stop();
+    public void stop(String reason);
 
     public void setLabelNames(String p1Name, String p2Name, String p3Name);
 }

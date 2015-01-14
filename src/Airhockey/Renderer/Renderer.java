@@ -3,7 +3,6 @@ package Airhockey.Renderer;
 import Airhockey.Connection.Encoder;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
-import Airhockey.Main.Login;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
@@ -63,13 +62,22 @@ public class Renderer extends BaseRenderer {
         this.batController = new BatController(this);
         this.isMultiplayer = isMultiplayer;
         this.threadPool = Executors.newCachedThreadPool();
+
+        primaryStage.setOnCloseRequest((WindowEvent event) -> {
+            game.leaveGame();
+            shutDown();
+            super.leave();
+        });
     }
 
     /**
-     * Creates the window where the game is played in and adds all the visible items and listeners.
+     * Creates the window where the game is played in and adds all the visible
+     * items and listeners.
      *
-     * @param encoder The enoder used to send game data to the clients if this is a multiplayer game.
-     * @param playerNumber The number assingned to each player in a game, used for item positioning.
+     * @param encoder The enoder used to send game data to the clients if this
+     * is a multiplayer game.
+     * @param playerNumber The number assingned to each player in a game, used
+     * for item positioning.
      */
     @Override
     public final void start(Encoder encoder, int playerNumber) {
@@ -144,7 +152,8 @@ public class Renderer extends BaseRenderer {
     }
 
     /**
-     * Creates the movable items on the screen which include the puck and the three bats.
+     * Creates the movable items on the screen which include the puck and the
+     * three bats.
      */
     private void createMovableItems() {
         puck = new Puck();
@@ -183,8 +192,9 @@ public class Renderer extends BaseRenderer {
     }
 
     /**
-     * This method is called on every game update frame.
-     * It checks whether a goal has been made and gives a notice to the game with the scorer and the one the goal was against.
+     * This method is called on every game update frame. It checks whether a
+     * goal has been made and gives a notice to the game with the scorer and the
+     * one the goal was against.
      */
     private synchronized void checkGoal() {
         Shape redGoalIntersect = Shape.intersect(redGoalShape, puckShape);
@@ -217,8 +227,9 @@ public class Renderer extends BaseRenderer {
     }
 
     /**
-     * Background tast that does all the calculation-heavy work.
-     * This class also takes care of sending the data to the clients if this game is a multiplayer game.
+     * Background tast that does all the calculation-heavy work. This class also
+     * takes care of sending the data to the clients if this game is a
+     * multiplayer game.
      */
     private class CalulationTask extends Task<Void> {
 
@@ -301,8 +312,8 @@ public class Renderer extends BaseRenderer {
                 batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
                 batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
             } else {
-                moveLeftEnemyBat(puckBodyPosY);
-                moveRightEnemyBat(puckBodyPosY);
+                moveLeftAIBat(puckBodyPosY);
+                moveAIEnemyBat(puckBodyPosY);
             }
         }
     }
@@ -331,60 +342,59 @@ public class Renderer extends BaseRenderer {
     }
 
     /**
-     * This method controls the movement of the LeftEnemyBat.
-     * The bat is positioned according to the puck's location within a certain height-range.
+     * This method controls the movement of the LeftAIBat. The bat is positioned
+     * according to the puck's location within a certain height-range.
      *
      * @param puckBodyPosY the y-coordinate of the puck
      */
-    private void moveLeftEnemyBat(float puckBodyPosY) {
-        Body leftEnemyBatBody = (Body) blueBat.node.getUserData();
-        float leftEnemyBatPositionY = Utils.toPixelPosY(leftEnemyBatBody.getPosition().y);
+    private void moveLeftAIBat(float puckBodyPosY) {
+        Body leftAIBatBody = (Body) blueBat.node.getUserData();
+        float leftAIBatPositionY = Utils.toPixelPosY(leftAIBatBody.getPosition().y);
 
         blueBat.stop();
-        if (puckBodyPosY > leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY < Constants.BAT_MIN_Y) {
+        if (puckBodyPosY > leftAIBatPositionY) {
+            if (leftAIBatPositionY < Constants.BAT_MIN_Y) {
                 blueBat.moveDown(puckBody);
             }
-        } else if (puckBodyPosY < leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY > Constants.BAT_MAX_Y) {
+        } else if (puckBodyPosY < leftAIBatPositionY) {
+            if (leftAIBatPositionY > Constants.BAT_MAX_Y) {
                 blueBat.moveUp(puckBody);
             }
         }
     }
 
     /**
-     * This method controls the movement of the RightEnemyBat.
-     * The bat is positioned according to the puck's location within a certain height-range.
+     * This method controls the movement of the RightAIBat. The bat is
+     * positioned according to the puck's location within a certain
+     * height-range.
      *
      * @param puckBodyPosY the y-coordinate of the puck
      */
-    private void moveRightEnemyBat(float puckBodyPosY) {
-        Body rightEnemyBatBody = (Body) greenBat.node.getUserData();
-        float rightEnemyBatPositionY = Utils.toPixelPosY(rightEnemyBatBody.getPosition().y);
+    private void moveAIEnemyBat(float puckBodyPosY) {
+        Body rightAIBatBody = (Body) greenBat.node.getUserData();
+        float rightAIBatPositionY = Utils.toPixelPosY(rightAIBatBody.getPosition().y);
 
         greenBat.stop();
-        if (puckBodyPosY - 5 > rightEnemyBatPositionY + 5) {
-            if (rightEnemyBatPositionY < Constants.BAT_MIN_Y) {
+        if (puckBodyPosY - 5 > rightAIBatPositionY + 5) {
+            if (rightAIBatPositionY < Constants.BAT_MIN_Y) {
                 greenBat.moveDown(puckBody);
             }
-        } else if (puckBodyPosY + 5 < rightEnemyBatPositionY - 5) {
-            if (rightEnemyBatPositionY > Constants.BAT_MAX_Y) {
+        } else if (puckBodyPosY + 5 < rightAIBatPositionY - 5) {
+            if (rightAIBatPositionY > Constants.BAT_MAX_Y) {
                 greenBat.moveUp(puckBody);
             }
         }
     }
 
     /**
-     * This method gets called after a goal has been made.
-     * It resets all movable elements to their original position and calls a animation.
+     * This method gets called after a goal has been made. It resets all movable
+     * elements to their original position and calls a animation.
      *
      * @param round The number of the next round.
      */
     @Override
     public void resetRound(int round) {
-        canUpdate = false;
-        timeline.stop();
-        threadPool.shutdownNow();
+        shutDown();
 
         lastHittedBat = null;
 
@@ -418,7 +428,8 @@ public class Renderer extends BaseRenderer {
     }
 
     /**
-     * Checks when the round animation has finished and starts the frame timer again.
+     * Checks when the round animation has finished and starts the frame timer
+     * again.
      */
     private class OnAnimationCompletionListener implements EventHandler<ActionEvent> {
 
@@ -430,26 +441,29 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * Shows a popup on the screen with the reason the game was stopped
+     *
+     * @param reason
+     */
     @Override
-    public void stop() {
-        super.stop();
-
-        //shutDown();
+    public void stop(String reason) {
+        super.stop(reason);
+        shutDown();
     }
 
+    /**
+     * Stops the timer and the background thread's from updating the game.
+     */
     private void shutDown() {
         canUpdate = false;
         timeline.stop();
         threadPool.shutdownNow();
-
-        primaryStage.close();
-        Login login = new Login();
-        login.Login();
-        System.out.println("shutdonwl");
     }
 
     /**
-     * Checks collisions between the puck and the bats to determine the last bat that hit the puck in the event of a goal.
+     * Checks collisions between the puck and the bats to determine the last bat
+     * that hit the puck in the event of a goal.
      */
     private class BatPuckContactListener implements ContactListener {
 

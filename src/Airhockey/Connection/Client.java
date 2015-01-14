@@ -1,7 +1,6 @@
 package Airhockey.Connection;
 
 import Airhockey.Main.Game;
-import Airhockey.Renderer.IRenderer;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -17,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class Client extends Thread implements IConnectionManager {
 
-    private boolean interrupted;
+    private boolean interrupted = false;
     private ObjectOutputStream objectOutputStream;
     private final Decoder decoder;
     private final Game game;
@@ -54,6 +53,9 @@ public class Client extends Thread implements IConnectionManager {
             }
         } catch (IOException | ClassNotFoundException e) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, e);
+
+            game.connectionLost();
+            interrupted = true;
         } finally {
             try {
                 if (socket != null) {
@@ -67,16 +69,19 @@ public class Client extends Thread implements IConnectionManager {
 
     @Override
     public synchronized void sendCommand(String command) {
-        try {
-            System.out.println("Sending Command: " + command);
-            objectOutputStream.writeObject(command);
-            objectOutputStream.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        if (!interrupted) {
+            try {
+                System.out.println("Sending Command: " + command);
+                objectOutputStream.writeObject(command);
+                objectOutputStream.flush();
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
+    @Override
     public void cancel() {
-        interrupted = false;
+        interrupted = true;
     }
 }

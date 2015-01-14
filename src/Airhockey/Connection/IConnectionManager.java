@@ -7,4 +7,6 @@ package Airhockey.Connection;
 public interface IConnectionManager {
 
     public void sendCommand(String command);
+
+    public void cancel();
 }

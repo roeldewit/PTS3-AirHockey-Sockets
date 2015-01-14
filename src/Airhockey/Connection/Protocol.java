@@ -4,7 +4,7 @@ package Airhockey.Connection;
  *
  * @author Sam
  */
-public class Protocol {
+class Protocol {
 
     protected static final String SEPERATOR = ",";
 
@@ -24,5 +24,9 @@ public class Protocol {
     protected static final String CLIENT_SEND_GAME_DATA = "client_send_game_data";
 
     protected static final String GAME_OVER = "game_over";
+
+    protected static final String CLIENT_LEAVING_GAME = "client_leaving_game";
+
+    protected static final String GAME_CANCELLED = "game_cancelled";
 
 }

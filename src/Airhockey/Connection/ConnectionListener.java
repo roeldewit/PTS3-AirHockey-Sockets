@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  */
 public class ConnectionListener extends Thread {
 
+    private static int clientNumber = 2;
+
     private boolean acceptMore = true;
     private final Decoder decoder;
     private final Game game;
@@ -33,7 +35,9 @@ public class ConnectionListener extends Thread {
                 Socket socket = serverSocket.accept();
                 System.out.println("Server bound");
 
-                Server server = new Server(socket, decoder, game);
+                Server server = new Server(socket, decoder, game, clientNumber);
+                clientNumber++;
+
                 game.clientConnected(server);
                 new Thread(server).start();
             }

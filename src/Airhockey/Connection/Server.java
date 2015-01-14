@@ -19,13 +19,17 @@ public class Server extends Thread implements IConnectionManager {
 
     private ObjectOutputStream objectOutputStream;
 
+    private final int clientNumber;
     private boolean interrupted = false;
     private final Socket socket;
     private final Decoder decoder;
+    private final Game game;
 
-    public Server(Socket socket, Decoder decoder, Game game) {
+    public Server(Socket socket, Decoder decoder, Game game, int clientNumber) {
         this.socket = socket;
         this.decoder = decoder;
+        this.game = game;
+        this.clientNumber = clientNumber;
     }
 
     @Override
@@ -41,11 +45,15 @@ public class Server extends Thread implements IConnectionManager {
 
             while (!interrupted) {
                 String command = (String) ois.readObject();
-                System.out.println("Received command: " + command);
+                //System.out.println("Received command: " + command);
                 decoder.receiveCommand(command);
             }
         } catch (IOException | ClassNotFoundException e) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
+
+            System.out.println("Connection lost to client: " + clientNumber);
+            interrupted = true;
+            game.clientLeftGame(clientNumber);
         } finally {
             try {
                 socket.close();
@@ -57,16 +65,20 @@ public class Server extends Thread implements IConnectionManager {
 
     @Override
     public synchronized void sendCommand(String command) {
-        try {
-            System.out.println("Sending Command: " + command);
-            objectOutputStream.writeObject(command);
-            objectOutputStream.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        if (!interrupted) {
+            try {
+                //System.out.println("Sending Command: " + command);
+                objectOutputStream.writeObject(command);
+                objectOutputStream.flush();
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
+    @Override
     public void cancel() {
         interrupted = true;
+
     }
 }

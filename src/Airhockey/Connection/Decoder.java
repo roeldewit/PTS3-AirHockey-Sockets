@@ -85,6 +85,16 @@ public class Decoder {
                     game.gameOver();
                 });
                 break;
+            case Protocol.GAME_CANCELLED:
+                Platform.runLater(() -> {
+                    game.gameCancelled();
+                });
+                break;
+            case Protocol.CLIENT_LEAVING_GAME:
+                Platform.runLater(() -> {
+                    game.clientLeftGame(Integer.parseInt(splitter[1]));
+                });
+                break;
         }
     }
 }

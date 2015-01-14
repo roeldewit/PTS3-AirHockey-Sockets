@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -21,6 +22,11 @@ public final class ClientRenderer extends BaseRenderer {
 
     public ClientRenderer(Stage primaryStage, Game game) {
         super(primaryStage, game);
+
+        primaryStage.setOnCloseRequest((WindowEvent event) -> {
+            game.leaveGame();
+            super.leave();
+        });
     }
 
     @Override
@@ -71,17 +77,17 @@ public final class ClientRenderer extends BaseRenderer {
 
     @Override
     public void setPuckLocation(int x, int y) {
-        Position position = rendererUtilities.serverPuckToBlueClientPuck(x, y);
+        position = rendererUtilities.serverPuckToBlueClientPuck(x, y);
         puck.setPosition(position.x, position.y);
     }
 
     @Override
     public void setRedBatLocation(int x, int y) {
         if (playerNumber == 2) {
-            position = rendererUtilities.batPositionBottomToLeft(x);
+            position = rendererUtilities.batPositionBottomToRight(x);
             redBat.setPosition(position.x, position.y);
         } else if (playerNumber == 3) {
-            position = rendererUtilities.batPositionBottomToRight(x);
+            position = rendererUtilities.batPositionBottomToLeft(x);
             redBat.setPosition(position.x, position.y);
         }
     }

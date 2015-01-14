@@ -56,7 +56,7 @@ public class Encoder {
                 + playerNumber
                 + Protocol.SEPERATOR
                 + direction;
-        
+
         sendCommand(command);
     }
 
@@ -95,6 +95,11 @@ public class Encoder {
         sendCommand(command);
     }
 
+    public void sendGameCancelledByServer() {
+        String command = Protocol.GAME_CANCELLED;
+        sendCommand(command);
+    }
+
     /**
      * CLIENT
      */
@@ -106,6 +111,14 @@ public class Encoder {
         sendCommand(command);
     }
 
+    public void sendLeavingGame(int playerNumber) {
+        String command = Protocol.CLIENT_LEAVING_GAME
+                + Protocol.SEPERATOR
+                + playerNumber;
+
+        sendCommand(command);
+    }
+
     private synchronized void sendCommandToOneClient(int clientNumber, String command) {
         connectionMangerMap.get(clientNumber).sendCommand(command);
     }
@@ -113,6 +126,12 @@ public class Encoder {
     private synchronized void sendCommand(String command) {
         connectionMangerMap.entrySet().stream().forEach((value) -> {
             value.getValue().sendCommand(command);
+        });
+    }
+
+    public void shutDownManagers() {
+        connectionMangerMap.entrySet().stream().forEach((value) -> {
+            value.getValue().cancel();
         });
     }
 }

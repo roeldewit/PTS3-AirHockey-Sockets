@@ -169,8 +169,26 @@ public class Game {
         });
     }
 
+    public void clientLeftGame(int playerNumber) {
+
+    }
+
+    public void leaveGame(){
+        encoder.shutDownManagers();
+    }
+    
+    public void connectionLost(){
+        renderer.stop("Connection Lost");
+    }
+    
+    public void gameCancelled() {
+        encoder.shutDownManagers();
+        renderer.stop("Server Disconnected");
+    }
+
     public void gameOver() {
-        renderer.stop();
+        encoder.shutDownManagers();
+        renderer.stop("Game Over");
     }
 
     public String getUsername(int id) {

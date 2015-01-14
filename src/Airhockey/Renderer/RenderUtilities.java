@@ -1,7 +1,6 @@
 package Airhockey.Renderer;
 
 import Airhockey.Elements.TriangleLine;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 /**
@@ -23,7 +22,8 @@ class RenderUtilities {
     private final int baseLineWidth;    //width of triangle
 
     /**
-     * Lists to save X coordinates of the corresponding Y Coordinate on the triangle side angles. Input Y gives X.
+     * Lists to save X coordinates of the corresponding Y Coordinate on the
+     * triangle side angles. Input Y gives X.
      */
     private final int[] batMovingLineXLeft;
     private final int[] batMovingLineXRight;
@@ -93,18 +93,42 @@ class RenderUtilities {
         return value;
     }
 
+//    public Position serverPuckToBlueClientPuck(int puckX, int puckY) {
+//        int tempY = translate(puckY);
+//
+//        int x = bottomRightX - tempY;
+//        int y = puckMovingLineTiltedRight[tempY];
+//
+//        Position position = new Position(x, y);
+//        return position;
+//    }
     public Position serverPuckToBlueClientPuck(int puckX, int puckY) {
-        int tempY = translate(puckY);
+        int tempX = (puckY - centerTopY);
+        //int x = (int) Math.floor((double) (puckY - centerTopY) * 0.80);
 
-        int x = bottomRightX - tempY;
-        int y = puckMovingLineTiltedRight[tempY];
+        //ConversionTriangle
+        double convTrWidth = tempX / 2;
+        double convTrHeight = Math.tan(Math.toRadians(58.0)) * convTrWidth;
+        double convTrSideLength = convTrWidth / Math.cos(Math.toRadians(58.0));
 
-        Position position = new Position(x, y);
-        return position;
+        int diff = ((baseLineWidth / 2) + bottomLeftX) - puckX;
+
+        int test = (int) (Math.floor(convTrSideLength / 2)) + diff;
+
+        int width = (int) Math.floor(((double) convTrWidth / convTrSideLength) * (double) test);
+        int height = (int) Math.floor(((double) convTrHeight / convTrSideLength) * (double) test);
+
+        int aWidth = tempX - (int) (Math.floor(convTrWidth - (double) width));
+
+        int x = bottomRightX - aWidth;
+        int y = bottomY - height;
+
+        return new Position(x, y);
     }
 
     /**
-     * Transfroms the given Y coordinate of a side-bat to an X coordinate of the center-bat
+     * Transfroms the given Y coordinate of a side-bat to an X coordinate of the
+     * center-bat
      *
      * @param positionY Y coordiate of a given side-bat
      * @return Y coordinate for the center-bat
@@ -121,7 +145,8 @@ class RenderUtilities {
     }
 
     /**
-     * Transfroms the given X coordinate of the center-bat to the X and Y coordinates of left side-bat
+     * Transfroms the given X coordinate of the center-bat to the X and Y
+     * coordinates of left side-bat
      *
      * @param bottomPositionX X coordinate of the center-bat
      * @return a new Position object with X and Y cooridnates
@@ -134,7 +159,8 @@ class RenderUtilities {
     }
 
     /**
-     * Transfroms the given X coordinate of the center-bat to the X and Y coordinates of right side-bat
+     * Transfroms the given X coordinate of the center-bat to the X and Y
+     * coordinates of right side-bat
      *
      * @param bottomPositionX X coordinate of the center-bat
      * @return a new Position object with X and Y cooridnates
@@ -147,7 +173,8 @@ class RenderUtilities {
     }
 
     /**
-     * Transfroms the given X coordinate of the center-bat to an Y coordinate of a side-bat
+     * Transfroms the given X coordinate of the center-bat to an Y coordinate of
+     * a side-bat
      *
      * @param positionX X coordiate of a given center-bat
      * @return Y coordinate for the side-bat

@@ -3,6 +3,7 @@ package Airhockey.Renderer;
 import Airhockey.Connection.Encoder;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
+import Airhockey.Main.Login;
 import Airhockey.Utils.Utils;
 import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
@@ -76,8 +77,6 @@ class BaseRenderer implements IRenderer {
     public BaseRenderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
         this.game = game;
-
-        //primaryStage.getOnCloseRequest(new EventHandler<Event>);
     }
 
     @Override
@@ -187,7 +186,7 @@ class BaseRenderer implements IRenderer {
         //gc.strokeArc(600, 200, 100, 300, 140, 180, ArcType.ROUND);
     }
 
-    protected void showGameOverPopupWindow() {
+    protected void showPopupWindow(String message) {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(primaryStage.getScene().getWindow());
@@ -196,9 +195,10 @@ class BaseRenderer implements IRenderer {
         Button okButton = new Button("Close");
         okButton.setOnAction((ActionEvent arg0) -> {
             dialogStage.close();
+            leave();
         });
 
-        Label label = new Label("GAME OVER");
+        Label label = new Label(message.toUpperCase());
         label.setFont(Font.font("Roboto", 24.0));
         label.setTextFill(Color.web(Constants.COLOR_GREEN));
         label.setPadding(new Insets(0, 0, 20, 0));
@@ -278,13 +278,13 @@ class BaseRenderer implements IRenderer {
 
         switch (playerNumber) {
             case 2:
-                redGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_RED);
+                redGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_RED);
                 blueGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_BLUE);
-                greenGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_GREEN);
+                greenGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_GREEN);
                 break;
             case 3:
-                redGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_RED);
-                blueGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_BLUE);
+                redGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_RED);
+                blueGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_BLUE);
                 greenGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_GREEN);
                 break;
             default:
@@ -329,8 +329,8 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
-    public void stop() {
-        showGameOverPopupWindow();
+    public void stop(String reason) {
+        showPopupWindow(reason);
 
         Rectangle rect = new Rectangle(0, 0, 0, 0);
         rect.setWidth(Utils.WIDTH);
@@ -341,6 +341,12 @@ class BaseRenderer implements IRenderer {
 
         FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
         ft.playFromStart();
+    }
+
+    protected void leave() {
+        primaryStage.close();
+        Login login = new Login();
+        login.Login();
     }
 
     @Override
