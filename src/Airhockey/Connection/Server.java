@@ -1,7 +1,6 @@
 package Airhockey.Connection;
 
 import Airhockey.Main.Game;
-import Airhockey.Renderer.IRenderer;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;

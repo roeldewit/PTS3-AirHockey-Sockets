@@ -36,6 +36,7 @@ public class Game {
     //private ArrayList<Spectator> spectators;
     private ScoreCalculator scoreCalculator;
     private boolean isMultiplayer;
+    private boolean isSpectator;
 
     public Game(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -54,8 +55,10 @@ public class Game {
     }
 
     public void startAsHost(User user) {
+        this.user = user;
         addPlayer(user.getUsername());
         isMultiplayer = true;
+        isSpectator = false;
 
         encoder = new Encoder();
         renderer = new Renderer(primaryStage, this, isMultiplayer);
@@ -66,21 +69,37 @@ public class Game {
     public void startAsClient(User user, String ipAddress) {
         this.user = user;
         isMultiplayer = true;
+        isSpectator = false;
 
         encoder = new Encoder();
-        renderer = new ClientRenderer(primaryStage, this);
+        renderer = new ClientRenderer(primaryStage, this, isSpectator);
         client = new Client(new Decoder(renderer, this), this, ipAddress);
-        encoder.addManager(client);
+        encoder.addManager(client, true);
         client.start();
+    }
 
+    public void startAsSpectator(User user, String ipAddress) {
+        this.user = user;
+        isMultiplayer = true;
+        isSpectator = true;
+
+        encoder = new Encoder();
+        renderer = new ClientRenderer(primaryStage, this, isSpectator);
+        client = new Client(new Decoder(renderer, this), this, ipAddress);
+        encoder.addManager(client, true);
+        client.start();
     }
 
     public void connectedToServer() {
-        encoder.sendGameData(user.getUsername());
+        if (isSpectator) {
+            encoder.sendSpectatorDataToServer(user.getUsername());
+        } else {
+            encoder.sendClientDataToServer(user.getUsername());
+        }
     }
 
     public void clientConnected(IConnectionManager manager) {
-        encoder.addManager(manager);
+        encoder.addManager(manager, false);
     }
 
     private void addPlayer(String userName) {
@@ -99,16 +118,29 @@ public class Game {
                 String p3Name = players.get(2).user.getUsername();
 
                 for (int i = 2; i < 4; i++) {
-                    encoder.sendSetUpGame(i, p1Name, p2Name, p3Name);
+                    encoder.sendSetUpGameAsClient(i, p1Name, p2Name, p3Name);
                 }
                 renderer.start(encoder, 1);
                 renderer.setLabelNames(p1Name, p2Name, p3Name);
             });
-            connectionListener.cancel();
+            //connectionListener.cancel();
         }
     }
 
+    public void addSpectator(String userName) {
+        addPlayer(userName);
+        encoder.sendSetUpGameAsSpectator(players.size(),
+                players.get(0).user.getUsername(),
+                players.get(1).user.getUsername(),
+                players.get(2).user.getUsername());
+    }
+
     public void startGameAsClient(int playerNumber) {
+        this.playerNumber = playerNumber;
+        renderer.start(encoder, playerNumber);
+    }
+
+    public void startGameAsSpectator(int playerNumber) {
         this.playerNumber = playerNumber;
         renderer.start(encoder, playerNumber);
     }
@@ -173,14 +205,14 @@ public class Game {
 
     }
 
-    public void leaveGame(){
+    public void leaveGame() {
         encoder.shutDownManagers();
     }
-    
-    public void connectionLost(){
+
+    public void connectionLost() {
         renderer.stop("Connection Lost");
     }
-    
+
     public void gameCancelled() {
         encoder.shutDownManagers();
         renderer.stop("Server Disconnected");
@@ -191,8 +223,8 @@ public class Game {
         renderer.stop("Game Over");
     }
 
-    public String getUsername(int id) {
-        return players.get(id - 1).user.getUsername();
+    public String getUsername() {
+        return user.getUsername();
     }
 
 }

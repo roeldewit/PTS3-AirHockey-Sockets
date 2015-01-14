@@ -32,7 +32,7 @@ public class Lobby {
 
     private Database database;
 
-    private ArrayList<SerializableGame> games;
+    //private ArrayList<SerializableGame> games;
 
     //
     private LobbyClient lobbyClient;
@@ -104,9 +104,9 @@ public class Lobby {
     }
 
     public void addWaitingGame(int id, String description, String portIP, String username) {
-        SerializableGame serializableGame = new SerializableGame(id, description, portIP, username);
+        //SerializableGame serializableGame = new SerializableGame(id, description, portIP, username);
 
-        games.add(serializableGame);
+        //games.add(serializableGame);
     }
 
     private void LobbySetUp(Stage primaryStage) {

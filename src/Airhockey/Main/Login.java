@@ -98,10 +98,15 @@ public class Login extends Application {
             //primaryStage.close();
             Game game = new Game(primaryStage);
             game.startAsHost(new User("SERVER"));
-        } else {
+        } else if (levelString.equals("s")){
             primaryStage = (Stage) btLogin.getScene().getWindow();
             //primaryStage.close();
             Game game = new Game(primaryStage);
+            game.startAsSpectator(new User("SPECTATOR"), "localhost");
+        } else {
+            primaryStage = (Stage) btLogin.getScene().getWindow();
+            //primaryStage.close();
+                Game game = new Game(primaryStage);
             game.startAsClient(new User("CLIENT"), "localhost");
         }
 
