@@ -41,7 +41,7 @@ public class CreateAccountController implements Initializable {
     Stage primaryStage;
 
     public CreateAccountController() {
-        database = new Database();
+//        database = new Database();
     }
 
     @Override

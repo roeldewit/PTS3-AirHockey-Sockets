@@ -36,9 +36,9 @@ public class LobbyClient extends Thread implements IConnectionManager {
 
         try {
             System.out.println("Starting client....");
-            socket = new Socket("localhost", 8189);
+            socket = new Socket("localhost", 8190);
             
-            encoder = new LobbyEncoder(this);
+            encoder = new LobbyEncoder(this);            
 
             System.out.println("Client bound");
 
@@ -64,6 +64,10 @@ public class LobbyClient extends Thread implements IConnectionManager {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    public synchronized LobbyEncoder getEncoder(){
+        return encoder;
     }
 
     @Override

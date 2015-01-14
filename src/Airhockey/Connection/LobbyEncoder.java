@@ -18,7 +18,7 @@ public class LobbyEncoder {
     }
 
     public synchronized void getCurrentRunningGames() {
-        
+
     }
 
     public synchronized void getCurrentOpenGames() {
@@ -53,6 +53,12 @@ public class LobbyEncoder {
                 + username
                 + Protocol.SEPERATOR
                 + text;
+
+        sendCommand(command);
+    }
+
+    public synchronized void getLastTenChatBoxLines() {
+        String command = Protocol.GET_CHATBOX_LINES;
 
         sendCommand(command);
     }

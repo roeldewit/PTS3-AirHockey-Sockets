@@ -112,27 +112,40 @@ public class Login extends Application {
     }
 
     public void actionlogin() {
+
         try {
-            database = new Database();
-            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
-                primaryStage = (Stage) btLogin.getScene().getWindow();
-                primaryStage.close();
-                Lobby lobby = new Lobby(primaryStage);
-                System.out.println("User: " + tfUsername.getText() + " logged in!");
-            } else {
+            primaryStage = (Stage) btLogin.getScene().getWindow();
+            primaryStage.close();
+            Lobby lobby = new Lobby(primaryStage);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        try {
+//            database = new Database();
+//            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
 //                primaryStage = (Stage) btLogin.getScene().getWindow();
 //                primaryStage.close();
 //                Lobby lobby = new Lobby(primaryStage);
-                showPopupWindow("Invalid login combination!", "Ok");
-                System.out.println("Logged in (no user)!");
-            }
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NotBoundException ex) {
-            // to do add a proper notification
-        } catch (IllegalArgumentException ex) {
-            showPopupWindow("Field is empty!", "Ok");
-        }
+//                System.out.println("User: " + tfUsername.getText() + " logged in!");
+//            } else {
+////                primaryStage = (Stage) btLogin.getScene().getWindow();
+////                primaryStage.close();
+////                Lobby lobby = new Lobby(primaryStage);
+//                showPopupWindow("Invalid login combination!", "Ok");
+//                System.out.println("Logged in (no user)!");
+//            }
+//        } catch (SQLException | IOException ex) {
+//            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (NotBoundException ex) {
+//            // to do add a proper notification
+//        } catch (IllegalArgumentException ex) {
+//            showPopupWindow("Field is empty!", "Ok");
+//        }
+
     }
 
     public void actionCreateAccount() {

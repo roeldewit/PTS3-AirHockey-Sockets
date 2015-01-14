@@ -23,6 +23,7 @@ public class LobbyDecoder {
     }
 
     protected void receiveCommand(String command) {
+        System.out.println("recieved command: " + command);
         String[] splitter = command.split(Protocol.SEPERATOR);
 
         switch (splitter[0]) {
@@ -33,7 +34,7 @@ public class LobbyDecoder {
                 break;
 
             case Protocol.GAME_ID:
-                Platform.runLater(() -> {
+                Platform.runLater(() -> {                    
                     // game_id can be used for retrieving the game on mainServer
                     int gameId = Integer.parseInt(splitter[1]);
                 });
@@ -41,6 +42,10 @@ public class LobbyDecoder {
 
             case Protocol.CHATBOX_LINES:
                 Platform.runLater(() -> {
+                    if (command.length() < 4) {
+                        return;
+                    }
+
                     int i = 1;
                     while (splitter[i] != Protocol.PROTOCOL_ENDER) {
                         lobby.getChatbox().writeLine(new ChatboxLine(splitter[i], lobby.getUser(splitter[++i])));
@@ -57,6 +62,10 @@ public class LobbyDecoder {
 
             case Protocol.CURRENT_OPENGAMES:
                 Platform.runLater(() -> {
+                    if (command.length() < 5) {
+                        return;
+                    }
+
                     int i = 1;
                     while (splitter[i] != Protocol.PROTOCOL_ENDER) {
                         int ID = i;
@@ -64,7 +73,7 @@ public class LobbyDecoder {
                         int amoundOfPlayers = ++i;
                         int hostIP = ++i;
                         lobby.addWaitingGame(Integer.parseInt(splitter[ID]), splitter[description], splitter[amoundOfPlayers], splitter[hostIP]);
-                        i++;                        
+                        i++;
                     }
                 });
                 break;

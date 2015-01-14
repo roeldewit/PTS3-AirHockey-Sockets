@@ -1,12 +1,14 @@
 package Airhockey.Main;
 
+import Airhockey.Connection.Encoder;
+import Airhockey.Connection.LobbyClient;
+import Airhockey.Connection.LobbyEncoder;
 import Airhockey.Rmi.SerializableGame;
 import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,43 +26,46 @@ import javafx.stage.Stage;
 public class Lobby {
 
     private ArrayList<User> users;
+
     private Chatbox chatbox;
     private ScoreCalculator scoreCalculator;
 
-    //IMainLobby mainLobby;
-    private String ipMainServer = "localhost";
-    private int portMainServer = 1099;
-    Database database;
+    private Database database;
 
     private ArrayList<SerializableGame> games;
 
-    HashMap<String, User> hashMapUsernameToUser;
+    //
+    private LobbyClient lobbyClient;
+    private LobbyEncoder encoder;
 
-    Stage primaryStage;
+    private HashMap<String, User> hashMapUsernameToUser;
 
-    public Lobby(Stage primaryStage) throws RemoteException, NotBoundException, IOException, SQLException {
+    private Stage primaryStage;
+
+    private Thread lobbyClientThread;
+
+    public Lobby(Stage primaryStage) throws NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
 //        database = new Database();
         hashMapUsernameToUser = new HashMap();
 
         games = new ArrayList<>();
-
-        users = new ArrayList<>();
-
+        users = new ArrayList<>();      
+     
         users.add(new User("Jan"));
         users.add(new User("Piet"));
         users.add(new User("Henk"));
 //        users = database.getUsers();
 //
-        for (User dbuser : users) {
-            hashMapUsernameToUser.put(dbuser.getUsername(), dbuser);
-        }
+//        for (User dbuser : users) {
+//            hashMapUsernameToUser.put(dbuser.getUsername(), dbuser);
+//        }
 
-        connectToMainServer();
-
-        getInitialChatbox();
+        initialSetUpLobby();
+        chatbox = new Chatbox();
     }
+    
 
     public ArrayList<User> getUsers() {
         return users;
@@ -75,12 +80,27 @@ public class Lobby {
     }
 
     public User getUser(String username) {
+        User returnvalue = null;
         for (User user : users) {
             if (user.getUsername().equals(username)) {
                 return user;
             }
         }
+
+        if (returnvalue == null) {
+            try {
+                returnvalue = database.getUser(username);
+            } catch (SQLException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return null;
+    }
+
+    public void writeLine(String text, User user) {
+        encoder.writeLine(user.getUsername(), text);
     }
 
     public void addWaitingGame(int id, String description, String portIP, String username) {
@@ -103,20 +123,39 @@ public class Lobby {
         }
     }
 
-    private void connectToMainServer() throws RemoteException, NotBoundException {
-        //this.mainLobby = null;
-
-        //this.mainLobby = ((IMainLobby) register.lookup("MainLobby"));
+    private void initialSetUpLobby() {
+        connectToMainServer();
+        getInitialChatbox();
+        encoder.getCurrentOpenGames();        
     }
 
-    private void getInitialChatbox() throws RemoteException {
-//        SerializableChatBox1 serializableChatBox = mainLobby.getChatBox();
-//        chatbox = new Chatbox();
-//
-//        for (SerializableChatBoxLine serializableChatBoxLine : serializableChatBox.lines) {
-//            chatbox.writeLine(new ChatboxLine(serializableChatBoxLine.text, hashMapUsernameToUser.get(serializableChatBoxLine.player)));
-//        }
+    private void connectToMainServer() {
+        lobbyClient = new LobbyClient(this);
+
+        lobbyClientThread = new Thread(lobbyClient);
+        lobbyClientThread.start();      
+
+        encoder = getEncoder();
     }
+
+    private void getInitialChatbox() {
+        encoder.getLastTenChatBoxLines();
+    }
+    
+    private LobbyEncoder getEncoder(){
+        LobbyEncoder returnvalue = null;
+        
+        while (returnvalue == null) {            
+            returnvalue = lobbyClient.getEncoder();
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return returnvalue;
+    } 
 
 //    private Game joinGame(int id, String usern) throws RemoteException {
 //        SerializableGame serializableGame = mainLobby.getWaitingGames().get(id);
