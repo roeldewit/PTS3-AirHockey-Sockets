@@ -4,10 +4,6 @@ import Airhockey.Connection.Encoder;
 import Airhockey.Elements.*;
 import Airhockey.Main.*;
 import Airhockey.Utils.KeyListener;
-import Airhockey.Utils.Utils;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -19,10 +15,12 @@ public final class ClientRenderer extends BaseRenderer {
 
     private RenderUtilities rendererUtilities;
     private Position position;
-    private boolean isSpectator;
+    private final boolean isSpectator;
 
     public ClientRenderer(Stage primaryStage, Game game, boolean isSpectator) {
         super(primaryStage, game);
+        this.isSpectator = isSpectator;
+        this.isMultiplayer = true;
 
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
             game.leaveGame();
@@ -39,13 +37,6 @@ public final class ClientRenderer extends BaseRenderer {
         } else {
             primaryStage.setTitle("Airhockey Client");
         }
-        primaryStage.setFullScreen(false);
-        primaryStage.setResizable(false);
-        primaryStage.setWidth(Utils.WIDTH + 250);
-        primaryStage.setHeight(Utils.HEIGHT);
-        primaryStage.centerOnScreen();
-
-        final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
         if (!isSpectator) {
             KeyListener keyListener = new KeyListener(null, playerNumber, encoder);
@@ -53,20 +44,12 @@ public final class ClientRenderer extends BaseRenderer {
             scene.setOnKeyReleased(keyListener);
         }
 
-        BorderPane mainBorderPane = new BorderPane();
-        mainBorderPane.setCenter(root);
-        mainBorderPane.setRight(createChatBox());
-        mainRoot.getChildren().add(mainBorderPane);
-
         drawShapes();
         createStaticItems();
         createMovableItems(false);
         createOtherItems();
 
         rendererUtilities = new RenderUtilities(triangle);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
 
     private void createMovableItems(boolean itemsAlreadyOnScreen) {

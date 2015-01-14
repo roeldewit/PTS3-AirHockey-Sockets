@@ -55,6 +55,7 @@ public class Game {
     }
 
     public void startAsHost(User user) {
+        this.user = user;
         addPlayer(user.getUsername());
         isMultiplayer = true;
         isSpectator = false;
@@ -222,8 +223,8 @@ public class Game {
         renderer.stop("Game Over");
     }
 
-    public String getUsername(int id) {
-        return players.get(id - 1).user.getUsername();
+    public String getUsername() {
+        return user.getUsername();
     }
 
 }

@@ -80,7 +80,7 @@ public class Encoder {
     public synchronized void sendSetUpGameAsClient(int clientNumber, String p1Name, String p2Name, String p3Name) {
         sendSetUpGame(Protocol.CLIENT_SET_UP_GAME, clientNumber, p1Name, p2Name, p3Name);
     }
-    
+
     public synchronized void sendSetUpGameAsSpectator(int clientNumber, String p1Name, String p2Name, String p3Name) {
         sendSetUpGame(Protocol.SPECTATOR_SET_UP_GAME, clientNumber, p1Name, p2Name, p3Name);
     }
@@ -107,6 +107,14 @@ public class Encoder {
 
     public void sendGameCancelledByServer() {
         String command = Protocol.GAME_CANCELLED;
+        sendCommand(command);
+    }
+
+    public void sendChatBoxLine(String line) {
+        String command = Protocol.CHAT_LINE
+                + Protocol.SEPERATOR
+                + line;
+
         sendCommand(command);
     }
 

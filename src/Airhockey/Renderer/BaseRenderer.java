@@ -9,6 +9,8 @@ import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
@@ -53,11 +56,15 @@ class BaseRenderer implements IRenderer {
 
     protected final Group root = new Group();
     protected final Group mainRoot = new Group();
+    protected Scene scene;
+    protected BorderPane mainBorderPane;
+    private ListView chatBox;
 
     protected final Stage primaryStage;
     protected final Game game;
 
     protected int playerNumber;
+    protected boolean isMultiplayer;
 
     protected Puck puck;
     protected Bat redBat;
@@ -74,6 +81,7 @@ class BaseRenderer implements IRenderer {
     protected Encoder encoder;
 
     protected ParallelTransition parallelTransition;
+    private ObservableList<String> chatBoxData;
 
     public BaseRenderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
@@ -84,6 +92,27 @@ class BaseRenderer implements IRenderer {
     public void start(Encoder encoder, int playerNumber) {
         this.encoder = encoder;
         this.playerNumber = playerNumber;
+
+        primaryStage.setFullScreen(false);
+        primaryStage.setResizable(false);
+        primaryStage.setWidth(Utils.WIDTH + 250);
+        primaryStage.setHeight(Utils.HEIGHT);
+        primaryStage.centerOnScreen();
+
+        scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
+
+        mainBorderPane = new BorderPane();
+        mainBorderPane.setCenter(root);
+        mainBorderPane.setRight(createChatBox());
+        mainBorderPane.getCenter().addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
+            System.out.println("GAINED FOCUS");
+            mainBorderPane.getCenter().requestFocus();
+        });
+
+        mainRoot.getChildren().add(mainBorderPane);
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     @Override
@@ -228,28 +257,52 @@ class BaseRenderer implements IRenderer {
     }
 
     protected Group createChatBox() {
-        ListView listView = new ListView();
+        chatBoxData = FXCollections.observableArrayList();
 
-        TextField textField = new TextField();
-        Button btn = new Button();
-        btn.setText("Send");
-        btn.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );");
+        chatBox = new ListView();
+        chatBox.setEditable(false);
+        chatBox.setItems(chatBoxData);
+
+        TextField inputField = new TextField();
+        Button sendButton = new Button();
+
+        sendButton.setText("Send");
+        sendButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );");
 
         BorderPane chatBoxBorderPane = new BorderPane();
-        HBox bottom = HBoxBuilder.create().children(textField, btn).build();
-        chatBoxBorderPane.setCenter(listView);
+        HBox bottom = HBoxBuilder.create().children(inputField, sendButton).build();
+        chatBoxBorderPane.setCenter(chatBox);
         chatBoxBorderPane.setBottom(bottom);
         chatBoxBorderPane.setMinHeight(Utils.HEIGHT - 40);
         chatBoxBorderPane.setMaxWidth(244);
 
-        btn.setOnAction((ActionEvent e) -> {
-            textField.clear();
+        sendButton.setOnAction((ActionEvent e) -> {
+            if (!inputField.getText().equals("")) {
+                String line = game.getUsername() + ":    " + inputField.getText();
+
+                if (playerNumber == 1) {
+                    addChatBoxLine(line);
+                }
+
+                if (isMultiplayer) {
+                    encoder.sendChatBoxLine(line);
+                }
+
+                inputField.clear();
+                mainBorderPane.getCenter().requestFocus();
+            }
         });
 
         Group chatBoxGroup = new Group();
         chatBoxGroup.getChildren().add(chatBoxBorderPane);
 
         return chatBoxGroup;
+    }
+
+    @Override
+    public void addChatBoxLine(String line) {
+        chatBoxData.add(line);
+        chatBox.setItems(chatBoxData);
     }
 
     protected void newRoundTransition(int round) {
@@ -263,13 +316,11 @@ class BaseRenderer implements IRenderer {
 
         root.getChildren().add(roundLabel);
 
-        FadeTransition fadeTransition
-                = new FadeTransition(Duration.millis(2000), roundLabel);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000), roundLabel);
         fadeTransition.setFromValue(1.0);
         fadeTransition.setToValue(0.0);
 
-        ScaleTransition scaleTransition
-                = new ScaleTransition(Duration.millis(2000), roundLabel);
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(2000), roundLabel);
         scaleTransition.setFromX(2f);
         scaleTransition.setFromY(2f);
         scaleTransition.setToX(8f);
@@ -400,5 +451,4 @@ class BaseRenderer implements IRenderer {
     public void moveClientBat(int playerNumber, int direction) {
         //Implemented in child cass.
     }
-
 }

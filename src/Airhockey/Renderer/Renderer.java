@@ -13,10 +13,7 @@ import javafx.animation.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -50,7 +47,6 @@ public class Renderer extends BaseRenderer {
 
     private boolean canImpulsPuck = true;
     private boolean canCorrectPuckSpeed = true;
-    private final boolean isMultiplayer;
     private boolean canUpdate;
 
     private final BatController batController;
@@ -84,27 +80,16 @@ public class Renderer extends BaseRenderer {
         super.start(encoder, playerNumber);
 
         primaryStage.setTitle("Airhockey");
-        primaryStage.setFullScreen(false);
-        primaryStage.setResizable(false);
-        primaryStage.setWidth(Utils.WIDTH + 250);
-        primaryStage.setHeight(Utils.HEIGHT);
-        primaryStage.centerOnScreen();
         primaryStage.setOnCloseRequest((WindowEvent windowEvent) -> {
             shutDown();
             primaryStage.close();
         });
 
-        final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
-
         KeyListener keyListener = new KeyListener(batController, playerNumber, encoder);
-        scene.setOnKeyPressed(keyListener);
-        scene.setOnKeyReleased(keyListener);
-        Utils.world.setContactListener(new BatPuckContactListener());
+        mainRoot.setOnKeyPressed(keyListener);
+        mainRoot.setOnKeyReleased(keyListener);
 
-        BorderPane mainBorderPane = new BorderPane();
-        mainBorderPane.setCenter(root);
-        mainBorderPane.setRight(createChatBox());
-        mainRoot.getChildren().add(mainBorderPane);
+        Utils.world.setContactListener(new BatPuckContactListener());
 
         Duration duration = Duration.seconds(1.0 / 60.0);
         FrameTimer eventHandler = new FrameTimer();
@@ -119,11 +104,7 @@ public class Renderer extends BaseRenderer {
         createStaticItems();
         createMovableItems();
         linkPlayersToBats();
-
         createOtherItems();
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
 
     private void linkPlayersToBats() {
@@ -496,6 +477,15 @@ public class Renderer extends BaseRenderer {
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
             //Not used
+        }
+    }
+
+    @Override
+    public void addChatBoxLine(String line) {
+        super.addChatBoxLine(line);
+        if (isMultiplayer) {
+            System.out.println("O HELL NO");
+            encoder.sendChatBoxLine(line);
         }
     }
 }

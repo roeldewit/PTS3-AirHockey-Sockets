@@ -98,6 +98,12 @@ public class Decoder {
                 });
                 break;
 
+            case Protocol.CHAT_LINE:
+                Platform.runLater(() -> {
+                    renderer.addChatBoxLine(splitter[1]);
+                });
+                break;
+
             case Protocol.GAME_OVER:
                 Platform.runLater(() -> {
                     game.gameOver();
