@@ -1,14 +1,12 @@
 package Airhockey.Main;
 
-import Airhockey.User.Player;
+import Airhockey.Rmi.SerializableGame;
 import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,10 +28,11 @@ public class Lobby {
     private ScoreCalculator scoreCalculator;
 
     //IMainLobby mainLobby;
-    private Registry register;
     private String ipMainServer = "localhost";
     private int portMainServer = 1099;
     Database database;
+
+    private ArrayList<SerializableGame> games;
 
     HashMap<String, User> hashMapUsernameToUser;
 
@@ -44,6 +43,8 @@ public class Lobby {
         this.primaryStage = primaryStage;
 //        database = new Database();
         hashMapUsernameToUser = new HashMap();
+
+        games = new ArrayList<>();
 
         users = new ArrayList<>();
 
@@ -73,6 +74,21 @@ public class Lobby {
         return scoreCalculator;
     }
 
+    public User getUser(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public void addWaitingGame(int id, String description, String portIP, String username) {
+        SerializableGame serializableGame = new SerializableGame(id, description, portIP, username);
+
+        games.add(serializableGame);
+    }
+
     private void LobbySetUp(Stage primaryStage) {
 
         Parent root = null;
@@ -89,8 +105,6 @@ public class Lobby {
 
     private void connectToMainServer() throws RemoteException, NotBoundException {
         //this.mainLobby = null;
-
-        register = LocateRegistry.getRegistry(ipMainServer, portMainServer);
 
         //this.mainLobby = ((IMainLobby) register.lookup("MainLobby"));
     }
