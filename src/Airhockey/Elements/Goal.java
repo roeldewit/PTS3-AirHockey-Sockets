@@ -1,8 +1,9 @@
 package Airhockey.Elements;
 
-import Airhockey.Renderer.Constants;
 import javafx.animation.RotateTransition;
 import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -15,6 +16,10 @@ import org.jbox2d.common.Vec2;
  */
 public class Goal {
 
+    public static final String GOAL_BOTTOM = "bottom";
+    public static final String GOAL_LEFT = "left";
+    public static final String GOAL_RIGHT = "right";
+
     private final int topLeftX;
     private final int topLeftY;
     private final int width = 340;
@@ -26,24 +31,27 @@ public class Goal {
     public Node node;
     public Node collisionNode;
 
-    public Goal(int color, int topLeftX, int topLeftY) {
-        this.topLeftX = topLeftX;
-        this.topLeftY = topLeftY;
+    public Goal(String position, String colorCode) {
 
-        switch (color) {
-            case Constants.GOAL_RED:
+        switch (position) {
+            case GOAL_BOTTOM:
+                topLeftX = 340;
+                topLeftY = 670;
                 rotation = 0;
-                this.color = Color.web(Constants.COLOR_RED);
                 break;
-            case Constants.GOAL_BLUE:
+            case GOAL_LEFT:
+                topLeftX = 124;
+                topLeftY = 330;
                 rotation = -57;
-                this.color = Color.web(Constants.COLOR_BLUE);
                 break;
             default:
+                topLeftX = 548;
+                topLeftY = 330;
                 rotation = 60;
-                this.color = Color.web(Constants.COLOR_GREEN);
                 break;
         }
+
+        color = Color.web(colorCode);
 
         this.node = createRect();
         this.collisionNode = createCollisionNode();
@@ -55,22 +63,32 @@ public class Goal {
      * @return
      */
     private Node createRect() {
-        Rectangle r = new Rectangle();
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetY(3.0);
+        shadow.setOffsetX(2.0);
+        shadow.setColor(Color.BLACK);
+        
+        InnerShadow is = new InnerShadow();
+        is.setOffsetX(0.5f);
+        is.setOffsetY(0.5f);
 
-        r.setWidth(width);
-        r.setHeight(height);
-        r.setFill(color);
-        r.setLayoutX(topLeftX);
-        r.setLayoutY(topLeftY);
-        r.setArcWidth(10);
-        r.setArcHeight(10);
+        Rectangle goal = new Rectangle();
+        goal.setWidth(width);
+        goal.setHeight(height);
+        goal.setFill(color);
+        goal.setLayoutX(topLeftX);
+        goal.setLayoutY(topLeftY);
+        goal.setArcWidth(10);
+        goal.setArcHeight(10);
+        //goal.setEffect(shadow);
+        goal.setEffect(is);
 
-        RotateTransition t = new RotateTransition(Duration.millis(1), r);
+        RotateTransition t = new RotateTransition(Duration.millis(1), goal);
         t.setByAngle(rotation);
         t.setAutoReverse(false);
         t.play();
 
-        return r;
+        return goal;
     }
 
     private Node createCollisionNode() {

@@ -1,6 +1,6 @@
 package Airhockey.Connection;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -8,14 +8,14 @@ import java.util.ArrayList;
  */
 public class Encoder {
 
-    private ArrayList<IConnectionManager> connectionMangerList;
+    private final HashMap<Integer, IConnectionManager> connectionMangerMap;
 
     public Encoder() {
-        this.connectionMangerList = new ArrayList<>();
+        this.connectionMangerMap = new HashMap<>();
     }
 
     public void addManager(IConnectionManager connectionManager) {
-        connectionMangerList.add(connectionManager);
+        connectionMangerMap.put(connectionMangerMap.size(), connectionManager);
     }
 
     public synchronized void sendPuckLocation(int x, int y) {
@@ -28,16 +28,16 @@ public class Encoder {
         sendCommand(command);
     }
 
+    public synchronized void sendBlueBatLocation(int x, int y) {
+        sendBatLocation(Protocol.BLUE_BAT_LOCATION, x, y);
+    }
+
     public synchronized void sendLeftBatLocation(int x, int y) {
-        sendBatLocation(Protocol.LEFT_BAT_LOCATION, x, y);
+        sendBatLocation(Protocol.GREEN_BAT_LOCATION, x, y);
     }
 
-    public synchronized void sendRightBatLocation(int x, int y) {
-        sendBatLocation(Protocol.RIGHT_BAT_LOCATION, x, y);
-    }
-
-    public synchronized void sendBottomBatLocation(int x, int y) {
-        sendBatLocation(Protocol.BOTTOM_BAT_LOCATION, x, y);
+    public synchronized void sendRedBatLocation(int x, int y) {
+        sendBatLocation(Protocol.RED_BAT_LOCATION, x, y);
     }
 
     private synchronized void sendBatLocation(String bat, int x, int y) {
@@ -50,20 +50,36 @@ public class Encoder {
         sendCommand(command);
     }
 
-    public synchronized void sendGoalMade(int newRound, int scorer, int against) {
+    public void sendClientBatMovementDirection(int playerNumber, int direction) {
+        String command = Protocol.CLIENT_BAT_MOVEMENT_DIRECTION
+                + Protocol.SEPERATOR
+                + playerNumber
+                + Protocol.SEPERATOR
+                + direction;
+
+        sendCommand(command);
+    }
+
+    public synchronized void sendGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore) {
         String command = Protocol.GOAL_MADE
                 + Protocol.SEPERATOR
                 + newRound
                 + Protocol.SEPERATOR
                 + scorer
                 + Protocol.SEPERATOR
-                + against;
+                + scorerScore
+                + Protocol.SEPERATOR
+                + against
+                + Protocol.SEPERATOR
+                + againstScore;
 
         sendCommand(command);
     }
 
-    public synchronized void sendSetUpGame(String p1Name, String p2Name, String p3Name) {
+    public synchronized void sendSetUpGame(int clientNumber, String p1Name, String p2Name, String p3Name) {
         String command = Protocol.SET_UP_GAME
+                + Protocol.SEPERATOR
+                + clientNumber
                 + Protocol.SEPERATOR
                 + p1Name
                 + Protocol.SEPERATOR
@@ -71,12 +87,51 @@ public class Encoder {
                 + Protocol.SEPERATOR
                 + p3Name;
 
+        sendCommandToOneClient(clientNumber - 2, command);
+    }
+
+    public void sendGameOver() {
+        String command = Protocol.GAME_OVER;
         sendCommand(command);
     }
 
-    public synchronized void sendCommand(String command) {
-        for (IConnectionManager manager : connectionMangerList) {
-            manager.sendCommand(command);
-        }
+    public void sendGameCancelledByServer() {
+        String command = Protocol.GAME_CANCELLED;
+        sendCommand(command);
+    }
+
+    /**
+     * CLIENT
+     */
+    public void sendGameData(String name) {
+        String command = Protocol.CLIENT_SEND_GAME_DATA
+                + Protocol.SEPERATOR
+                + name;
+
+        sendCommand(command);
+    }
+
+    public void sendLeavingGame(int playerNumber) {
+        String command = Protocol.CLIENT_LEAVING_GAME
+                + Protocol.SEPERATOR
+                + playerNumber;
+
+        sendCommand(command);
+    }
+
+    private synchronized void sendCommandToOneClient(int clientNumber, String command) {
+        connectionMangerMap.get(clientNumber).sendCommand(command);
+    }
+
+    private synchronized void sendCommand(String command) {
+        connectionMangerMap.entrySet().stream().forEach((value) -> {
+            value.getValue().sendCommand(command);
+        });
+    }
+
+    public void shutDownManagers() {
+        connectionMangerMap.entrySet().stream().forEach((value) -> {
+            value.getValue().cancel();
+        });
     }
 }

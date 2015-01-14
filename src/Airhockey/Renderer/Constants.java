@@ -18,13 +18,13 @@ public class Constants {
     public static final String COLOR_ORANGE = "#FF9933";
     public static final String COLOR_GRAY = "#373737";
 
-    public static final int GOAL_RED = 1;
-    public static final int GOAL_BLUE = 2;
-    public static final int GOAL_GREEN = 3;
+    public static final int GOAL_RED = 10;
+    public static final int GOAL_BLUE = 11;
+    public static final int GOAL_GREEN = 12;
 
-    protected static final String P1_SCORE = "PLAYER1_SCORE";
-    protected static final String P2_SCORE = "PLAYER2_SCORE";
-    protected static final String P3_SCORE = "PLAYER3_SCORE";
+    protected static final int P1_SCORE = 1;
+    protected static final int P2_SCORE = 2;
+    protected static final int P3_SCORE = 3;
 
 //    public static final String COLOR_RED = "#DD4540";
 //    public static final String COLOR_BLUE = "#4D7FDD";

@@ -1,19 +1,15 @@
 package Airhockey.Renderer;
 
 import Airhockey.Connection.Encoder;
-import Airhockey.Connection.Protocol;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
-import Airhockey.Main.Login;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
-import java.rmi.RemoteException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javafx.animation.*;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,7 +17,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -60,8 +55,7 @@ public class Renderer extends BaseRenderer {
 
     private final BatController batController;
     private Timeline timeline;
-    private final ExecutorService threadPool;
-    //private RmiServer rmiServer;
+    private ExecutorService threadPool;
 
     public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
@@ -69,11 +63,25 @@ public class Renderer extends BaseRenderer {
         this.isMultiplayer = isMultiplayer;
         this.threadPool = Executors.newCachedThreadPool();
 
+        primaryStage.setOnCloseRequest((WindowEvent event) -> {
+            game.leaveGame();
+            shutDown();
+            super.leave();
+        });
     }
 
+    /**
+     * Creates the window where the game is played in and adds all the visible
+     * items and listeners.
+     *
+     * @param encoder The enoder used to send game data to the clients if this
+     * is a multiplayer game.
+     * @param playerNumber The number assingned to each player in a game, used
+     * for item positioning.
+     */
     @Override
-    public final void start(Encoder encoder) {
-        super.start(encoder);
+    public final void start(Encoder encoder, int playerNumber) {
+        super.start(encoder, playerNumber);
 
         primaryStage.setTitle("Airhockey");
         primaryStage.setFullScreen(false);
@@ -88,7 +96,7 @@ public class Renderer extends BaseRenderer {
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
-        KeyListener keyListener = new KeyListener(batController);
+        KeyListener keyListener = new KeyListener(batController, playerNumber, encoder);
         scene.setOnKeyPressed(keyListener);
         scene.setOnKeyReleased(keyListener);
         Utils.world.setContactListener(new BatPuckContactListener());
@@ -99,7 +107,7 @@ public class Renderer extends BaseRenderer {
         mainRoot.getChildren().add(mainBorderPane);
 
         Duration duration = Duration.seconds(1.0 / 60.0);
-        MyHandler eventHandler = new MyHandler();
+        FrameTimer eventHandler = new FrameTimer();
         KeyFrame frame = new KeyFrame(duration, eventHandler, null, null);
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -107,31 +115,32 @@ public class Renderer extends BaseRenderer {
 
         PropertiesManager.saveProperty("REB-Difficulty", "HARD");
 
-        drawShapes();
-        createFixedItems();
+        super.drawShapes();
+        createStaticItems();
         createMovableItems();
-        createScreenStuff();
         linkPlayersToBats();
+
+        createStartButton();
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
     private void linkPlayersToBats() {
-        game.addPlayerToBat(1, bat);
-        game.addPlayerToBat(2, leftBat);
-        game.addPlayerToBat(3, rightBat);
+        game.addPlayerToBat(1, redBat);
+        game.addPlayerToBat(2, blueBat);
+        game.addPlayerToBat(3, greenBat);
     }
 
     @Override
-    protected void createScreenStuff() {
-        super.createScreenStuff();
+    protected void createStartButton() {
+        super.createStartButton();
 
         startButton = new Button();
         startButton.setLayoutX(30);
         startButton.setLayoutY((45));
         startButton.setText("Start");
-        startButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );");
+        startButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 2,2,1,1 );");
         startButton.setOnAction((ActionEvent event) -> {
             canUpdate = true;
             timeline.playFromStart();
@@ -142,54 +151,69 @@ public class Renderer extends BaseRenderer {
         root.getChildren().add(startButton);
     }
 
+    /**
+     * Creates the movable items on the screen which include the puck and the
+     * three bats.
+     */
     private void createMovableItems() {
-        puck = new Puck(50, 45);
+        puck = new Puck();
 
         if (batBody != null) {
-            bat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
+            redBat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
         } else {
-            bat = new Bat(50f, 15f, Constants.COLOR_RED);
+            redBat = new Bat(50f, 15f, Constants.COLOR_RED);
         }
-        leftBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
-        rightBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
+        blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
+        greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
-        root.getChildren().addAll(puck.node);
-        root.getChildren().addAll(bat.node, bat.imageNode);
-        root.getChildren().addAll(leftBat.node, leftBat.imageNode);
-        root.getChildren().addAll(rightBat.node, rightBat.imageNode);
+        root.getChildren().addAll(puck.node, puck.imageNode);
+        root.getChildren().addAll(redBat.node, redBat.imageNode);
+        root.getChildren().addAll(blueBat.node, blueBat.imageNode);
+        root.getChildren().addAll(greenBat.node, greenBat.imageNode);
 
         puckShape = (Shape) puck.node;
 
         puckBody = (Body) puck.node.getUserData();
-        batBody = (Body) bat.node.getUserData();
-        leftBatBody = (Body) leftBat.node.getUserData();
-        rightBatBody = (Body) rightBat.node.getUserData();
+        batBody = (Body) redBat.node.getUserData();
+        leftBatBody = (Body) blueBat.node.getUserData();
+        rightBatBody = (Body) greenBat.node.getUserData();
     }
 
+    /**
+     * Creates the static items on the screen which include the goals.
+     */
     @Override
-    protected void createFixedItems() {
-        super.createFixedItems();
+    protected void createStaticItems() {
+        super.createStaticItems();
 
         redGoalShape = (Shape) redGoal.collisionNode;
         blueGoalShape = (Shape) blueGoal.collisionNode;
         greenGoalShape = (Shape) greenGoal.collisionNode;
     }
 
+    /**
+     * This method is called on every game update frame. It checks whether a
+     * goal has been made and gives a notice to the game with the scorer and the
+     * one the goal was against.
+     */
     private synchronized void checkGoal() {
         Shape redGoalIntersect = Shape.intersect(redGoalShape, puckShape);
         Shape blueGoalIntersect = Shape.intersect(blueGoalShape, puckShape);
         Shape greenGoalIntersect = Shape.intersect(greenGoalShape, puckShape);
 
         if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, bat, encoder);
+            game.setGoal(lastHittedBat, redBat, encoder);
         } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftBat, encoder);
+            game.setGoal(lastHittedBat, blueBat, encoder);
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftBat, encoder);
+            game.setGoal(lastHittedBat, blueBat, encoder);
         }
     }
 
-    private class MyHandler implements EventHandler<ActionEvent> {
+    /**
+     * Class that initates each frame.
+     */
+    private class FrameTimer implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent event) {
@@ -202,6 +226,11 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * Background tast that does all the calculation-heavy work. This class also
+     * takes care of sending the data to the clients if this game is a
+     * multiplayer game.
+     */
     private class CalulationTask extends Task<Void> {
 
         private float puckBodyPosX;
@@ -212,10 +241,6 @@ public class Renderer extends BaseRenderer {
         private float leftBatBodyPosY;
         private float rightBatBodyPosX;
         private float rightBatBodyPosY;
-
-        public CalulationTask() {
-            call();
-        }
 
         @Override
         protected Void call() {
@@ -245,9 +270,9 @@ public class Renderer extends BaseRenderer {
 
             if (isMultiplayer) {
                 encoder.sendPuckLocation((int) puckBodyPosX, (int) puckBodyPosY);
-                encoder.sendBottomBatLocation((int) batBodyPosX, (int) batBodyPosY);
-                encoder.sendLeftBatLocation((int) leftBatBodyPosX, (int) leftBatBodyPosY);
-                encoder.sendRightBatLocation((int) rightBatBodyPosX, (int) rightBatBodyPosY);
+                encoder.sendRedBatLocation((int) batBodyPosX, (int) batBodyPosY);
+                encoder.sendBlueBatLocation((int) leftBatBodyPosX, (int) leftBatBodyPosY);
+                encoder.sendLeftBatLocation((int) rightBatBodyPosX, (int) rightBatBodyPosY);
             }
 
             if (canCorrectPuckSpeed) {
@@ -268,10 +293,18 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * Receives the calculated data from the background task
+     *
+     * @param puckBodyPosX
+     * @param puckBodyPosY
+     * @param batBodyPosX
+     * @param batBodyPosY
+     */
     private synchronized void threadCallback(float puckBodyPosX, float puckBodyPosY, float batBodyPosX, float batBodyPosY) {
         if (canUpdate) {
             puck.setPosition(puckBodyPosX, puckBodyPosY);
-            bat.setPosition(batBodyPosX, batBodyPosY);
+            redBat.setPosition(batBodyPosX, batBodyPosY);
 
             batController.controlCenterBat(batBodyPosX);
 
@@ -279,71 +312,125 @@ public class Renderer extends BaseRenderer {
                 batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
                 batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
             } else {
-                moveLeftEnemyBat(puckBodyPosY);
-                moveRightEnemyBat(puckBodyPosY);
-            }
-        }
-    }
-
-    private void moveLeftEnemyBat(float puckBodyPosY) {
-        Body leftEnemyBatBody = (Body) leftBat.node.getUserData();
-        float leftEnemyBatPositionY = Utils.toPixelPosY(leftEnemyBatBody.getPosition().y);
-
-        leftBat.stop();
-        if (puckBodyPosY > leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY < Constants.BAT_MIN_Y) {
-                leftBat.moveDown(puckBody);
-            }
-        } else if (puckBodyPosY < leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY > Constants.BAT_MAX_Y) {
-                leftBat.moveUp(puckBody);
-            }
-        }
-    }
-
-    private void moveRightEnemyBat(float puckBodyPosY) {
-        Body rightEnemyBatBody = (Body) rightBat.node.getUserData();
-        float rightEnemyBatPositionY = Utils.toPixelPosY(rightEnemyBatBody.getPosition().y);
-
-        rightBat.stop();
-        if (puckBodyPosY - 5 > rightEnemyBatPositionY + 5) {
-            if (rightEnemyBatPositionY < Constants.BAT_MIN_Y) {
-                rightBat.moveDown(puckBody);
-            }
-        } else if (puckBodyPosY + 5 < rightEnemyBatPositionY - 5) {
-            if (rightEnemyBatPositionY > Constants.BAT_MAX_Y) {
-                rightBat.moveUp(puckBody);
+                moveLeftAIBat(puckBodyPosY);
+                moveAIEnemyBat(puckBodyPosY);
             }
         }
     }
 
     @Override
+    public void moveClientBat(int playerNumber, int direction) {
+        if (direction == BatController.STOP) {
+            switch (playerNumber) {
+                case 2:
+                    batController.stopLeftBatMovement();
+                    break;
+                case 3:
+                    batController.stopRightBatMovement();
+                    break;
+            }
+        } else {
+            switch (playerNumber) {
+                case 2:
+                    batController.startLeftBatMovement(direction);
+                    break;
+                case 3:
+                    batController.startRightBatMovement(direction);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * This method controls the movement of the LeftAIBat. The bat is positioned
+     * according to the puck's location within a certain height-range.
+     *
+     * @param puckBodyPosY the y-coordinate of the puck
+     */
+    private void moveLeftAIBat(float puckBodyPosY) {
+        Body leftAIBatBody = (Body) blueBat.node.getUserData();
+        float leftAIBatPositionY = Utils.toPixelPosY(leftAIBatBody.getPosition().y);
+
+        blueBat.stop();
+        if (puckBodyPosY > leftAIBatPositionY) {
+            if (leftAIBatPositionY < Constants.BAT_MIN_Y) {
+                blueBat.moveDown(puckBody);
+            }
+        } else if (puckBodyPosY < leftAIBatPositionY) {
+            if (leftAIBatPositionY > Constants.BAT_MAX_Y) {
+                blueBat.moveUp(puckBody);
+            }
+        }
+    }
+
+    /**
+     * This method controls the movement of the RightAIBat. The bat is
+     * positioned according to the puck's location within a certain
+     * height-range.
+     *
+     * @param puckBodyPosY the y-coordinate of the puck
+     */
+    private void moveAIEnemyBat(float puckBodyPosY) {
+        Body rightAIBatBody = (Body) greenBat.node.getUserData();
+        float rightAIBatPositionY = Utils.toPixelPosY(rightAIBatBody.getPosition().y);
+
+        greenBat.stop();
+        if (puckBodyPosY - 5 > rightAIBatPositionY + 5) {
+            if (rightAIBatPositionY < Constants.BAT_MIN_Y) {
+                greenBat.moveDown(puckBody);
+            }
+        } else if (puckBodyPosY + 5 < rightAIBatPositionY - 5) {
+            if (rightAIBatPositionY > Constants.BAT_MAX_Y) {
+                greenBat.moveUp(puckBody);
+            }
+        }
+    }
+
+    /**
+     * This method gets called after a goal has been made. It resets all movable
+     * elements to their original position and calls a animation.
+     *
+     * @param round The number of the next round.
+     */
+    @Override
     public void resetRound(int round) {
-        canUpdate = false;
-        timeline.stop();
+        shutDown();
+
+        lastHittedBat = null;
 
         Utils.world.destroyBody(puckBody);
         Utils.world.destroyBody(batBody);
-        Utils.world.destroyBody(leftBat.getBody());
-        Utils.world.destroyBody(rightBat.getBody());
+        Utils.world.destroyBody(blueBat.getBody());
+        Utils.world.destroyBody(greenBat.getBody());
 
         root.getChildren().removeAll(puck.node, puck.imageNode);
-        root.getChildren().removeAll(bat.node, bat.imageNode);
-        root.getChildren().removeAll(leftBat.node, leftBat.imageNode);
-        root.getChildren().removeAll(rightBat.node, rightBat.imageNode);
+        root.getChildren().removeAll(redBat.node, redBat.imageNode);
+        root.getChildren().removeAll(blueBat.node, blueBat.imageNode);
+        root.getChildren().removeAll(greenBat.node, greenBat.imageNode);
 
         newRoundTransition(round);
 
         createMovableItems();
         linkPlayersToBats();
+
+        threadPool = Executors.newCachedThreadPool();
     }
 
+    /**
+     * Displays an animation with the number of the new round.
+     *
+     * @param round The number of the new round.
+     */
     @Override
     protected void newRoundTransition(int round) {
         super.newRoundTransition(round);
         parallelTransition.setOnFinished(new OnAnimationCompletionListener());
     }
 
+    /**
+     * Checks when the round animation has finished and starts the frame timer
+     * again.
+     */
     private class OnAnimationCompletionListener implements EventHandler<ActionEvent> {
 
         @Override
@@ -354,31 +441,30 @@ public class Renderer extends BaseRenderer {
         }
     }
 
-    protected void stop() {
-        Rectangle rect = new Rectangle(0, 0, 0, 0);
-        rect.setWidth(Utils.WIDTH);
-        rect.setHeight(Utils.HEIGHT);
-        rect.setArcWidth(50);
-
-        root.getChildren().add(rect);
-
-        FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
-        ft.playFromStart();
-
+    /**
+     * Shows a popup on the screen with the reason the game was stopped
+     *
+     * @param reason
+     */
+    @Override
+    public void stop(String reason) {
+        super.stop(reason);
         shutDown();
     }
 
+    /**
+     * Stops the timer and the background thread's from updating the game.
+     */
     private void shutDown() {
         canUpdate = false;
         timeline.stop();
         threadPool.shutdownNow();
-
-        primaryStage.close();
-        Login login = new Login();
-        login.Login();
-        System.out.println("shutdonwl");
     }
 
+    /**
+     * Checks collisions between the puck and the bats to determine the last bat
+     * that hit the puck in the event of a goal.
+     */
     private class BatPuckContactListener implements ContactListener {
 
         @Override
@@ -387,30 +473,29 @@ public class Renderer extends BaseRenderer {
             Fixture fB = contact.getFixtureB();
 
             if (fA == puck.getFixture() || fB == puck.getFixture()) {
-                if (fA == bat.getFixture() || fB == bat.getFixture()) {
-                    lastHittedBat = bat;
-                } else if (fA == leftBat.getFixture() || fB == leftBat.getFixture()) {
-                    lastHittedBat = leftBat;
-                } else if (fA == rightBat.getFixture() || fB == rightBat.getFixture()) {
-                    lastHittedBat = rightBat;
+                if (fA == redBat.getFixture() || fB == redBat.getFixture()) {
+                    lastHittedBat = redBat;
+                } else if (fA == blueBat.getFixture() || fB == blueBat.getFixture()) {
+                    lastHittedBat = blueBat;
+                } else if (fA == greenBat.getFixture() || fB == greenBat.getFixture()) {
+                    lastHittedBat = greenBat;
                 }
             }
         }
 
         @Override
         public void endContact(Contact contact) {
+            //Not used
         }
 
         @Override
         public void preSolve(Contact contact, Manifold oldManifold) {
+            //Not used
         }
 
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
+            //Not used
         }
-    }
-
-    public BatController getBatController() {
-        return batController;
     }
 }

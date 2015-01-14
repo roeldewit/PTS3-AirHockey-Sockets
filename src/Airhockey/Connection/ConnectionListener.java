@@ -1,7 +1,6 @@
 package Airhockey.Connection;
 
 import Airhockey.Main.Game;
-import Airhockey.Renderer.IRenderer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,12 +13,14 @@ import java.util.logging.Logger;
  */
 public class ConnectionListener extends Thread {
 
+    private static int clientNumber = 2;
+
     private boolean acceptMore = true;
-    private final IRenderer renderer;
+    private final Decoder decoder;
     private final Game game;
 
-    public ConnectionListener(Game game, IRenderer renderer) {
-        this.renderer = renderer;
+    public ConnectionListener(Game game, Decoder decoder) {
+        this.decoder = decoder;
         this.game = game;
     }
 
@@ -34,7 +35,9 @@ public class ConnectionListener extends Thread {
                 Socket socket = serverSocket.accept();
                 System.out.println("Server bound");
 
-                Server server = new Server(socket, renderer);
+                Server server = new Server(socket, decoder, game, clientNumber);
+                clientNumber++;
+
                 game.clientConnected(server);
                 new Thread(server).start();
             }

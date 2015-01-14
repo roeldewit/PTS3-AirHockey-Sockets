@@ -3,12 +3,13 @@ package Airhockey.Renderer;
 import Airhockey.Connection.Encoder;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
+import Airhockey.Main.Login;
 import Airhockey.Utils.Utils;
 import javafx.animation.FadeTransition;
+import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -19,11 +20,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
@@ -53,10 +56,12 @@ class BaseRenderer implements IRenderer {
     protected final Stage primaryStage;
     protected final Game game;
 
+    protected int playerNumber;
+
     protected Puck puck;
-    protected Bat bat;
-    protected LeftBat leftBat;
-    protected RightBat rightBat;
+    protected Bat redBat;
+    protected LeftBat blueBat;
+    protected RightBat greenBat;
     protected TriangleLine triangle;
     protected TriangleLeftLine triangleLeft;
     protected Goal redGoal;
@@ -75,12 +80,15 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
-    public void start(Encoder encoder) {
+    public void start(Encoder encoder, int playerNumber) {
         this.encoder = encoder;
+        this.playerNumber = playerNumber;
     }
 
     @Override
-    public void setTextFields(String field, String value) {
+    public void setTextFields(int field, int score) {
+        String value = String.valueOf(score);
+
         switch (field) {
             case Constants.P1_SCORE:
                 player1ScoreLabel.setText(value);
@@ -94,14 +102,15 @@ class BaseRenderer implements IRenderer {
         }
     }
 
-    @Override
-    public void resetRound(int round) {
-    }
+    protected void createStartButton() {
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetY(1.0);
+        shadow.setOffsetX(1.0);
+        shadow.setColor(Color.BLACK);
 
-    protected void createScreenStuff() {
-        player1NameLabel = new Label(game.getUsername(1).toUpperCase() + ": ");
-        player2NameLabel = new Label(game.getUsername(2).toUpperCase() + ": ");
-        player3NameLabel = new Label(game.getUsername(3).toUpperCase() + ": ");
+        player1NameLabel = new Label();
+        player2NameLabel = new Label();
+        player3NameLabel = new Label();
         player1ScoreLabel = new Label("20");
         player2ScoreLabel = new Label("20");
         player3ScoreLabel = new Label("20");
@@ -135,8 +144,29 @@ class BaseRenderer implements IRenderer {
         roundTextLabel.relocate(30, 10);
         roundNumberLabel.relocate(140, 10);
 
-        root.getChildren().addAll(player1NameLabel, player2NameLabel, player3NameLabel, player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
+        player1NameLabel.setEffect(shadow);
+        player2NameLabel.setEffect(shadow);
+        player3NameLabel.setEffect(shadow);
+        player1ScoreLabel.setEffect(shadow);
+        player2ScoreLabel.setEffect(shadow);
+        player3ScoreLabel.setEffect(shadow);
+        roundTextLabel.setEffect(shadow);
+        roundNumberLabel.setEffect(shadow);
+
+        root.getChildren().addAll(player1NameLabel,
+                player2NameLabel,
+                player3NameLabel,
+                player1ScoreLabel,
+                player2ScoreLabel,
+                player3ScoreLabel);
         root.getChildren().addAll(roundTextLabel, roundNumberLabel);
+    }
+
+    @Override
+    public void setLabelNames(String p1Name, String p2Name, String p3Name) {
+        player1NameLabel.setText(p1Name.toUpperCase() + ": ");
+        player2NameLabel.setText(p2Name.toUpperCase() + ": ");
+        player3NameLabel.setText(p3Name.toUpperCase() + ": ");
     }
 
     protected void drawShapes() {
@@ -149,27 +179,26 @@ class BaseRenderer implements IRenderer {
 
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(3);
-        gc.strokeOval(centerPointX - 100, centerPointY - 60, 200, 200);
+        gc.strokeOval(centerPointX - 100, centerPointY - 40, 200, 200);
 
+//        RenderUtilities r = new RenderUtilities(triangle);
+//        r.drawLine(gc);
         //gc.strokeArc(600, 200, 100, 300, 140, 180, ArcType.ROUND);
     }
 
-    protected void showPopupWindow() {
+    protected void showPopupWindow(String message) {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(primaryStage.getScene().getWindow());
         dialogStage.centerOnScreen();
 
         Button okButton = new Button("Close");
-        okButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent arg0) {
-                dialogStage.close();
-            }
+        okButton.setOnAction((ActionEvent arg0) -> {
+            dialogStage.close();
+            leave();
         });
 
-        Label label = new Label("GAME OVER");
+        Label label = new Label(message.toUpperCase());
         label.setFont(Font.font("Roboto", 24.0));
         label.setTextFill(Color.web(Constants.COLOR_GREEN));
         label.setPadding(new Insets(0, 0, 20, 0));
@@ -243,13 +272,27 @@ class BaseRenderer implements IRenderer {
         parallelTransition.playFromStart();
     }
 
-    protected void createFixedItems() {
+    protected void createStaticItems() {
         triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
         triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
 
-        redGoal = new Goal(Constants.GOAL_RED, 340, 670);
-        blueGoal = new Goal(Constants.GOAL_BLUE, 124, 330);
-        greenGoal = new Goal(Constants.GOAL_GREEN, 548, 330);
+        switch (playerNumber) {
+            case 2:
+                redGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_RED);
+                blueGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_BLUE);
+                greenGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_GREEN);
+                break;
+            case 3:
+                redGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_RED);
+                blueGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_BLUE);
+                greenGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_GREEN);
+                break;
+            default:
+                redGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_RED);
+                blueGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_BLUE);
+                greenGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_GREEN);
+                break;
+        }
 
         root.getChildren().add(triangle.node);
         root.getChildren().add(triangleLeft.node);
@@ -286,35 +329,64 @@ class BaseRenderer implements IRenderer {
     }
 
     @Override
+    public void stop(String reason) {
+        showPopupWindow(reason);
+
+        Rectangle rect = new Rectangle(0, 0, 0, 0);
+        rect.setWidth(Utils.WIDTH);
+        rect.setHeight(Utils.HEIGHT);
+        rect.setArcWidth(50);
+
+        root.getChildren().add(rect);
+
+        FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
+        ft.playFromStart();
+    }
+
+    protected void leave() {
+        primaryStage.close();
+        Login login = new Login();
+        login.Login();
+    }
+
+    @Override
+    public void resetRound(int round) {
+        //Implemented in child cass.    
+    }
+
+    @Override
     public void setPuckLocation(int x, int y) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setBottomBatLocation(int x, int y) {
+    public void setRedBatLocation(int x, int y) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setLeftBatLocation(int x, int y) {
+    public void setBlueBatLocation(int x, int y) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setRightBatLocation(int x, int y) {
+    public void setGreenBatLocation(int x, int y) {
         //Implemented in child cass.
     }
 
     @Override
-    public void setGoalMade(int newRound, int scorer, int against) {
+    public void setGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore) {
         //Implemented in child cass.
     }
 
     @Override
     public void setUpGame(String p1Name, String p2Name, String p3Name) {
-        player1NameLabel.setText(p1Name);
-        player2NameLabel.setText(p2Name);
-        player3NameLabel.setText(p3Name);
+        //Implemented in child cass.
+    }
+
+    @Override
+    public void moveClientBat(int playerNumber, int direction) {
+        //Implemented in child cass.
     }
 
 }

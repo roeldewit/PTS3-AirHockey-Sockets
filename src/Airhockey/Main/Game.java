@@ -2,137 +2,115 @@ package Airhockey.Main;
 
 import Airhockey.Connection.Client;
 import Airhockey.Connection.ConnectionListener;
+import Airhockey.Connection.Decoder;
 import Airhockey.Connection.Encoder;
 import Airhockey.Connection.IConnectionManager;
 import Airhockey.Elements.Bat;
 import Airhockey.Renderer.*;
 import Airhockey.User.*;
 import Airhockey.Utils.ScoreCalculator;
-import java.net.Socket;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
  *
- * @author Roel
+ * @author Sam
  */
 public class Game {
 
     private int id;
     private int round = 1;
-    private Player owner;
+    private User user;
+    private int playerNumber;
     private IRenderer renderer;
-    private ArrayList<Player> players;
-    private ArrayList<User> users;
-    private Player currentPlayer;
+    private final ArrayList<Player> players;
 
     private int numberOfClientsConnected = 0;
     private Encoder encoder;
-
     private Client client;
-
-//    private ArrayList<Spectator> spectators;
-    private Chatbox chatbox;
-    private ScoreCalculator scoreCalculator;
-
-    private boolean isHost;
-    private boolean isMultiplayer;
-
-    // data of the host
-    private String ipHost;
-    private int port;
-
     private ConnectionListener connectionListener;
 
-    public Game(Stage primaryStage, boolean isHost, boolean isMultiplayer) {
-        this.isHost = isHost;
-        this.isMultiplayer = isMultiplayer;
-        players = new ArrayList<>();
+    private final Stage primaryStage;
 
-        addPlayer(new User("Sam"));
-        addPlayer(new User("Com1"));
-        addPlayer(new User("Com2"));
+    //private ArrayList<Spectator> spectators;
+    private ScoreCalculator scoreCalculator;
+    private boolean isMultiplayer;
+
+    public Game(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        players = new ArrayList<>();
+    }
+
+    public void startSinglePlayer() {
+        addPlayer("Sam");
+        addPlayer("PC1");
+        addPlayer("PC2");
+        isMultiplayer = false;
+
+        renderer = new Renderer(primaryStage, this, isMultiplayer);
+        renderer.start(null, 1);
+        renderer.setLabelNames("SAM", "PC1", "PC2");
+    }
+
+    public void startAsHost(User user) {
+        addPlayer(user.getUsername());
+        isMultiplayer = true;
 
         encoder = new Encoder();
-
-        //renderer = new Renderer(primaryStage, this, isMultiplayer);
-        if (isHost) {
-            this.renderer = new Renderer(primaryStage, this, true);
-            connectionListener = new ConnectionListener(this, renderer);
-            connectionListener.start();
-        } else {
-            this.renderer = new ClientRenderer(primaryStage, this);
-            client = new Client(renderer);
-            client.start();
-        }
+        renderer = new Renderer(primaryStage, this, isMultiplayer);
+        connectionListener = new ConnectionListener(this, new Decoder(renderer, this));
+        connectionListener.start();
     }
 
-    /**
-     * Constructor used to start a game as a Host
-     *
-     * @param primaryStage
-     * @param players
-     * @param users
-     * @throws RemoteException
-     */
-    public Game(Stage primaryStage, ArrayList<Player> players, ArrayList<User> users) throws RemoteException {
-        this.players = players;
-        this.owner = players.get(0);
-        this.chatbox = new Chatbox();
-        this.users = users;
-        this.currentPlayer = players.get(0);
+    public void startAsClient(User user, String ipAddress) {
+        this.user = user;
+        isMultiplayer = true;
 
-        this.renderer = new Renderer(primaryStage, this, true);
-        connectionListener = new ConnectionListener(this, renderer);
-    }
-
-    /**
-     * Constructor used to start a game as a client
-     *
-     * @param primaryStage
-     * @param ipHost
-     * @param port
-     * @param players
-     * @param currentPlayer
-     * @throws RemoteException
-     */
-    public Game(Stage primaryStage, String ipHost, int port, ArrayList<Player> players, Player currentPlayer) throws RemoteException {
-        this.ipHost = ipHost;
-        this.port = port;
-        this.players = players;
-        this.owner = players.get(0);
-        this.currentPlayer = currentPlayer;
-
-        this.renderer = new ClientRenderer(primaryStage, this);
-        client = new Client(renderer);
+        encoder = new Encoder();
+        renderer = new ClientRenderer(primaryStage, this);
+        client = new Client(new Decoder(renderer, this), this, ipAddress);
+        encoder.addManager(client);
+        client.start();
 
     }
 
-    public synchronized void clientConnected(IConnectionManager manager) {
+    public void connectedToServer() {
+        encoder.sendGameData(user.getUsername());
+    }
+
+    public void clientConnected(IConnectionManager manager) {
         encoder.addManager(manager);
+    }
+
+    private void addPlayer(String userName) {
+        Player player = new Player(players.size() + 1, new User(userName));
+        players.add(player);
+    }
+
+    public synchronized void addClientPlayer(String userName) {
+        addPlayer(userName);
 
         numberOfClientsConnected++;
-
-        System.out.println("NOCC: " + numberOfClientsConnected);
         if (numberOfClientsConnected == 2) {
-            System.out.println("joajoa");
             Platform.runLater(() -> {
-                System.out.println("PFRL joajoa");
-                renderer.start(encoder);
+                String p1Name = players.get(0).user.getUsername();
+                String p2Name = players.get(1).user.getUsername();
+                String p3Name = players.get(2).user.getUsername();
+
+                for (int i = 2; i < 4; i++) {
+                    encoder.sendSetUpGame(i, p1Name, p2Name, p3Name);
+                }
+                renderer.start(encoder, 1);
+                renderer.setLabelNames(p1Name, p2Name, p3Name);
             });
             connectionListener.cancel();
         }
     }
 
-    public void addPlayer(User user) {
-        Player player = new Player(players.size() + 1, user);
-        players.add(player);
-    }
-
-    public void startGame(Player owner) {
-        throw new UnsupportedOperationException();
+    public void startGameAsClient(int playerNumber) {
+        this.playerNumber = playerNumber;
+        renderer.start(encoder, playerNumber);
     }
 
     public void leaveGame(User user) {
@@ -160,35 +138,61 @@ public class Game {
     }
 
     public synchronized void setGoal(Bat scorer, Bat against, Encoder encoder) {
-        round++;
+        Platform.runLater(() -> {
+            round++;
 
-        Player playerAgainst = against.getPlayer();
-        playerAgainst.downScore();
-        renderer.setTextFields("PLAYER" + playerAgainst.getId() + "_SCORE", String.valueOf(playerAgainst.getScore()));
+            Player playerAgainst = against.getPlayer();
+            playerAgainst.downScore();
+            renderer.setTextFields(playerAgainst.getId(), playerAgainst.getScore());
 
-        if (scorer != null) {
-            Player playerScorer = scorer.getPlayer();
-            playerScorer.upScore();
-            renderer.setTextFields("PLAYER" + playerScorer.getId() + "_SCORE", String.valueOf(playerScorer.getScore()));
-            encoder.sendGoalMade(round, playerScorer.getId(), playerAgainst.getId());
-        } else {
-            encoder.sendGoalMade(round, -1, playerAgainst.getId());
-        }
+            if (scorer != null) {
+                Player playerScorer = scorer.getPlayer();
+                playerScorer.upScore();
+                renderer.setTextFields(playerScorer.getId(), playerScorer.getScore());
+                if (isMultiplayer) {
+                    encoder.sendGoalMade(round, playerScorer.getId(), playerScorer.getScore(), playerAgainst.getId(), playerAgainst.getScore());
+                }
+            } else {
+                if (isMultiplayer) {
+                    encoder.sendGoalMade(round, -1, -1, playerAgainst.getId(), playerAgainst.getScore());
+                }
+            }
 
-        if (round == 10) {
-            stop();
-        } else {
-            renderer.resetRound(round);
-        }
+            if (round == 100) {
+                if (isMultiplayer) {
+                    encoder.sendGameOver();
+                }
+                gameOver();
+            } else {
+                renderer.resetRound(round);
+            }
+        });
+    }
 
+    public void clientLeftGame(int playerNumber) {
+
+    }
+
+    public void leaveGame(){
+        encoder.shutDownManagers();
+    }
+    
+    public void connectionLost(){
+        renderer.stop("Connection Lost");
+    }
+    
+    public void gameCancelled() {
+        encoder.shutDownManagers();
+        renderer.stop("Server Disconnected");
+    }
+
+    public void gameOver() {
+        encoder.shutDownManagers();
+        renderer.stop("Game Over");
     }
 
     public String getUsername(int id) {
         return players.get(id - 1).user.getUsername();
-    }
-
-    private void stop() {
-        //renderer.resetRound();
     }
 
 }

@@ -3,6 +3,7 @@ package Airhockey.Elements;
 import Airhockey.Renderer.Constants;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -23,8 +24,8 @@ public class Puck {
     public Node node;
     public Node imageNode;
 
-    private final float positionX;
-    private final float positionY;
+    private final float positionX = 50;
+    private final float positionY = 42;
 
     private float radius = 25f;
 
@@ -32,10 +33,8 @@ public class Puck {
     public Body body;
     public FixtureDef fd;
 
-    public Puck(float positionX, float positionY) {
+    public Puck() {
         this.radius = Utils.BALL_RADIUS;
-        this.positionX = positionX;
-        this.positionY = positionY;
         this.bodyType = BodyType.DYNAMIC;
 
         node = create();
@@ -43,13 +42,19 @@ public class Puck {
     }
 
     private Node create() {
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetY(1.0);
+        shadow.setOffsetX(1.0);
+        shadow.setColor(Color.BLACK);
+
         Circle puck = new Circle();
         puck.setRadius(radius);
-        puck.setFill(Color.web(Constants.COLOR_ORANGE));
+        //puck.setFill(Color.web(Constants.COLOR_ORANGE));
 
         puck.setLayoutX(Utils.toPixelPosX(positionX));
         puck.setLayoutY(Utils.toPixelPosY(positionY));
         puck.setCache(true);
+        puck.setEffect(shadow);
 
         BodyDef bd = new BodyDef();
         bd.type = bodyType;
