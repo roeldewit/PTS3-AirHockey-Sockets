@@ -71,7 +71,7 @@ public class MainLobby {
         for (SerializableGame busyGame : busyGames) {
             sBusyGames.add(ExtraArrayListFunctions.createNodeArrayListWithEntries(busyGame.id + "", busyGame.description, busyGame.usernames.size() + "", busyGame.hostIP));
         }
-        
+
         encoder.sendBusyGames(sBusyGames, connectionManager);
     }
 
@@ -183,5 +183,12 @@ public class MainLobby {
      */
     public void addConnectionManager(IConnectionManager connectionManager) {
         encoder.addManager(connectionManager);
+    }
+
+    /**
+     * Write games to file
+     */
+    private void writeGamesToFile() {
+        throw new NotImplementedException();
     }
 }
