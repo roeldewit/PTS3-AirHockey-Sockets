@@ -5,6 +5,9 @@
  */
 package Airhockey.Mainserver;
 
+import Airhockey.Serializable.SerializableGame;
+import Airhockey.Serializable.SerializableChatBox1;
+import Airhockey.Serializable.SerializableChatBoxLine;
 import Airhockey.Rmi.*;
 import java.util.ArrayList;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

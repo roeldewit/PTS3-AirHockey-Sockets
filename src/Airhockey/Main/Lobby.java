@@ -2,7 +2,7 @@ package Airhockey.Main;
 
 import Airhockey.Connection.LobbyClient;
 import Airhockey.Connection.LobbyEncoder;
-import Airhockey.Rmi.SerializableGame;
+import Airhockey.Serializable.SerializableGame;
 import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;

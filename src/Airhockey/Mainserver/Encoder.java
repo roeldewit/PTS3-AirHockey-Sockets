@@ -1,6 +1,6 @@
 package Airhockey.Mainserver;
 
-import Airhockey.Rmi.SerializableGame;
+import Airhockey.Serializable.SerializableGame;
 import java.util.ArrayList;
 
 /**
