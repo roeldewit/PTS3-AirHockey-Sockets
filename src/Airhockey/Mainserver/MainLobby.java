@@ -53,6 +53,7 @@ public class MainLobby {
 
     /**
      * Get encoder
+     *
      * @return Encoder
      */
     public Encoder getEncoder() {
@@ -61,14 +62,22 @@ public class MainLobby {
 
     /**
      * Send busy games
+     *
      * @param connectionManager Connection manager to use
      */
     public void sendBusyGames(IConnectionManager connectionManager) {
-        throw new NotImplementedException();
+        ArrayList<ArrayList<String>> sBusyGames = new ArrayList<>();
+
+        for (SerializableGame busyGame : busyGames) {
+            sBusyGames.add(ExtraArrayListFunctions.createNodeArrayListWithEntries(busyGame.id + "", busyGame.description, busyGame.usernames.size() + "", busyGame.hostIP));
+        }
+        
+        encoder.sendBusyGames(sBusyGames, connectionManager);
     }
 
     /**
      * Send waiting games
+     *
      * @param connectionManager Connection manager to use
      */
     public void sendWaitingGames(IConnectionManager connectionManager) {
@@ -78,12 +87,13 @@ public class MainLobby {
             sWaitingGames.add(ExtraArrayListFunctions.createNodeArrayListWithEntries(waitingGame.id + "", waitingGame.description, waitingGame.usernames.size() + "", waitingGame.hostIP));
         }
 
-        encoder.sendWaitingGame(sWaitingGames, connectionManager);
+        encoder.sendWaitingGames(sWaitingGames, connectionManager);
     }
 
     /**
      * Send chat box
-     * @param connectionManager Connection manager to use 
+     *
+     * @param connectionManager Connection manager to use
      */
     public void sendChatbox(IConnectionManager connectionManager) {
 
@@ -104,10 +114,11 @@ public class MainLobby {
 
     /**
      * Add new waiting game
+     *
      * @param description Description
      * @param ipHost IP of the host
      * @param username Username
-     * @param connectionManager Connection manager to use 
+     * @param connectionManager Connection manager to use
      */
     public void addNewWaitingGame(String description, String ipHost, String username, IConnectionManager connectionManager) {
         SerializableGame serializableGame = new SerializableGame(nextGameID, description, ipHost, username);
@@ -119,6 +130,7 @@ public class MainLobby {
 
     /**
      * Start game
+     *
      * @param id Game id
      */
     public void startGame(int id) {
@@ -133,6 +145,7 @@ public class MainLobby {
 
     /**
      * Delete game
+     *
      * @param id Game id
      */
     public void deleteGame(int id) {
@@ -153,6 +166,7 @@ public class MainLobby {
 
     /**
      * Write a line in the chat box
+     *
      * @param username Username
      * @param text Text
      */
@@ -164,7 +178,8 @@ public class MainLobby {
 
     /**
      * Add connection manager
-     * @param connectionManager Connection manager to use 
+     *
+     * @param connectionManager Connection manager to use
      */
     public void addConnectionManager(IConnectionManager connectionManager) {
         encoder.addManager(connectionManager);
