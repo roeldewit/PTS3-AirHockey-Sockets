@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -126,9 +126,10 @@ public class Lobby {
         Parent root = null;
 
         try {
-            FXMLLoader fMXLLoader = new FXMLLoader(Lobby.class.getResource("LobbyLayout.fxml"));
+            FXMLLoader fMXLLoader = new FXMLLoader();
+            root = fMXLLoader.load(Lobby.class.getResource("LobbyLayout.fxml"));
+//            root = FXMLLoader.load(Lobby.class.getResource("LobbyLayout.fxml"));
             lobbyController = fMXLLoader.getController();
-            root = FXMLLoader.load(Lobby.class.getResource("LobbyLayout.fxml"));
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();
