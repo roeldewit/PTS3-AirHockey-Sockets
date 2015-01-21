@@ -2,7 +2,6 @@ package Airhockey.Main;
 
 import Airhockey.Connection.LobbyClient;
 import Airhockey.Connection.LobbyEncoder;
-import Airhockey.Rmi.SerializableGame;
 import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
@@ -50,9 +49,15 @@ public class Lobby {
 
         hashMapUsernameToUser = new HashMap();
 
+<<<<<<< HEAD
         games = new ArrayList<>();
         users = new ArrayList<>();
 
+=======
+//        games = new ArrayList<>();
+        users = new ArrayList<>();      
+     
+>>>>>>> 9fee954d75c53c105616fcec78bedd9056b6da2b
         users.add(new User("Jan"));
         users.add(new User("Piet"));
         users.add(new User("Henk"));
