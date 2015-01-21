@@ -17,9 +17,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class MainLobby {
 
-    private ArrayList<SerializableGame> busyGames;
+    private final ArrayList<SerializableGame> busyGames;
 
-    private ArrayList<SerializableGame> waitingGames;
+    private final ArrayList<SerializableGame> waitingGames;
 
     private final SerializableChatBox1 chatbox;
 
@@ -27,14 +27,14 @@ public class MainLobby {
 
     private int nextGameID;
 
-    private ArrayList<IConnectionManager> connectionManagers;
+    private final ArrayList<IConnectionManager> connectionManagers;
 
     private final ConnectionListener connectionListener;
 
-    private Thread connectionListenerThread;
+    private final Thread connectionListenerThread;
 
     /**
-     * the Lobby of the MainServer
+     * Default constructor
      */
     public MainLobby() {
         busyGames = new ArrayList<>();
@@ -51,14 +51,26 @@ public class MainLobby {
         connectionListenerThread.start();
     }
 
+    /**
+     * Get encoder
+     * @return Encoder
+     */
     public Encoder getEncoder() {
         return this.encoder;
     }
 
+    /**
+     * Send busy games
+     * @param connectionManager Connection manager to use
+     */
     public void sendBusyGames(IConnectionManager connectionManager) {
         throw new NotImplementedException();
     }
 
+    /**
+     * Send waiting games
+     * @param connectionManager Connection manager to use
+     */
     public void sendWaitingGames(IConnectionManager connectionManager) {
         ArrayList<ArrayList<String>> sWaitingGames = new ArrayList<>();
 
@@ -69,6 +81,10 @@ public class MainLobby {
         encoder.sendWaitingGame(sWaitingGames, connectionManager);
     }
 
+    /**
+     * Send chat box
+     * @param connectionManager Connection manager to use 
+     */
     public void sendChatbox(IConnectionManager connectionManager) {
 
         ArrayList<SerializableChatBoxLine> chatboxlines = chatbox.getSerializableChatBoxWithTenLastLines().lines;
@@ -86,6 +102,13 @@ public class MainLobby {
         encoder.sendInitialChatBox(sChatboxLines, connectionManager);
     }
 
+    /**
+     * Add new waiting game
+     * @param description Description
+     * @param ipHost IP of the host
+     * @param username Username
+     * @param connectionManager Connection manager to use 
+     */
     public void addNewWaitingGame(String description, String ipHost, String username, IConnectionManager connectionManager) {
         SerializableGame serializableGame = new SerializableGame(nextGameID, description, ipHost, username);
 
@@ -94,37 +117,55 @@ public class MainLobby {
         waitingGames.add(serializableGame);
     }
 
+    /**
+     * Start game
+     * @param id Game id
+     */
     public void startGame(int id) {
-        for (SerializableGame waitinggame : waitingGames) {
-            if (waitinggame.id == id) {
-                busyGames.add(waitinggame);
+        for (SerializableGame waitingGame : waitingGames) {
+            if (waitingGame.id == id) {
+                waitingGames.remove(waitingGame);
+                busyGames.add(waitingGame);
                 break;
             }
         }
     }
 
+    /**
+     * Delete game
+     * @param id Game id
+     */
     public void deleteGame(int id) {
-        for (SerializableGame waitinggame : waitingGames) {
-            if (waitinggame.id == id) {
-                busyGames.add(waitinggame);
+        for (SerializableGame waitingGame : waitingGames) {
+            if (waitingGame.id == id) {
+                waitingGames.remove(waitingGame);
                 break;
             }
         }
 
         for (SerializableGame busyGame : busyGames) {
             if (busyGame.id == id) {
-                busyGames.add(busyGame);
+                busyGames.remove(busyGame);
                 break;
             }
         }
     }
 
+    /**
+     * Write a line in the chat box
+     * @param username Username
+     * @param text Text
+     */
     public void writeline(String username, String text) {
         chatbox.writeline(username, text);
 
         encoder.sendChatBoxLine(username, text);
     }
 
+    /**
+     * Add connection manager
+     * @param connectionManager Connection manager to use 
+     */
     public void addConnectionManager(IConnectionManager connectionManager) {
         encoder.addManager(connectionManager);
     }
