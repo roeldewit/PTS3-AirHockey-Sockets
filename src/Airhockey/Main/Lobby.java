@@ -7,6 +7,7 @@ import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
+import java.net.URL;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -107,8 +108,8 @@ public class Lobby {
         encoder.writeLine(user.getUsername(), text);
     }
 
-    public void remoteChatboxUpdate(String text, String person) {
-        lobbyController.updateChatbox(text, person);
+    public void remoteChatboxUpdate(String person, String text) {
+        lobbyController.updateChatbox(person, text);
     }
 
     public void remoteUpdateWaitingGame(int id, String description, String portIP, String username) {
@@ -126,10 +127,16 @@ public class Lobby {
         Parent root = null;
 
         try {
-            FXMLLoader fMXLLoader = new FXMLLoader();
-            root = fMXLLoader.load(Lobby.class.getResource("LobbyLayout.fxml"));
-//            root = FXMLLoader.load(Lobby.class.getResource("LobbyLayout.fxml"));
-            lobbyController = fMXLLoader.getController();
+            URL location = getClass().getResource("LobbyLayout.fxml");
+
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(location);
+            fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+
+            root = (Parent) fxmlLoader.load(location.openStream());
+
+            lobbyController = fxmlLoader.getController();
+
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -142,6 +149,7 @@ public class Lobby {
         connectToMainServer();
         getInitialChatbox();
         encoder.getCurrentOpenGames();
+        lobbyController.setLobby(this);
     }
 
     private void connectToMainServer() {

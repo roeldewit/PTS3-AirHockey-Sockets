@@ -98,11 +98,6 @@ public class LobbyController implements Initializable {
     }
 
     public void chatboxSend() {
-        if (tfChatbox.getText() != "") {
-            chatItems.add(tfChatbox.getText());
-            lvChatbox.setItems(chatItems);
-        }
-
         lobby.writeLine(tfChatbox.getText());
         tfChatbox.clear();
     }
@@ -123,7 +118,7 @@ public class LobbyController implements Initializable {
         }
     }
 
-    public void updateChatbox(String text, String person) {
+    public void updateChatbox(String person, String text) {
         chatItems.add(person + ":" + text);
         lvChatbox.setItems(chatItems);
     }

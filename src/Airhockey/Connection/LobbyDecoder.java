@@ -23,7 +23,6 @@ public class LobbyDecoder {
     }
 
     protected void receiveCommand(String command) {
-        System.out.println("recieved command: " + command);
         String[] splitter = command.split(Protocol.SEPERATOR);
 
         switch (splitter[0]) {
@@ -32,7 +31,7 @@ public class LobbyDecoder {
                     if (splitter.length < 3) {
                         return;
                     }
-
+                    System.out.println(splitter[1] + ":" + splitter[2]);
                     lobby.remoteChatboxUpdate(splitter[1], splitter[2]);
                 });
                 break;
@@ -51,9 +50,11 @@ public class LobbyDecoder {
                     }
 
                     int i = 1;
-                    while (splitter[i] != Protocol.PROTOCOL_ENDER) {
-                        lobby.getChatbox().writeLine(new ChatboxLine(splitter[i], lobby.getUser(splitter[++i])));
+                    while (!splitter[i].equals(Protocol.PROTOCOL_ENDER)) {
+                        System.out.println("lobbyDecoder finds:" + splitter[i] + splitter[i+1] + splitter[i+2]);
+                        lobby.remoteChatboxUpdate(splitter[i], splitter[++i]);
                         i++;
+
                     }
                 });
                 break;
@@ -71,7 +72,7 @@ public class LobbyDecoder {
                     }
 
                     int i = 1;
-                    while (splitter[i] != Protocol.PROTOCOL_ENDER) {
+                    while (!splitter[i].equals(Protocol.PROTOCOL_ENDER)) {
                         int ID = i;
                         int description = ++i;
                         int amoundOfPlayers = ++i;

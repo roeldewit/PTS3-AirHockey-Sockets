@@ -38,11 +38,15 @@ public class ConnectionListener extends Thread {
             serverSocket = new ServerSocket(8190);
 
             while (acceptMore) {
+                System.out.println("more are being accepted");
                 Socket socket = serverSocket.accept();
                 System.out.println("Server bound");
 
                 MainLobbyServer server = new MainLobbyServer(socket, lobby);
-                new Thread(server).run();
+                
+                lobby.getEncoder().addManager(server);
+                
+                new Thread(server).start();
             }
 
         } catch (IOException e) {

@@ -37,9 +37,9 @@ public class Encoder {
                 + Protocol.SEPERATOR;
 
         for (ArrayList<String> chatboxline : chatboxlines) {
-            command = chatboxline.get(0)
+            command += chatboxline.get(1)
                     + Protocol.SEPERATOR
-                    + chatboxline.get(1)
+                    + chatboxline.get(0)
                     + Protocol.SEPERATOR;
         }
 
