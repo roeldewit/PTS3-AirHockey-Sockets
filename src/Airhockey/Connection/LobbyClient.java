@@ -20,10 +20,11 @@ import java.util.logging.Logger;
  * @author pieper126
  */
 public class LobbyClient extends Thread implements IConnectionManager {
+
     private ObjectOutputStream objectOutputStream;
     private final LobbyDecoder decoder;
     private boolean interrupted;
-    
+
     private LobbyEncoder encoder;
 
     public LobbyClient(Lobby lobby) {
@@ -37,8 +38,8 @@ public class LobbyClient extends Thread implements IConnectionManager {
         try {
             System.out.println("Starting client....");
             socket = new Socket("localhost", 8190);
-            
-            encoder = new LobbyEncoder(this);            
+
+            encoder = new LobbyEncoder(this);
 
             System.out.println("Client bound");
 
@@ -65,8 +66,8 @@ public class LobbyClient extends Thread implements IConnectionManager {
             }
         }
     }
-    
-    public synchronized LobbyEncoder getEncoder(){
+
+    public synchronized LobbyEncoder getEncoder() {
         return encoder;
     }
 
