@@ -1,6 +1,5 @@
 package Airhockey.Main;
 
-import Airhockey.Connection.Encoder;
 import Airhockey.Connection.LobbyClient;
 import Airhockey.Connection.LobbyEncoder;
 import Airhockey.Rmi.SerializableGame;
@@ -28,14 +27,15 @@ public class Lobby {
     private ArrayList<User> users;
 
     private Chatbox chatbox;
+
     private ScoreCalculator scoreCalculator;
 
     private Database database;
 
-    //private ArrayList<SerializableGame> games;
+    private ArrayList<SerializableGame> games;
 
-    //
     private LobbyClient lobbyClient;
+
     private LobbyEncoder encoder;
 
     private HashMap<String, User> hashMapUsernameToUser;
@@ -47,25 +47,19 @@ public class Lobby {
     public Lobby(Stage primaryStage) throws NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
-//        database = new Database();
+
         hashMapUsernameToUser = new HashMap();
 
         games = new ArrayList<>();
-        users = new ArrayList<>();      
-     
+        users = new ArrayList<>();
+
         users.add(new User("Jan"));
         users.add(new User("Piet"));
         users.add(new User("Henk"));
-//        users = database.getUsers();
-//
-//        for (User dbuser : users) {
-//            hashMapUsernameToUser.put(dbuser.getUsername(), dbuser);
-//        }
 
         initialSetUpLobby();
         chatbox = new Chatbox();
     }
-    
 
     public ArrayList<User> getUsers() {
         return users;
@@ -126,14 +120,14 @@ public class Lobby {
     private void initialSetUpLobby() {
         connectToMainServer();
         getInitialChatbox();
-        encoder.getCurrentOpenGames();        
+        encoder.getCurrentOpenGames();
     }
 
     private void connectToMainServer() {
         lobbyClient = new LobbyClient(this);
 
         lobbyClientThread = new Thread(lobbyClient);
-        lobbyClientThread.start();      
+        lobbyClientThread.start();
 
         encoder = getEncoder();
     }
@@ -141,11 +135,11 @@ public class Lobby {
     private void getInitialChatbox() {
         encoder.getLastTenChatBoxLines();
     }
-    
-    private LobbyEncoder getEncoder(){
+
+    private LobbyEncoder getEncoder() {
         LobbyEncoder returnvalue = null;
-        
-        while (returnvalue == null) {            
+
+        while (returnvalue == null) {
             returnvalue = lobbyClient.getEncoder();
             try {
                 Thread.sleep(50);
@@ -153,9 +147,9 @@ public class Lobby {
                 Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return returnvalue;
-    } 
+    }
 
 //    private Game joinGame(int id, String usern) throws RemoteException {
 //        SerializableGame serializableGame = mainLobby.getWaitingGames().get(id);

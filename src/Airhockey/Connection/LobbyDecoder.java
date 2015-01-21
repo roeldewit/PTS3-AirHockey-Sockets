@@ -34,7 +34,7 @@ public class LobbyDecoder {
                 break;
 
             case Protocol.GAME_ID:
-                Platform.runLater(() -> {                    
+                Platform.runLater(() -> {
                     // game_id can be used for retrieving the game on mainServer
                     int gameId = Integer.parseInt(splitter[1]);
                 });
@@ -42,7 +42,7 @@ public class LobbyDecoder {
 
             case Protocol.CHATBOX_LINES:
                 Platform.runLater(() -> {
-                    if (command.length() < 4) {
+                    if (splitter.length < 4) {
                         return;
                     }
 
@@ -56,13 +56,13 @@ public class LobbyDecoder {
 
             case Protocol.START_GAME:
                 Platform.runLater(() -> {
-                    throw new NotImplementedException();
+
                 });
                 break;
 
             case Protocol.CURRENT_OPENGAMES:
                 Platform.runLater(() -> {
-                    if (command.length() < 5) {
+                    if (splitter.length < 5) {
                         return;
                     }
 
