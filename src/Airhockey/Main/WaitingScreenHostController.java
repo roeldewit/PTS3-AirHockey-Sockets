@@ -8,6 +8,7 @@ package Airhockey.Main;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -15,8 +16,10 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
@@ -26,40 +29,40 @@ import javafx.stage.Stage;
  *
  * @author martijn
  */
-public class WaitingScreenController implements Initializable {
+public class WaitingScreenHostController implements Initializable {
 
-    Database database = new Database();
-    public static final ObservableList items = FXCollections.observableArrayList();
-    
     @FXML
     private Button btReturnLobby;
+
     @FXML
-    private ListView<?> lvJoinedPlayers;
-    @FXML
-    private Button btStartGame;
-    
+    private ListView lvJoinedPlayers;
+
+    public static final ObservableList items = FXCollections.observableArrayList();
+    Database database = new Database();
+
     /**
      * Initializes the controller class.
      */
     @Override
-
     public void initialize(URL url, ResourceBundle rb) {
-        try {
-            items.add(database.getUser("t").getUsername());
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(WaitingScreenController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        lvJoinedPlayers.setItems(items);
+        screenSetup();
     }
 
-    public void startGameHost() {
-        Game game = new Game((Stage) btStartGame.getScene().getWindow());
-        
+    public void screenSetup() {
         try {
-            game.startAsHost(database.getUser("t"));
+            items.add(database.getUser("t"));
+            lvJoinedPlayers.setItems(items);
         } catch (SQLException | IOException ex) {
-            Logger.getLogger(WaitingScreenController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WaitingScreenHostController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void returnLobby() {
+        try {
+            Stage stage = (Stage) lvJoinedPlayers.getScene().getWindow();
+            Lobby lobby = new Lobby(stage);
+        } catch (NotBoundException | IOException | SQLException ex) {
+            Logger.getLogger(WaitingScreenHostController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -107,16 +107,11 @@ public class LobbyController implements Initializable {
     public void StartGameList() {
         primaryStage = (Stage) btStartGame.getScene().getWindow();
         primaryStage.close();
-
-        Parent root = null;
-
+        
         try {
-            root = FXMLLoader.load(Lobby.class.getResource("WaitingScreen.fxml"));
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        } catch (IOException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            WaitingScreen waitingScreen = new WaitingScreen(primaryStage,true);
+        } catch (Exception ex) {
+            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
