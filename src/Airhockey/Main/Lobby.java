@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -44,11 +45,17 @@ public class Lobby {
 
     private Thread lobbyClientThread;
 
-    public Lobby(Stage primaryStage) throws NotBoundException, IOException, SQLException {
+    private LobbyController lobbyController;
+
+    private User user;
+
+    public Lobby(Stage primaryStage, User user) throws NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
 
         hashMapUsernameToUser = new HashMap();
+
+        this.user = user;
 
         games = new ArrayList<>();
         users = new ArrayList<>();
@@ -96,8 +103,16 @@ public class Lobby {
         return null;
     }
 
-    public void writeLine(String text, User user) {
+    public void writeLine(String text) {
         encoder.writeLine(user.getUsername(), text);
+    }
+
+    public void remoteChatboxUpdate(String text, String person) {
+        lobbyController.updateChatbox(text, person);
+    }
+
+    public void remoteUpdateWaitingGame(int id, String description, String portIP, String username) {
+        lobbyController.updateGameList(description, id + "");
     }
 
     public void addWaitingGame(int id, String description, String portIP, String username) {
@@ -111,6 +126,8 @@ public class Lobby {
         Parent root = null;
 
         try {
+            FXMLLoader fMXLLoader = new FXMLLoader(Lobby.class.getResource("LobbyLayout.fxml"));
+            lobbyController = fMXLLoader.getController();
             root = FXMLLoader.load(Lobby.class.getResource("LobbyLayout.fxml"));
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);

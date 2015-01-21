@@ -98,7 +98,7 @@ public class Login extends Application {
             //primaryStage.close();
             Game game = new Game(primaryStage);
             game.startAsHost(new User("SERVER"));
-        } else if (levelString.equals("s")){
+        } else if (levelString.equals("s")) {
             primaryStage = (Stage) btLogin.getScene().getWindow();
             //primaryStage.close();
             Game game = new Game(primaryStage);
@@ -106,7 +106,7 @@ public class Login extends Application {
         } else {
             primaryStage = (Stage) btLogin.getScene().getWindow();
             //primaryStage.close();
-                Game game = new Game(primaryStage);
+            Game game = new Game(primaryStage);
             game.startAsClient(new User("CLIENT"), "localhost");
         }
 
@@ -121,7 +121,7 @@ public class Login extends Application {
         try {
             primaryStage = (Stage) btLogin.getScene().getWindow();
             primaryStage.close();
-            Lobby lobby = new Lobby(primaryStage);
+            Lobby lobby = new Lobby(primaryStage, new User("Jan"));
         } catch (NotBoundException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

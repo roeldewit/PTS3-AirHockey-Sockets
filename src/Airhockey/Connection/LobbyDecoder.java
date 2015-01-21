@@ -29,7 +29,11 @@ public class LobbyDecoder {
         switch (splitter[0]) {
             case Protocol.CHAT_LINE:
                 Platform.runLater(() -> {
-                    lobby.getChatbox().writeLine(new ChatboxLine(splitter[2], lobby.getUser(splitter[1])));
+                    if (splitter.length < 3) {
+                        return;
+                    }
+
+                    lobby.remoteChatboxUpdate(splitter[1], splitter[2]);
                 });
                 break;
 

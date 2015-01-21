@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,15 +61,15 @@ public class LobbyController implements Initializable {
     ArrayList<User> users;
     Database database;
     User user;
+    Lobby lobby;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setLobbyLists();
-
     }
 
     public LobbyController() {
-        database = new Database();
+//        database = new Database();
 
         chatItems = FXCollections.observableArrayList();
         ratingItems = FXCollections.observableArrayList();
@@ -100,8 +101,10 @@ public class LobbyController implements Initializable {
         if (tfChatbox.getText() != "") {
             chatItems.add(tfChatbox.getText());
             lvChatbox.setItems(chatItems);
-            tfChatbox.clear();
         }
+
+        lobby.writeLine(tfChatbox.getText());
+        tfChatbox.clear();
     }
 
     public void StartGameList() {
@@ -121,20 +124,30 @@ public class LobbyController implements Initializable {
     }
 
     public void updateChatbox(String text, String person) {
+        chatItems.add(person + ":" + text);
+        lvChatbox.setItems(chatItems);
+    }
 
+    public void updateGameList(String description, String id) {
+        gameItems.add(id + ":" + description);
+        lvOpenGames.setItems(gameItems);
+    }
+
+    public void setLobby(Lobby lobby) {
+        this.lobby = lobby;
     }
 
     private void setLobbyLists() {
-        try {
-            users = database.getUsers();
-        } catch (IOException | SQLException ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        for (User user : users) {
-            ratingItems.add(user.getUsername() + " : " + user.getRating());
-        }
-        lvRatingTable.setItems(ratingItems);
+//        try {
+//            users = database.getUsers();
+//        } catch (IOException | SQLException ex) {
+//            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//        for (User user : users) {
+//            ratingItems.add(user.getUsername() + " : " + user.getRating());
+//        }
+//        lvRatingTable.setItems(ratingItems);
     }
 
     protected void showPopupWindow(String message, String buttonText) {
