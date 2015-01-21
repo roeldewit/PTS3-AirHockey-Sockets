@@ -75,7 +75,7 @@ public class MainLobby {
         ArrayList<ArrayList<String>> sWaitingGames = new ArrayList<>();
 
         for (SerializableGame waitingGame : waitingGames) {
-            sWaitingGames.add(ExtraArrayListFunctions.createsNodeArrayListWithEnetries(waitingGame.id + "", waitingGame.description, waitingGame.usernames.size() + "", waitingGame.hostIP));
+            sWaitingGames.add(ExtraArrayListFunctions.createNodeArrayListWithEntries(waitingGame.id + "", waitingGame.description, waitingGame.usernames.size() + "", waitingGame.hostIP));
         }
 
         encoder.sendWaitingGame(sWaitingGames, connectionManager);
