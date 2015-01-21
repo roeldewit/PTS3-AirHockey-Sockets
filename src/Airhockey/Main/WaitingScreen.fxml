@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="188.0" prefWidth="360.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="Airhockey.Main.WaitingScreenController">
+   <children>
+      <Button fx:id="btStartGame" layoutX="14.0" layoutY="24.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Start Game" />
+      <Button fx:id="btReturnLobby" layoutX="196.0" layoutY="24.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Retrun to Lobby" />
+      <Label layoutX="14.0" layoutY="62.0" text="Joined Players">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <ListView fx:id="lvJoinedPlayers" layoutX="14.0" layoutY="94.0" prefHeight="84.0" prefWidth="332.0" />
+   </children>
+</AnchorPane>

@@ -16,9 +16,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -97,13 +99,29 @@ public class LobbyController implements Initializable {
     public void chatboxSend() {
         if (tfChatbox.getText() != "") {
             chatItems.add(tfChatbox.getText());
-            lvChatbox.setItems(chatItems);            
+            lvChatbox.setItems(chatItems);
             tfChatbox.clear();
         }
     }
-    
-    public void updateChatbox(String text, String person){
-        
+
+    public void StartGameList() {
+        primaryStage = (Stage) btStartGame.getScene().getWindow();
+        primaryStage.close();
+
+        Parent root = null;
+
+        try {
+            root = FXMLLoader.load(Lobby.class.getResource("WaitingScreen.fxml"));
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void updateChatbox(String text, String person) {
+
     }
 
     private void setLobbyLists() {
@@ -118,8 +136,8 @@ public class LobbyController implements Initializable {
 //        }
 //        lvRatingTable.setItems(ratingItems);
     }
-    
-       protected void showPopupWindow(String message, String buttonText) {
+
+    protected void showPopupWindow(String message, String buttonText) {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(tfDescription.getScene().getWindow());

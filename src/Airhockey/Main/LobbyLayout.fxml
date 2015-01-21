@@ -10,7 +10,7 @@
         <Label layoutX="14.0" layoutY="14.0" text="Description :" />
         <TextField fx:id="tfDescription" layoutX="130.0" layoutY="14.0" />
         <Button fx:id="btStartGame" layoutX="369.0" layoutY="12.0" mnemonicParsing="false" onAction="#startGame" prefHeight="31.0" prefWidth="146.0" text="Start new game" />
-        <ListView fx:id="lvOpenGames" layoutX="14.0" layoutY="100.0" prefHeight="286.0" prefWidth="287.0" />
+        <ListView fx:id="lvOpenGames" layoutX="14.0" layoutY="100.0" onMouseClicked="#StartGameList" prefHeight="286.0" prefWidth="287.0" />
         <ListView fx:id="lvRatingTable" layoutX="314.0" layoutY="100.0" prefHeight="141.0" prefWidth="270.0" />
         <ListView layoutX="314.0" layoutY="268.0" prefHeight="118.0" prefWidth="270.0" />
         <Label layoutX="350.0" layoutY="66.0" text="Rating Table (Last 5 games)" />

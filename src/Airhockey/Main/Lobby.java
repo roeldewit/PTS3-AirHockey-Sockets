@@ -3,7 +3,6 @@ package Airhockey.Main;
 import Airhockey.Connection.Encoder;
 import Airhockey.Connection.LobbyClient;
 import Airhockey.Connection.LobbyEncoder;
-import Airhockey.Rmi.SerializableGame;
 import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
@@ -50,7 +49,7 @@ public class Lobby {
 //        database = new Database();
         hashMapUsernameToUser = new HashMap();
 
-        games = new ArrayList<>();
+//        games = new ArrayList<>();
         users = new ArrayList<>();      
      
         users.add(new User("Jan"));
