@@ -56,7 +56,7 @@ public class Encoder {
         connectionManager.sendCommand(command);
     }
 
-    public synchronized void sendWaitingGame(ArrayList<ArrayList<String>> waitingGames, IConnectionManager connectionManager) {
+    public synchronized void sendWaitingGames(ArrayList<ArrayList<String>> waitingGames, IConnectionManager connectionManager) {
         String command = Protocol.CURRENT_OPENGAMES
                 + Protocol.SEPERATOR;
 
@@ -68,6 +68,26 @@ public class Encoder {
                     + waitingGame.get(2)
                     + Protocol.SEPERATOR
                     + waitingGame.get(3)
+                    + Protocol.SEPERATOR;
+        }
+
+        command += Protocol.PROTOCOL_ENDER;
+
+        connectionManager.sendCommand(command);
+    }
+    
+    public synchronized void sendBusyGames(ArrayList<ArrayList<String>> busyGames, IConnectionManager connectionManager) {
+        String command = Protocol.CURRENT_BUSYGAMES
+                + Protocol.SEPERATOR;
+
+        for (ArrayList<String> busyGame : busyGames) {
+            command = busyGame.get(0)
+                    + Protocol.SEPERATOR
+                    + busyGame.get(1)
+                    + Protocol.SEPERATOR
+                    + busyGame.get(2)
+                    + Protocol.SEPERATOR
+                    + busyGame.get(3)
                     + Protocol.SEPERATOR;
         }
 
