@@ -43,11 +43,11 @@ public class Puck {
         DropShadow shadow = new DropShadow();
         shadow.setOffsetY(1.0);
         shadow.setOffsetX(1.0);
-        shadow.setColor(Color.BLACK);
+        shadow.setColor(Color.TRANSPARENT);
 
         Circle puck = new Circle();
         puck.setRadius(radius);
-        //puck.setFill(Color.web(Constants.COLOR_ORANGE));
+        puck.setFill(Color.TRANSPARENT);
 
         puck.setLayoutX(Utils.toPixelPosX(positionX));
         puck.setLayoutY(Utils.toPixelPosY(positionY));
@@ -75,25 +75,12 @@ public class Puck {
 
     private Image createImageNode() {
         Image image = new Image(getClass().getResourceAsStream("Images/Puck.png"), radius * 2f, radius * 2f, false, false);
-
-//        ImageView imageView = new ImageView(image);
-//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-        //return imageView;
         return image;
     }
 
-//    private Node createImageNode() {
-//        Image image = new Image(getClass().getResourceAsStream("Images/Puck.png"), radius * 2f, radius * 2f, false, false);
-//
-//        ImageView imageView = new ImageView(image);
-//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-//        return imageView;
-//    }
     public void setPosition(float xPosition, float yPosition) {
         node.setLayoutX(xPosition);
         node.setLayoutY(yPosition);
-        //imageNode.setLayoutX(xPosition - radius);
-        //imageNode.setLayoutY(yPosition - radius);
 
         positionX = xPosition;
         positionY = yPosition;

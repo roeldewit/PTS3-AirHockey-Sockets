@@ -35,7 +35,7 @@ public class LeftBat extends Bat {
                 speed = 17.0f;
                 break;
         }
-        speedManipulation = speed * 0.50f;
+        speedManipulation = speed * 0.55f;
     }
 
     public void moveUp(Body puckBody) {

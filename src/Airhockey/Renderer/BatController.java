@@ -38,8 +38,8 @@ public class BatController {
     public BatController(Renderer renderer) {
         this.renderer = renderer;
 
-        leftSpeedManipulation = speed * 0.50f;
-        rightSpeedManipulation = speed * 0.55f;
+        leftSpeedManipulation = speed * 0.55f;
+        rightSpeedManipulation = speed * 0.60f;
     }
 
     /**
@@ -48,7 +48,7 @@ public class BatController {
      * @param batPositionX Xpostion of the center bat
      */
     protected void controlCenterBat(float batPositionX) {
-        if (batPositionX > 380) {
+        if (batPositionX > Constants.CENTER_BAT_MIN_Y) {
             canStopBatLeft = true;
             if (batSideMovementLeft) {
                 renderer.batBody.setLinearVelocity(new Vec2(-25.0f, 0.0f));
@@ -61,7 +61,7 @@ public class BatController {
                 canStopBatLeft = false;
             }
         }
-        if (batPositionX < 640) {
+        if (batPositionX < Constants.CENTER_BAT_MAX_Y) {
             canStopBatRight = true;
             if (batSideMovementRight) {
                 renderer.batBody.setLinearVelocity(new Vec2(25.0f, 0.0f));
@@ -98,7 +98,7 @@ public class BatController {
      * @param leftBatPositionY
      */
     protected void controlLeftBat(float leftBatPositionY) {
-        if (leftBatPositionY > Constants.BAT_MAX_Y) {
+        if (leftBatPositionY > Constants.SIDE_BAT_MAX_Y) {
             canStopLeftBatTop = true;
             if (leftBatMovementUp) {
                 renderer.leftBatBody.setLinearVelocity(new Vec2(speed - leftSpeedManipulation, speed));
@@ -111,7 +111,7 @@ public class BatController {
                 canStopLeftBatTop = false;
             }
         }
-        if (leftBatPositionY < Constants.BAT_MIN_Y) {
+        if (leftBatPositionY < Constants.SIDE_BAT_MIN_Y) {
             canStopLeftBatBottom = true;
             if (leftBatMovementDown) {
                 renderer.leftBatBody.setLinearVelocity(new Vec2(-speed + leftSpeedManipulation, -speed));
@@ -139,6 +139,7 @@ public class BatController {
     public void stopLeftBatMovement() {
         leftBatMovementUp = false;
         leftBatMovementDown = false;
+        renderer.leftBatBody.setLinearVelocity(new Vec2(0.0f, 0.0f));
     }
 
     /**
@@ -147,7 +148,7 @@ public class BatController {
      * @param rightBatPositionY
      */
     protected void controlRightBat(float rightBatPositionY) {
-        if (rightBatPositionY > Constants.BAT_MAX_Y) {
+        if (rightBatPositionY > Constants.SIDE_BAT_MAX_Y) {
             canStopRightBatTop = true;
             if (rightBatMovementUp) {
                 renderer.rightBatBody.setLinearVelocity(new Vec2(-speed + rightSpeedManipulation, speed));
@@ -160,7 +161,7 @@ public class BatController {
                 canStopRightBatTop = false;
             }
         }
-        if (rightBatPositionY < Constants.BAT_MIN_Y) {
+        if (rightBatPositionY < Constants.SIDE_BAT_MIN_Y) {
             canStopRightBatBottom = true;
             if (rightBatMovementDown) {
                 renderer.rightBatBody.setLinearVelocity(new Vec2(speed - rightSpeedManipulation, -speed));
@@ -188,5 +189,6 @@ public class BatController {
     public void stopRightBatMovement() {
         rightBatMovementUp = false;
         rightBatMovementDown = false;
+        renderer.rightBatBody.setLinearVelocity(new Vec2(0.0f, 0.0f));
     }
 }

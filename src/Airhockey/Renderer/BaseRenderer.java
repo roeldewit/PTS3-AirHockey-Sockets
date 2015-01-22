@@ -7,11 +7,14 @@ import Airhockey.Main.Login;
 import Airhockey.Utils.Utils;
 import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
+import javafx.animation.KeyFrame;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -121,6 +124,31 @@ class BaseRenderer implements IRenderer {
         primaryStage.show();
     }
 
+    protected void startCountDown() {
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(1000),
+                new CountDownTimer()));
+        timeline.setCycleCount(3);
+        timeline.play();
+        timeline.setOnFinished((ActionEvent t) -> {
+            startGameTimer();
+        });
+    }
+
+    /**
+     * Class that initates each frame.
+     */
+    private class CountDownTimer implements EventHandler<ActionEvent> {
+
+        int number = 3;
+
+        @Override
+        public void handle(ActionEvent event) {
+            textEffectTransition(String.valueOf(number));
+            number--;
+        }
+    }
+
     @Override
     public void setTextFields(int field, int score) {
         String value = String.valueOf(score);
@@ -217,22 +245,18 @@ class BaseRenderer implements IRenderer {
     }
 
     protected void drawShapes() {
-        canvas = new Canvas(870, 740);
-        playerNumber = 2;
+        canvas = new Canvas(900, 740);
+        // playerNumber = 1;
 
         double rotation = 0;
-        if (playerNumber == 1) {
-            //canvas.relocate(0.0, 0.0);
-        } else if (playerNumber == 2) {
-            canvas.relocate(15.0, 165.0);
-            rotation = canvas.getRotate() - 120.0;
+        if (playerNumber == 2) {
+            canvas.relocate(-70.0, 175.0);
+            rotation = canvas.getRotate() - 121.0;
         } else if (playerNumber == 3) {
-            //canvas.relocate(896.0, 100.0);
-            canvas.relocate(145.0, 75.0);
-            rotation = canvas.getRotate() + 120.0;
+            canvas.relocate(105.0, 140.0);
+            rotation = canvas.getRotate() + 118.5;
         }
 
-        System.out.println("ROTATION: " + rotation);
         canvas.setRotate(rotation);
 
         graphicsContext = canvas.getGraphicsContext2D();
@@ -242,36 +266,33 @@ class BaseRenderer implements IRenderer {
         centerPointY = Utils.HEIGHT / 2;
 
         graphicsContext.setFill(Color.WHITE);
-        //graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(3);
-        graphicsContext.strokeOval(centerPointX - 120.0, centerPointY - 40, 200, 200);
-        //gc.strokeRect(centerPointX, centerPointY, 200, 200);
-        //gc.drawImage(null, rotation, rotation);
-//        r.drawLine(gc);
-        //gc.strokeArc(600, 200, 100, 300, 140, 180, ArcType.ROUND);
+        graphicsContext.strokeOval(centerPointX - 145.0, centerPointY - 6, 200, 200);
     }
 
     protected void updateFrame() {
+        //Clear frame
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        if (playerNumber == 1) {
-            graphicsContext.drawImage(puck.imageNode, puck.getImagePositionX(), puck.getImagePositionY());
-            graphicsContext.drawImage(redBat.imageNode, redBat.getImagePositionX(), redBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
-            graphicsContext.drawImage(blueBat.imageNode, blueBat.getImagePositionX(), blueBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
-            graphicsContext.drawImage(greenBat.imageNode, greenBat.getImagePositionX(), greenBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
-        } else {
-            graphicsContext.drawImage(puck.imageNode, puck.getImagePositionX(), puck.getImagePositionY());
-            graphicsContext.drawImage(redBat.imageNode, redBat.getImagePositionX(), redBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
-            graphicsContext.drawImage(blueBat.imageNode, blueBat.getImagePositionX(), blueBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
-            graphicsContext.drawImage(greenBat.imageNode, greenBat.getImagePositionX(), greenBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
-        }
-
-        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        graphicsContext.strokeOval(centerPointX - 155.0, centerPointY - 40, 200, 200);
+        //Draw traingle sides
+        graphicsContext.strokeOval(centerPointX - 145.0, centerPointY - 6, 200, 200);
         graphicsContext.strokeLine(triangleLeft.positionXL - 22.0f, triangleLeft.positionYL + 12.0f, triangleLeft.positionXR - 22.0f, triangleLeft.positionYR + 12.0f);
         graphicsContext.strokeLine(triangle.positionXL - 22.0f, triangle.positionYL + 12.0f, triangle.positionXR - 22.0f, triangle.positionYR + 12.0f);
         graphicsContext.strokeLine(triangle.positionXC - 22.0f, triangle.positionYC + 12.0f, triangle.positionXR - 22.0f, triangle.positionYR + 12.0f);
+
+        //Draw Goals
+        graphicsContext.drawImage(redGoal.imageNode, redGoal.topLeftX - 22, redGoal.topLeftY + 10);
+        graphicsContext.drawImage(blueGoal.imageNode, blueGoal.topLeftX + 35, blueGoal.topLeftY - 110);
+        graphicsContext.drawImage(greenGoal.imageNode, greenGoal.topLeftX + 60, greenGoal.topLeftY - 120);
+
+        //Draw puck
+        graphicsContext.drawImage(puck.imageNode, puck.getImagePositionX(), puck.getImagePositionY());
+
+        //Draw Bats
+        graphicsContext.drawImage(redBat.imageNode, redBat.getImagePositionX(), redBat.getImagePositionY(), (redBat.diameter + 4f), (redBat.diameter + 4f));
+        graphicsContext.drawImage(blueBat.imageNode, blueBat.getImagePositionX(), blueBat.getImagePositionY(), (redBat.diameter + 4f), (redBat.diameter + 4f));
+        graphicsContext.drawImage(greenBat.imageNode, greenBat.getImagePositionX(), greenBat.getImagePositionY(), (redBat.diameter + 4f), (redBat.diameter + 4f));
     }
 
     protected void showPopupWindow(String message) {
@@ -352,22 +373,20 @@ class BaseRenderer implements IRenderer {
         chatBox.setItems(chatBoxData);
     }
 
-    protected void newRoundTransition(int round) {
-        roundNumberLabel.setText(Integer.toString(round));
+    protected void textEffectTransition(String text) {
+        Label textLabel = new Label();
+        textLabel.setText(text);
+        textLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        textLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
+        textLabel.relocate(460, 340);
 
-        Label roundLabel = new Label();
-        roundLabel.setText("Round " + round);
-        roundLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        roundLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
-        roundLabel.relocate(460, 340);
+        root.getChildren().add(textLabel);
 
-        root.getChildren().add(roundLabel);
-
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000), roundLabel);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000), textLabel);
         fadeTransition.setFromValue(1.0);
         fadeTransition.setToValue(0.0);
 
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(2000), roundLabel);
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(2000), textLabel);
         scaleTransition.setFromX(2f);
         scaleTransition.setFromY(2f);
         scaleTransition.setToX(8f);
@@ -383,32 +402,16 @@ class BaseRenderer implements IRenderer {
     }
 
     protected void createStaticItems() {
-        triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
-        triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
+        triangle = new TriangleLine(0, 4f, 5f, 81f, 5f, 45f, 95f);
+        triangleLeft = new TriangleLeftLine(0, 4f, 5f, 45f, 95f);
 
-        switch (playerNumber) {
-            case 2:
-                redGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_RED);
-                blueGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_BLUE);
-                greenGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_GREEN);
-                break;
-            case 3:
-                redGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_RED);
-                blueGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_BLUE);
-                greenGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_GREEN);
-                break;
-            default:
-                redGoal = new Goal(Goal.GOAL_BOTTOM, Constants.COLOR_RED);
-                blueGoal = new Goal(Goal.GOAL_LEFT, Constants.COLOR_BLUE);
-                greenGoal = new Goal(Goal.GOAL_RIGHT, Constants.COLOR_GREEN);
-                break;
-        }
+        redGoal = new Goal(Constants.COLOR_RED);
+        blueGoal = new Goal(Constants.COLOR_BLUE);
+        greenGoal = new Goal(Constants.COLOR_GREEN);
 
-        root.getChildren().add(triangle.node);
-        root.getChildren().add(triangleLeft.node);
-        root.getChildren().addAll(redGoal.node, redGoal.collisionNode);
-        root.getChildren().addAll(blueGoal.node, blueGoal.collisionNode);
-        root.getChildren().addAll(greenGoal.node, greenGoal.collisionNode);
+        root.getChildren().addAll(redGoal.collisionNode,
+                blueGoal.collisionNode,
+                greenGoal.collisionNode);
     }
 
     protected void correctPuckSpeed() {
@@ -461,41 +464,45 @@ class BaseRenderer implements IRenderer {
 
     @Override
     public void resetRound(int round) {
-        //Implemented in child cass.    
+        //Implemented in child class.    
     }
 
     @Override
     public void setPuckLocation(int x, int y) {
-        //Implemented in child cass.
+        //Implemented in child class.
     }
 
     @Override
     public void setRedBatLocation(int x, int y) {
-        //Implemented in child cass.
+        //Implemented in child class.
     }
 
     @Override
     public void setBlueBatLocation(int x, int y) {
-        //Implemented in child cass.
+        //Implemented in child class.
     }
 
     @Override
     public void setGreenBatLocation(int x, int y) {
-        //Implemented in child cass.
+        //Implemented in child class.
     }
 
     @Override
     public void setGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore) {
-        //Implemented in child cass.
+        //Implemented in child class.
     }
 
     @Override
     public void setUpGame(String p1Name, String p2Name, String p3Name) {
-        //Implemented in child cass.
+        //Implemented in child class.
     }
 
     @Override
     public void moveClientBat(int playerNumber, int direction) {
-        //Implemented in child cass.
+        //Implemented in child class.
+    }
+
+    public void startGameTimer() {
+        //Implemented in child class.
     }
 }

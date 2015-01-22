@@ -1,14 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Airhockey.Connection;
 
-import Airhockey.Main.ChatboxLine;
 import Airhockey.Main.Lobby;
 import javafx.application.Platform;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -51,7 +44,7 @@ public class LobbyDecoder {
 
                     int i = 1;
                     while (!splitter[i].equals(Protocol.PROTOCOL_ENDER)) {
-                        System.out.println("lobbyDecoder finds:" + splitter[i] + splitter[i+1] + splitter[i+2]);
+                        System.out.println("lobbyDecoder finds:" + splitter[i] + splitter[i + 1] + splitter[i + 2]);
                         lobby.remoteChatboxUpdate(splitter[i], splitter[++i]);
                         i++;
 

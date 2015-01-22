@@ -1,6 +1,5 @@
 package Airhockey.Elements;
 
-import Airhockey.Renderer.LinePoints;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -36,9 +35,9 @@ public class TriangleLeftLine {
         this.enginePositionXR = positionXR;
         this.enginePositionYR = positionYR;
 
-        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 34;
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 44;
         this.positionYL = Utils.toPixelPosY(enginePositionYL) - 37;
-        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 28;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 38;
         this.positionYR = Utils.toPixelPosY(enginePositionYR) - 32;
 
         node = create();

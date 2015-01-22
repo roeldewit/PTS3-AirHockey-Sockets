@@ -42,11 +42,11 @@ public class TriangleLine {
         this.enginePositionXC = positionXC;
         this.enginePositionYC = positionYC;
 
-        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 35;
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 47;
         this.positionYL = Utils.toPixelPosY(enginePositionYL) - 36;
-        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 21;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 45;
         this.positionYR = Utils.toPixelPosY(enginePositionYR) - 36;
-        this.positionXC = Utils.toPixelPosX(enginePositionXC) + 28;
+        this.positionXC = Utils.toPixelPosX(enginePositionXC) + 39;
         this.positionYC = Utils.toPixelPosY(enginePositionYC) - 32;
 
         node = createLinePieceAB();
@@ -58,11 +58,11 @@ public class TriangleLine {
         Vec2 VecC = new Vec2(enginePositionXC, enginePositionYC);
         Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecC};
 
-        Line bottom = new Line(Utils.toPixelPosX(enginePositionXL) + 35, Utils.toPixelPosY(enginePositionYL) - 36, Utils.toPixelPosX(enginePositionXR) + 21, Utils.toPixelPosY(enginePositionYR) - 36);
+        Line bottom = new Line(positionXL, positionYL, positionXR, positionYR);
         bottom.setStroke(Color.BLACK);
         bottom.setStrokeWidth(3.0);
 
-        Line right = new Line(Utils.toPixelPosX(enginePositionXC) + 28, Utils.toPixelPosY(enginePositionYC) - 32, Utils.toPixelPosX(enginePositionXR) + 22, Utils.toPixelPosY(enginePositionYR) - 37);
+        Line right = new Line(positionXC, positionYC, positionXR, positionYR);
         right.setStroke(Color.BLACK);
         right.setStrokeWidth(3.0);
 

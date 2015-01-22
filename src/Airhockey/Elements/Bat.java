@@ -49,7 +49,7 @@ public class Bat {
     private Node create() {
         Circle bat = new Circle();
         bat.setRadius(radius);
-        bat.setFill(Color.BLACK);
+        bat.setFill(Color.TRANSPARENT);
 
         bat.setLayoutX(Utils.toPixelPosX(positionX));
         bat.setLayoutY(Utils.toPixelPosY(positionY));

@@ -48,6 +48,7 @@ public class Renderer extends BaseRenderer {
     private boolean canImpulsPuck = true;
     private boolean canCorrectPuckSpeed = true;
     private boolean canUpdate;
+    private boolean canMoveItems;
 
     private final BatController batController;
     private Timeline timeline;
@@ -99,7 +100,7 @@ public class Renderer extends BaseRenderer {
 
         PropertiesManager.saveProperty("REB-Difficulty", "HARD");
 
-        super.drawShapes();
+        drawShapes();
         createStaticItems();
         createMovableItems();
         linkPlayersToBats();
@@ -108,7 +109,14 @@ public class Renderer extends BaseRenderer {
         canUpdate = true;
         timeline.playFromStart();
 
+        startCountDown();
+
         //createOtherItems();
+    }
+
+    @Override
+    public void startGameTimer() {
+        canMoveItems = true;
     }
 
     private void linkPlayersToBats() {
@@ -148,15 +156,25 @@ public class Renderer extends BaseRenderer {
         if (batBody != null) {
             redBat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
         } else {
-            redBat = new Bat(50f, 15f, Constants.COLOR_RED);
+            redBat = new Bat(48f, 15f, Constants.COLOR_RED);
         }
-        blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
-        greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
-        root.getChildren().addAll(puck.node);
-        root.getChildren().addAll(redBat.node);
-        root.getChildren().addAll(blueBat.node);
-        root.getChildren().addAll(greenBat.node);
+        if (leftBatBody != null) {
+            blueBat = new LeftBat(leftBatBody.getPosition().x, leftBatBody.getPosition().y, Constants.COLOR_BLUE);
+        } else {
+            blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
+        }
+
+        if (rightBatBody != null) {
+            greenBat = new RightBat(rightBatBody.getPosition().x, rightBatBody.getPosition().y, Constants.COLOR_GREEN);
+        } else {
+            greenBat = new RightBat(64.5f, 50f, Constants.COLOR_GREEN);
+        }
+
+        root.getChildren().addAll(puck.node,
+                redBat.node,
+                blueBat.node,
+                greenBat.node);
 
         puckShape = (Shape) puck.node;
 
@@ -172,7 +190,6 @@ public class Renderer extends BaseRenderer {
     @Override
     protected void createStaticItems() {
         super.createStaticItems();
-
         redGoalShape = (Shape) redGoal.collisionNode;
         blueGoalShape = (Shape) blueGoal.collisionNode;
         greenGoalShape = (Shape) greenGoal.collisionNode;
@@ -190,13 +207,10 @@ public class Renderer extends BaseRenderer {
 
         if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
             game.setGoal(lastHittedBat, redBat, encoder);
-            System.out.println("GOALMADE");
         } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
             game.setGoal(lastHittedBat, blueBat, encoder);
-            System.out.println("GOALMADE");
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
             game.setGoal(lastHittedBat, greenBat, encoder);
-            System.out.println("GOALMADE");
         }
     }
 
@@ -208,11 +222,15 @@ public class Renderer extends BaseRenderer {
         @Override
         public void handle(ActionEvent event) {
             //Create time step. Set Iteration count 8 for velocity and 3 for positions
-            if (!threadPool.isShutdown()) {
-                //Utils.world.step(1.0f / 40.f, 8, 3);
-                Utils.world.step(1.0f / 80.f, 16, 3);
+            if (canMoveItems) {
+                if (!threadPool.isShutdown()) {
+                    Utils.world.step(1.0f / 40.f, 8, 3);
+                    //Utils.world.step(1.0f / 80.f, 16, 3);
 
-                threadPool.execute(new CalulationTask());
+                    threadPool.execute(new CalulationTask());
+                }
+            } else {
+                updateFrame();
             }
         }
     }
@@ -299,12 +317,12 @@ public class Renderer extends BaseRenderer {
 
             batController.controlCenterBat(batBodyPosX);
 
-            if (false) {
+            if (isMultiplayer) {
                 batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
                 batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
             } else {
                 moveLeftAIBat(puckBodyPosY);
-                moveAIEnemyBat(puckBodyPosY);
+                moveRightAIEnemyBat(puckBodyPosY);
             }
 
             updateFrame();
@@ -346,11 +364,11 @@ public class Renderer extends BaseRenderer {
 
         blueBat.stop();
         if (puckBodyPosY > leftAIBatPositionY) {
-            if (leftAIBatPositionY < Constants.BAT_MIN_Y) {
+            if (leftAIBatPositionY < Constants.SIDE_BAT_MIN_Y) {
                 blueBat.moveDown(puckBody);
             }
         } else if (puckBodyPosY < leftAIBatPositionY) {
-            if (leftAIBatPositionY > Constants.BAT_MAX_Y) {
+            if (leftAIBatPositionY > Constants.SIDE_BAT_MAX_Y) {
                 blueBat.moveUp(puckBody);
             }
         }
@@ -363,17 +381,17 @@ public class Renderer extends BaseRenderer {
      *
      * @param puckBodyPosY the y-coordinate of the puck
      */
-    private void moveAIEnemyBat(float puckBodyPosY) {
+    private void moveRightAIEnemyBat(float puckBodyPosY) {
         Body rightAIBatBody = (Body) greenBat.node.getUserData();
         float rightAIBatPositionY = Utils.toPixelPosY(rightAIBatBody.getPosition().y);
 
         greenBat.stop();
         if (puckBodyPosY - 5 > rightAIBatPositionY + 5) {
-            if (rightAIBatPositionY < Constants.BAT_MIN_Y) {
+            if (rightAIBatPositionY < Constants.SIDE_BAT_MIN_Y) {
                 greenBat.moveDown(puckBody);
             }
         } else if (puckBodyPosY + 5 < rightAIBatPositionY - 5) {
-            if (rightAIBatPositionY > Constants.BAT_MAX_Y) {
+            if (rightAIBatPositionY > Constants.SIDE_BAT_MAX_Y) {
                 greenBat.moveUp(puckBody);
             }
         }
@@ -396,12 +414,13 @@ public class Renderer extends BaseRenderer {
         Utils.world.destroyBody(blueBat.getBody());
         Utils.world.destroyBody(greenBat.getBody());
 
-        root.getChildren().removeAll(puck.node);
-        root.getChildren().removeAll(redBat.node);
-        root.getChildren().removeAll(blueBat.node);
-        root.getChildren().removeAll(greenBat.node);
+        root.getChildren().removeAll(puck.node,
+                redBat.node,
+                blueBat.node,
+                greenBat.node);
 
-        newRoundTransition(round);
+        roundNumberLabel.setText(String.valueOf(round));
+        textEffectTransition("Round " + round);
 
         createMovableItems();
         linkPlayersToBats();
@@ -412,11 +431,12 @@ public class Renderer extends BaseRenderer {
     /**
      * Displays an animation with the number of the new round.
      *
+     * @param text
      * @param round The number of the new round.
      */
     @Override
-    protected void newRoundTransition(int round) {
-        super.newRoundTransition(round);
+    protected void textEffectTransition(String text) {
+        super.textEffectTransition(text);
         parallelTransition.setOnFinished(new OnAnimationCompletionListener());
     }
 

@@ -51,16 +51,6 @@ public class Encoder {
         sendCommand(command);
     }
 
-    public void sendClientBatMovementDirection(int playerNumber, int direction) {
-        String command = Protocol.CLIENT_BAT_MOVEMENT_DIRECTION
-                + Protocol.SEPERATOR
-                + playerNumber
-                + Protocol.SEPERATOR
-                + direction;
-
-        sendCommand(command);
-    }
-
     public synchronized void sendGoalMade(int newRound, int scorer, int scorerScore, int against, int againstScore) {
         String command = Protocol.GOAL_MADE
                 + Protocol.SEPERATOR
@@ -141,6 +131,16 @@ public class Encoder {
         String command = Protocol.CLIENT_LEAVING_GAME
                 + Protocol.SEPERATOR
                 + playerNumber;
+
+        sendCommand(command);
+    }
+
+    public void sendClientBatMovementDirection(int playerNumber, int direction) {
+        String command = Protocol.CLIENT_BAT_MOVEMENT_DIRECTION
+                + Protocol.SEPERATOR
+                + playerNumber
+                + Protocol.SEPERATOR
+                + direction;
 
         sendCommand(command);
     }
