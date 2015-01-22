@@ -1,11 +1,9 @@
 package Airhockey.Elements;
 
-import Airhockey.Renderer.Constants;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -22,10 +20,10 @@ import org.jbox2d.dynamics.FixtureDef;
 public class Puck {
 
     public Node node;
-    public Node imageNode;
+    public Image imageNode;
 
-    private final float positionX = 50;
-    private final float positionY = 42;
+    private float positionX = 50;
+    private float positionY = 42;
 
     private float radius = 25f;
 
@@ -75,23 +73,42 @@ public class Puck {
         return puck;
     }
 
-    private Node createImageNode() {
+    private Image createImageNode() {
         Image image = new Image(getClass().getResourceAsStream("Images/Puck.png"), radius * 2f, radius * 2f, false, false);
 
-        ImageView imageView = new ImageView(image);
-        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-        return imageView;
+//        ImageView imageView = new ImageView(image);
+//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
+        //return imageView;
+        return image;
     }
 
+//    private Node createImageNode() {
+//        Image image = new Image(getClass().getResourceAsStream("Images/Puck.png"), radius * 2f, radius * 2f, false, false);
+//
+//        ImageView imageView = new ImageView(image);
+//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
+//        return imageView;
+//    }
     public void setPosition(float xPosition, float yPosition) {
         node.setLayoutX(xPosition);
         node.setLayoutY(yPosition);
-        imageNode.setLayoutX(xPosition - radius);
-        imageNode.setLayoutY(yPosition - radius);
+        //imageNode.setLayoutX(xPosition - radius);
+        //imageNode.setLayoutY(yPosition - radius);
+
+        positionX = xPosition;
+        positionY = yPosition;
     }
 
     public Fixture getFixture() {
         return body.getFixtureList();
+    }
+
+    public float getImagePositionX() {
+        return positionX - (radius * 2.0f);
+    }
+
+    public float getImagePositionY() {
+        return positionY - radius + 10f;
     }
 
 }

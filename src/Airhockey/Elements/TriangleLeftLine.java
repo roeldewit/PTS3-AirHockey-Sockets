@@ -1,5 +1,6 @@
 package Airhockey.Elements;
 
+import Airhockey.Renderer.LinePoints;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -19,26 +20,36 @@ public class TriangleLeftLine {
 
     public Node node;
 
-    private final float positionXL;
-    private final float positionYL;
-    private final float positionXR;
-    private final float positionYR;
+    private final float enginePositionXL;
+    private final float enginePositionYL;
+    private final float enginePositionXR;
+    private final float enginePositionYR;
+
+    public final float positionXL;
+    public final float positionYL;
+    public final float positionXR;
+    public final float positionYR;
 
     public TriangleLeftLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR) {
-        this.positionXL = positionXL;
-        this.positionYL = positionYL;
-        this.positionXR = positionXR;
-        this.positionYR = positionYR;
+        this.enginePositionXL = positionXL;
+        this.enginePositionYL = positionYL;
+        this.enginePositionXR = positionXR;
+        this.enginePositionYR = positionYR;
+
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 34;
+        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 37;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 28;
+        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 32;
 
         node = create();
     }
 
     private Node create() {
-        Vec2 VecL = new Vec2(positionXL, positionYL);
-        Vec2 VecR = new Vec2(positionXR, positionYR);
+        Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
+        Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
         Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecL, VecR};
 
-        Line left = new Line(Utils.toPixelPosX(positionXL) + 34, Utils.toPixelPosY(positionYL) - 37, Utils.toPixelPosX(positionXR) + 28, Utils.toPixelPosY(positionYR) - 32);
+        Line left = new Line(positionXL, positionYL, positionXR, positionYR);
         left.setStroke(Color.BLACK);
         left.setStrokeWidth(3.0);
 
@@ -64,6 +75,5 @@ public class TriangleLeftLine {
         Body body = Utils.world.createBody(bd);
         body.createFixture(fd);
     }
-
 
 }

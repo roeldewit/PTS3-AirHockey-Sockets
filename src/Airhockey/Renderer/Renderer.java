@@ -60,7 +60,10 @@ public class Renderer extends BaseRenderer {
         this.threadPool = Executors.newCachedThreadPool();
 
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
-            game.leaveGame();
+            if (isMultiplayer) {
+                game.leaveGame();
+            }
+
             shutDown();
             super.leave();
         });
@@ -80,10 +83,6 @@ public class Renderer extends BaseRenderer {
         super.start(encoder, playerNumber);
 
         primaryStage.setTitle("Airhockey");
-        primaryStage.setOnCloseRequest((WindowEvent windowEvent) -> {
-            shutDown();
-            primaryStage.close();
-        });
 
         KeyListener keyListener = new KeyListener(batController, playerNumber, encoder);
         mainRoot.setOnKeyPressed(keyListener);
@@ -104,7 +103,12 @@ public class Renderer extends BaseRenderer {
         createStaticItems();
         createMovableItems();
         linkPlayersToBats();
-        createOtherItems();
+        super.createOtherItems();
+
+        canUpdate = true;
+        timeline.playFromStart();
+
+        //createOtherItems();
     }
 
     private void linkPlayersToBats() {
@@ -118,8 +122,10 @@ public class Renderer extends BaseRenderer {
         super.createOtherItems();
 
         startButton = new Button();
-        startButton.setLayoutX(30);
-        startButton.setLayoutY((45));
+//        startButton.setLayoutX(30);
+//        startButton.setLayoutY((45));
+        startButton.setLayoutX(970);
+        startButton.setLayoutY((100));
         startButton.setText("Start");
         startButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 2,2,1,1 );");
         startButton.setOnAction((ActionEvent event) -> {
@@ -147,10 +153,10 @@ public class Renderer extends BaseRenderer {
         blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
         greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
-        root.getChildren().addAll(puck.node, puck.imageNode);
-        root.getChildren().addAll(redBat.node, redBat.imageNode);
-        root.getChildren().addAll(blueBat.node, blueBat.imageNode);
-        root.getChildren().addAll(greenBat.node, greenBat.imageNode);
+        root.getChildren().addAll(puck.node);
+        root.getChildren().addAll(redBat.node);
+        root.getChildren().addAll(blueBat.node);
+        root.getChildren().addAll(greenBat.node);
 
         puckShape = (Shape) puck.node;
 
@@ -184,10 +190,13 @@ public class Renderer extends BaseRenderer {
 
         if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
             game.setGoal(lastHittedBat, redBat, encoder);
+            System.out.println("GOALMADE");
         } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
             game.setGoal(lastHittedBat, blueBat, encoder);
+            System.out.println("GOALMADE");
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, blueBat, encoder);
+            game.setGoal(lastHittedBat, greenBat, encoder);
+            System.out.println("GOALMADE");
         }
     }
 
@@ -200,7 +209,8 @@ public class Renderer extends BaseRenderer {
         public void handle(ActionEvent event) {
             //Create time step. Set Iteration count 8 for velocity and 3 for positions
             if (!threadPool.isShutdown()) {
-                Utils.world.step(1.0f / 40.f, 8, 3);
+                //Utils.world.step(1.0f / 40.f, 8, 3);
+                Utils.world.step(1.0f / 80.f, 16, 3);
 
                 threadPool.execute(new CalulationTask());
             }
@@ -296,6 +306,8 @@ public class Renderer extends BaseRenderer {
                 moveLeftAIBat(puckBodyPosY);
                 moveAIEnemyBat(puckBodyPosY);
             }
+
+            updateFrame();
         }
     }
 
@@ -384,10 +396,10 @@ public class Renderer extends BaseRenderer {
         Utils.world.destroyBody(blueBat.getBody());
         Utils.world.destroyBody(greenBat.getBody());
 
-        root.getChildren().removeAll(puck.node, puck.imageNode);
-        root.getChildren().removeAll(redBat.node, redBat.imageNode);
-        root.getChildren().removeAll(blueBat.node, blueBat.imageNode);
-        root.getChildren().removeAll(greenBat.node, greenBat.imageNode);
+        root.getChildren().removeAll(puck.node);
+        root.getChildren().removeAll(redBat.node);
+        root.getChildren().removeAll(blueBat.node);
+        root.getChildren().removeAll(greenBat.node);
 
         newRoundTransition(round);
 

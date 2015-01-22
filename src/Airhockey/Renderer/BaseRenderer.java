@@ -80,8 +80,14 @@ class BaseRenderer implements IRenderer {
 
     protected Encoder encoder;
 
+    protected GraphicsContext graphicsContext;
+    private Canvas canvas;
+
     protected ParallelTransition parallelTransition;
     private ObservableList<String> chatBoxData;
+
+    double centerPointX;
+    double centerPointY;
 
     public BaseRenderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
@@ -211,20 +217,61 @@ class BaseRenderer implements IRenderer {
     }
 
     protected void drawShapes() {
-        Canvas canvas = new Canvas(Utils.WIDTH, Utils.HEIGHT);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        root.getChildren().add(canvas);
+        canvas = new Canvas(870, 740);
+        playerNumber = 2;
 
-        double centerPointX = Utils.WIDTH / 2;
-        double centerPointY = Utils.HEIGHT / 2;
+        double rotation = 0;
+        if (playerNumber == 1) {
+            //canvas.relocate(0.0, 0.0);
+        } else if (playerNumber == 2) {
+            canvas.relocate(15.0, 165.0);
+            rotation = canvas.getRotate() - 120.0;
+        } else if (playerNumber == 3) {
+            //canvas.relocate(896.0, 100.0);
+            canvas.relocate(145.0, 75.0);
+            rotation = canvas.getRotate() + 120.0;
+        }
 
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(3);
-        gc.strokeOval(centerPointX - 100, centerPointY - 40, 200, 200);
+        System.out.println("ROTATION: " + rotation);
+        canvas.setRotate(rotation);
 
-//        RenderUtilities r = new RenderUtilities(triangle);
+        graphicsContext = canvas.getGraphicsContext2D();
+        mainRoot.getChildren().add(canvas);
+
+        centerPointX = Utils.WIDTH / 2;
+        centerPointY = Utils.HEIGHT / 2;
+
+        graphicsContext.setFill(Color.WHITE);
+        //graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.setLineWidth(3);
+        graphicsContext.strokeOval(centerPointX - 120.0, centerPointY - 40, 200, 200);
+        //gc.strokeRect(centerPointX, centerPointY, 200, 200);
+        //gc.drawImage(null, rotation, rotation);
 //        r.drawLine(gc);
         //gc.strokeArc(600, 200, 100, 300, 140, 180, ArcType.ROUND);
+    }
+
+    protected void updateFrame() {
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        if (playerNumber == 1) {
+            graphicsContext.drawImage(puck.imageNode, puck.getImagePositionX(), puck.getImagePositionY());
+            graphicsContext.drawImage(redBat.imageNode, redBat.getImagePositionX(), redBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
+            graphicsContext.drawImage(blueBat.imageNode, blueBat.getImagePositionX(), blueBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
+            graphicsContext.drawImage(greenBat.imageNode, greenBat.getImagePositionX(), greenBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
+        } else {
+            graphicsContext.drawImage(puck.imageNode, puck.getImagePositionX(), puck.getImagePositionY());
+            graphicsContext.drawImage(redBat.imageNode, redBat.getImagePositionX(), redBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
+            graphicsContext.drawImage(blueBat.imageNode, blueBat.getImagePositionX(), blueBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
+            graphicsContext.drawImage(greenBat.imageNode, greenBat.getImagePositionX(), greenBat.getImagePositionY(), (redBat.diameter + 8f), (redBat.diameter + 8f));
+        }
+
+        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext.strokeOval(centerPointX - 155.0, centerPointY - 40, 200, 200);
+        graphicsContext.strokeLine(triangleLeft.positionXL - 22.0f, triangleLeft.positionYL + 12.0f, triangleLeft.positionXR - 22.0f, triangleLeft.positionYR + 12.0f);
+        graphicsContext.strokeLine(triangle.positionXL - 22.0f, triangle.positionYL + 12.0f, triangle.positionXR - 22.0f, triangle.positionYR + 12.0f);
+        graphicsContext.strokeLine(triangle.positionXC - 22.0f, triangle.positionYC + 12.0f, triangle.positionXR - 22.0f, triangle.positionYR + 12.0f);
     }
 
     protected void showPopupWindow(String message) {
@@ -359,9 +406,9 @@ class BaseRenderer implements IRenderer {
 
         root.getChildren().add(triangle.node);
         root.getChildren().add(triangleLeft.node);
-        root.getChildren().addAll(redGoal.node);
-        root.getChildren().addAll(blueGoal.node);
-        root.getChildren().addAll(greenGoal.node);
+        root.getChildren().addAll(redGoal.node, redGoal.collisionNode);
+        root.getChildren().addAll(blueGoal.node, blueGoal.collisionNode);
+        root.getChildren().addAll(greenGoal.node, greenGoal.collisionNode);
     }
 
     protected void correctPuckSpeed() {

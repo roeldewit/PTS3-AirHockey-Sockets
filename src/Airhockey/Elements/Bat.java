@@ -5,7 +5,6 @@ import Airhockey.User.Player;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -24,14 +23,14 @@ public class Bat {
     private Player player;
     private final String type;
 
-    protected final float positionX;
-    protected final float positionY;
+    protected float positionX;
+    protected float positionY;
 
-    protected final float diameter;
+    public final float diameter;
     protected final float radius;
 
     public Node node;
-    public Node imageNode;
+    public Image imageNode;
 
     private final BodyType bodyType;
     private Body body;
@@ -50,7 +49,7 @@ public class Bat {
     private Node create() {
         Circle bat = new Circle();
         bat.setRadius(radius);
-        bat.setFill(Color.TRANSPARENT);
+        bat.setFill(Color.BLACK);
 
         bat.setLayoutX(Utils.toPixelPosX(positionX));
         bat.setLayoutY(Utils.toPixelPosY(positionY));
@@ -75,7 +74,24 @@ public class Bat {
         return bat;
     }
 
-    private Node createImageNode() {
+//    private Node createImageNode() {
+//        Image image;
+//        switch (type) {
+//            case Constants.COLOR_RED:
+//                image = new Image(getClass().getResourceAsStream("Images/RedBat.png"), diameter, diameter, false, false);
+//                break;
+//            case Constants.COLOR_BLUE:
+//                image = new Image(getClass().getResourceAsStream("Images/LightBlueBat.png"), diameter, diameter, false, false);
+//                break;
+//            default:
+//                image = new Image(getClass().getResourceAsStream("Images/GreenBat.png"), diameter, diameter, false, false);
+//                break;
+//        }
+//        ImageView imageView = new ImageView(image);
+//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
+//        return imageView;
+//    }
+    private Image createImageNode() {
         Image image;
         switch (type) {
             case Constants.COLOR_RED:
@@ -88,16 +104,19 @@ public class Bat {
                 image = new Image(getClass().getResourceAsStream("Images/GreenBat.png"), diameter, diameter, false, false);
                 break;
         }
-        ImageView imageView = new ImageView(image);
-        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-        return imageView;
+//        ImageView imageView = new ImageView(image);
+//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
+        return image;
     }
 
     public void setPosition(float xPosition, float yPosition) {
         node.setLayoutX(xPosition);
         node.setLayoutY(yPosition);
-        imageNode.setLayoutX(xPosition - radius);
-        imageNode.setLayoutY(yPosition - radius);
+        //imageNode.setLayoutX(xPosition - radius);
+        //imageNode.setLayoutY(yPosition - radius);
+
+        positionX = xPosition;
+        positionY = yPosition;
     }
 
     public float getPositionX() {
@@ -106,6 +125,14 @@ public class Bat {
 
     public float getPositionY() {
         return positionY;
+    }
+
+    public double getImagePositionX() {
+        return positionX - radius - 28f;
+    }
+
+    public float getImagePositionY() {
+        return positionY - radius + 7f;
     }
 
     public Fixture getFixture() {

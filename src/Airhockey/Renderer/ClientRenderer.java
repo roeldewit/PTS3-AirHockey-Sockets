@@ -54,7 +54,7 @@ public final class ClientRenderer extends BaseRenderer {
 
     private void createMovableItems(boolean itemsAlreadyOnScreen) {
         puck = new Puck();
-        root.getChildren().addAll(puck.node, puck.imageNode);
+        root.getChildren().addAll(puck.node);
 
         if (!itemsAlreadyOnScreen) {
             redBat = new Bat(50f, 15f, Constants.COLOR_RED);
@@ -62,9 +62,9 @@ public final class ClientRenderer extends BaseRenderer {
             blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
             greenBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
-            root.getChildren().addAll(redBat.node, redBat.imageNode);
-            root.getChildren().addAll(blueBat.node, blueBat.imageNode);
-            root.getChildren().addAll(greenBat.node, greenBat.imageNode);
+            root.getChildren().addAll(redBat.node);
+            root.getChildren().addAll(blueBat.node);
+            root.getChildren().addAll(greenBat.node);
         }
     }
 
@@ -125,7 +125,7 @@ public final class ClientRenderer extends BaseRenderer {
 
     @Override
     public void resetRound(int round) {
-        root.getChildren().removeAll(puck.node, puck.imageNode);
+        root.getChildren().removeAll(puck.node);
         newRoundTransition(round);
         createMovableItems(true);
     }

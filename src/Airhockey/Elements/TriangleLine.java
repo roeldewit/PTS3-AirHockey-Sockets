@@ -18,37 +18,51 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class TriangleLine {
 
-    private final float positionXL;
-    private final float positionYL;
-    private final float positionXR;
-    private final float positionYR;
-    private final float positionXC;
-    private final float positionYC;
+    private final float enginePositionXL;
+    private final float enginePositionYL;
+    private final float enginePositionXR;
+    private final float enginePositionYR;
+    private final float enginePositionXC;
+    private final float enginePositionYC;
+
+    public final float positionXL;
+    public final float positionYL;
+    public final float positionXR;
+    public final float positionYR;
+    public final float positionXC;
+    public final float positionYC;
 
     public Node node;
 
     public TriangleLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR, float positionXC, float positionYC) {
-        this.positionXL = positionXL;
-        this.positionYL = positionYL;
-        this.positionXR = positionXR;
-        this.positionYR = positionYR;
-        this.positionXC = positionXC;
-        this.positionYC = positionYC;
+        this.enginePositionXL = positionXL;
+        this.enginePositionYL = positionYL;
+        this.enginePositionXR = positionXR;
+        this.enginePositionYR = positionYR;
+        this.enginePositionXC = positionXC;
+        this.enginePositionYC = positionYC;
+
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 35;
+        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 36;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 21;
+        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 36;
+        this.positionXC = Utils.toPixelPosX(enginePositionXC) + 28;
+        this.positionYC = Utils.toPixelPosY(enginePositionYC) - 32;
 
         node = createLinePieceAB();
     }
 
     private Node createLinePieceAB() {
-        Vec2 VecL = new Vec2(positionXL, positionYL);
-        Vec2 VecR = new Vec2(positionXR, positionYR);
-        Vec2 VecC = new Vec2(positionXC, positionYC);
+        Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
+        Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
+        Vec2 VecC = new Vec2(enginePositionXC, enginePositionYC);
         Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecC};
 
-        Line bottom = new Line(Utils.toPixelPosX(positionXL) + 35, Utils.toPixelPosY(positionYL) - 36, Utils.toPixelPosX(positionXR) + 21, Utils.toPixelPosY(positionYR) - 36);
+        Line bottom = new Line(Utils.toPixelPosX(enginePositionXL) + 35, Utils.toPixelPosY(enginePositionYL) - 36, Utils.toPixelPosX(enginePositionXR) + 21, Utils.toPixelPosY(enginePositionYR) - 36);
         bottom.setStroke(Color.BLACK);
         bottom.setStrokeWidth(3.0);
 
-        Line right = new Line(Utils.toPixelPosX(positionXC) + 28, Utils.toPixelPosY(positionYC) - 32, Utils.toPixelPosX(positionXR) + 22, Utils.toPixelPosY(positionYR) - 37);
+        Line right = new Line(Utils.toPixelPosX(enginePositionXC) + 28, Utils.toPixelPosY(enginePositionYC) - 32, Utils.toPixelPosX(enginePositionXR) + 22, Utils.toPixelPosY(enginePositionYR) - 37);
         right.setStroke(Color.BLACK);
         right.setStrokeWidth(3.0);
 
@@ -79,18 +93,18 @@ public class TriangleLine {
     }
 
     public int getCenterTopY() {
-        return (int) Utils.toPixelPosY(positionYC) - 32;
+        return (int) Utils.toPixelPosY(enginePositionYC) - 32;
     }
 
     public int getBottomLeftY() {
-        return (int) Utils.toPixelPosY(positionYL) - 36;
+        return (int) Utils.toPixelPosY(enginePositionYL) - 36;
     }
 
     public int getBottomLeftX() {
-        return (int) Utils.toPixelPosX(positionXL) + 35;
+        return (int) Utils.toPixelPosX(enginePositionXL) + 35;
     }
 
     public int getBottomRightX() {
-        return (int) Utils.toPixelPosX(positionXR) + 22;
+        return (int) Utils.toPixelPosX(enginePositionXR) + 22;
     }
 }
