@@ -39,7 +39,7 @@ public class LobbyDecoder {
             case Protocol.GAME_ID:
                 Platform.runLater(() -> {
                     // game_id can be used for retrieving the game on mainServer
-                    int gameId = Integer.parseInt(splitter[1]);
+                    lobby.setGameId(Integer.parseInt(splitter[1]));
                 });
                 break;
 
@@ -77,7 +77,7 @@ public class LobbyDecoder {
                         int description = ++i;
                         int amoundOfPlayers = ++i;
                         int hostIP = ++i;
-                        lobby.addWaitingGame(Integer.parseInt(splitter[ID]), splitter[description], splitter[amoundOfPlayers], splitter[hostIP]);
+                        lobby.remoteUpdateWaitingGame(Integer.parseInt(splitter[ID]), splitter[description], splitter[amoundOfPlayers], splitter[hostIP]);
                         i++;
                     }
                 });

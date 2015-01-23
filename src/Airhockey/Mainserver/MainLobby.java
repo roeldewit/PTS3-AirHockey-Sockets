@@ -123,6 +123,8 @@ public class MainLobby {
     public void addNewWaitingGame(String description, String ipHost, String username, IConnectionManager connectionManager) {
         SerializableGame serializableGame = new SerializableGame(nextGameID, description, ipHost, username);
 
+        encoder.sendGameID(nextGameID, connectionManager);
+
         nextGameID++;
 
         waitingGames.add(serializableGame);

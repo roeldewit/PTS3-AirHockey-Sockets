@@ -77,13 +77,12 @@ public class LobbyController implements Initializable {
     }
 
     public void startGame() {
-        gameItems.add(tfDescription.getText());
-        lvOpenGames.setItems(gameItems);
+        lobby.addWaitingGame(tfDescription.getText());
 
 //        primaryStage = (Stage) btStartGame.getScene().getWindow();
 //        primaryStage.close();
-        try {
-            User user = database.getUser("TestUser5");
+//        try {
+//            User user = database.getUser("TestUser5");
             ArrayList<Player> playerList = new ArrayList();
             Player player = new Player(0, user);
             playerList.add(player);
@@ -92,9 +91,9 @@ public class LobbyController implements Initializable {
             //Game g = new Game(primaryStage, false, false);
             //Game multiGame = new Game(primaryStage, playerList, new ArrayList());
             //showPopupWindow("Under Construction", "Return to Lobby");
-        } catch (IOException | SQLException ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        } catch (IOException | SQLException ex) {
+//            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     public void chatboxSend() {

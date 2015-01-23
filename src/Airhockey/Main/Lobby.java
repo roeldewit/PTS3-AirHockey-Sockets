@@ -49,6 +49,8 @@ public class Lobby {
     private LobbyController lobbyController;
 
     private User user;
+    
+    private int gameID;
 
     public Lobby(Stage primaryStage, User user) throws NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
@@ -70,6 +72,14 @@ public class Lobby {
 
         initialSetUpLobby();
         chatbox = new Chatbox();
+        
+        this.gameID = -1;
+    }
+    
+    public void setGameId(int gameID){
+        if (this.gameID == -1) {
+            this.gameID = gameID;
+        }
     }
 
     public ArrayList<User> getUsers() {
@@ -116,10 +126,21 @@ public class Lobby {
         lobbyController.updateGameList(description, id + "");
     }
 
-    public void addWaitingGame(int id, String description, String portIP, String username) {
-        //SerializableGame serializableGame = new SerializableGame(id, description, portIP, username);
-
-        //games.add(serializableGame);
+    public int addWaitingGame(String description) {
+        String iphost = "localhost";
+        
+        encoder.createNewWaitingGame(description, iphost, this.user.getUsername());
+        
+        while(gameID == -1){
+            try {
+                // waiting from response from the server
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return gameID;
     }
 
     private void LobbySetUp(Stage primaryStage) {
