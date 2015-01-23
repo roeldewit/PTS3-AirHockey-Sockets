@@ -6,9 +6,11 @@ package Airhockey.Renderer;
  */
 public class Constants {
 
-    protected static final int BAT_MAX_Y = 260;
-    protected static final int BAT_MIN_Y = 480;
+    protected static final int SIDE_BAT_MAX_Y = 270;
+    protected static final int SIDE_BAT_MIN_Y = 490;
     protected static final int CENTER_BAT_Y = 652;
+    protected static final int CENTER_BAT_MAX_Y = 620;
+    protected static final int CENTER_BAT_MIN_Y = 360;
 
     public static final float BAT_RADIUS = 40;
 
@@ -25,8 +27,4 @@ public class Constants {
     protected static final int P1_SCORE = 1;
     protected static final int P2_SCORE = 2;
     protected static final int P3_SCORE = 3;
-
-//    public static final String COLOR_RED = "#DD4540";
-//    public static final String COLOR_BLUE = "#4D7FDD";
-//    public static final String COLOR_GREEN = "#009587";
 }

@@ -6,12 +6,11 @@ import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -62,6 +61,7 @@ public class LobbyController implements Initializable {
     Database database;
     User user;
     Lobby lobby;
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

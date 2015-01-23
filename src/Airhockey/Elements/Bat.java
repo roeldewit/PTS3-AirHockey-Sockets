@@ -23,8 +23,8 @@ public class Bat {
     private Player player;
     private final String type;
 
-    protected float positionX;
-    protected float positionY;
+    private float positionX;
+    private float positionY;
 
     public final float diameter;
     protected final float radius;
@@ -35,29 +35,29 @@ public class Bat {
     private final BodyType bodyType;
     private Body body;
 
-    public Bat(float positionX, float positionY, String type) {
+    public Bat(float enginePositionX, float enginePositionY, String type) {
         this.type = type;
-        this.positionX = positionX;
-        this.positionY = positionY;
+        this.positionX = Utils.toPixelPosX(enginePositionX);
+        this.positionY = Utils.toPixelPosY(enginePositionY);
         this.bodyType = BodyType.KINEMATIC;
         this.radius = Constants.BAT_RADIUS;
         this.diameter = radius * 2.0f;
-        this.node = create();
+        this.node = create(enginePositionX, enginePositionY);
         this.imageNode = createImageNode();
     }
 
-    private Node create() {
+    private Node create(float enginePositionX, float enginePositionY) {
         Circle bat = new Circle();
         bat.setRadius(radius);
-        bat.setFill(Color.BLACK);
+        bat.setFill(Color.TRANSPARENT);
 
-        bat.setLayoutX(Utils.toPixelPosX(positionX));
-        bat.setLayoutY(Utils.toPixelPosY(positionY));
+        bat.setLayoutX(positionX);
+        bat.setLayoutY(positionY);
         bat.setCache(true);
 
         BodyDef bd = new BodyDef();
         bd.type = bodyType;
-        bd.position.set(positionX, positionY);
+        bd.position.set(enginePositionX, enginePositionY);
 
         CircleShape cs = new CircleShape();
         cs.m_radius = radius * 0.1f;
@@ -74,23 +74,6 @@ public class Bat {
         return bat;
     }
 
-//    private Node createImageNode() {
-//        Image image;
-//        switch (type) {
-//            case Constants.COLOR_RED:
-//                image = new Image(getClass().getResourceAsStream("Images/RedBat.png"), diameter, diameter, false, false);
-//                break;
-//            case Constants.COLOR_BLUE:
-//                image = new Image(getClass().getResourceAsStream("Images/LightBlueBat.png"), diameter, diameter, false, false);
-//                break;
-//            default:
-//                image = new Image(getClass().getResourceAsStream("Images/GreenBat.png"), diameter, diameter, false, false);
-//                break;
-//        }
-//        ImageView imageView = new ImageView(image);
-//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-//        return imageView;
-//    }
     private Image createImageNode() {
         Image image;
         switch (type) {
@@ -104,16 +87,12 @@ public class Bat {
                 image = new Image(getClass().getResourceAsStream("Images/GreenBat.png"), diameter, diameter, false, false);
                 break;
         }
-//        ImageView imageView = new ImageView(image);
-//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
         return image;
     }
 
     public void setPosition(float xPosition, float yPosition) {
         node.setLayoutX(xPosition);
         node.setLayoutY(yPosition);
-        //imageNode.setLayoutX(xPosition - radius);
-        //imageNode.setLayoutY(yPosition - radius);
 
         positionX = xPosition;
         positionY = yPosition;

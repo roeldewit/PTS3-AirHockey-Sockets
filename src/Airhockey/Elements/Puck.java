@@ -19,21 +19,26 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class Puck {
 
+    private static final int DEFAULT_ENGINE_X_POS = 48;
+    private static final int DEFAULT_ENGINE_Y_POS = 40;
+
     public Node node;
     public Image imageNode;
 
-    private float positionX = 50;
-    private float positionY = 42;
+    private float positionX;
+    private float positionY;
 
-    private float radius = 25f;
+    private final float radius = 20;
 
     private final BodyType bodyType;
     public Body body;
     public FixtureDef fd;
 
     public Puck() {
-        this.radius = Utils.BALL_RADIUS;
         this.bodyType = BodyType.DYNAMIC;
+
+        this.positionX = Utils.toPixelPosX(DEFAULT_ENGINE_X_POS);
+        this.positionY = Utils.toPixelPosY(DEFAULT_ENGINE_Y_POS);
 
         node = create();
         imageNode = createImageNode();
@@ -43,20 +48,20 @@ public class Puck {
         DropShadow shadow = new DropShadow();
         shadow.setOffsetY(1.0);
         shadow.setOffsetX(1.0);
-        shadow.setColor(Color.BLACK);
+        shadow.setColor(Color.TRANSPARENT);
 
         Circle puck = new Circle();
         puck.setRadius(radius);
-        //puck.setFill(Color.web(Constants.COLOR_ORANGE));
+        puck.setFill(Color.TRANSPARENT);
 
-        puck.setLayoutX(Utils.toPixelPosX(positionX));
-        puck.setLayoutY(Utils.toPixelPosY(positionY));
+        puck.setLayoutX(positionX);
+        puck.setLayoutY(positionY);
         puck.setCache(true);
         puck.setEffect(shadow);
 
         BodyDef bd = new BodyDef();
         bd.type = bodyType;
-        bd.position.set(positionX, positionY);
+        bd.position.set(DEFAULT_ENGINE_X_POS, DEFAULT_ENGINE_Y_POS);
 
         CircleShape cs = new CircleShape();
         cs.m_radius = radius * 0.1f;
@@ -75,25 +80,12 @@ public class Puck {
 
     private Image createImageNode() {
         Image image = new Image(getClass().getResourceAsStream("Images/Puck.png"), radius * 2f, radius * 2f, false, false);
-
-//        ImageView imageView = new ImageView(image);
-//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-        //return imageView;
         return image;
     }
 
-//    private Node createImageNode() {
-//        Image image = new Image(getClass().getResourceAsStream("Images/Puck.png"), radius * 2f, radius * 2f, false, false);
-//
-//        ImageView imageView = new ImageView(image);
-//        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-//        return imageView;
-//    }
     public void setPosition(float xPosition, float yPosition) {
         node.setLayoutX(xPosition);
         node.setLayoutY(yPosition);
-        //imageNode.setLayoutX(xPosition - radius);
-        //imageNode.setLayoutY(yPosition - radius);
 
         positionX = xPosition;
         positionY = yPosition;

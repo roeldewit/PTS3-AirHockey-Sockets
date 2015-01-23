@@ -14,9 +14,6 @@ public class Utils {
 
     public static final World world = new World(new Vec2(0.0f, 0.0f));
 
-    //Ball radius in pixel
-    public static final int BALL_RADIUS = 20;
-
     //Screen width and height
     public static final int WIDTH = 1024;
     public static final int HEIGHT = 768;

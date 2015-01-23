@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -49,7 +50,7 @@ public class Lobby {
     private LobbyController lobbyController;
 
     private User user;
-    
+
     private int gameID;
 
     public Lobby(Stage primaryStage, User user) throws NotBoundException, IOException, SQLException {
@@ -72,11 +73,11 @@ public class Lobby {
 
         initialSetUpLobby();
         chatbox = new Chatbox();
-        
+
         this.gameID = -1;
     }
-    
-    public void setGameId(int gameID){
+
+    public void setGameId(int gameID) {
         if (this.gameID == -1) {
             this.gameID = gameID;
         }
@@ -128,10 +129,10 @@ public class Lobby {
 
     public int addWaitingGame(String description) {
         String iphost = "localhost";
-        
+
         encoder.createNewWaitingGame(description, iphost, this.user.getUsername());
-        
-        while(gameID == -1){
+
+        while (gameID == -1) {
             try {
                 // waiting from response from the server
                 Thread.sleep(10);
@@ -139,7 +140,7 @@ public class Lobby {
                 Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return gameID;
     }
 
