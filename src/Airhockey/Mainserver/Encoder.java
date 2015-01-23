@@ -1,6 +1,5 @@
 package Airhockey.Mainserver;
 
-import Airhockey.Serializable.SerializableGame;
 import java.util.ArrayList;
 
 /**
@@ -20,6 +19,10 @@ public class Encoder {
 
     public synchronized void addManager(IConnectionManager connectionManager) {
         connectionMangerList.add(connectionManager);
+    }
+
+    public synchronized void deleteManager(IConnectionManager connecitonManager) {
+        connectionMangerList.remove(connecitonManager);
     }
 
     public synchronized void sendChatBoxLine(String username, String text) {
@@ -57,11 +60,12 @@ public class Encoder {
     }
 
     public synchronized void sendWaitingGames(ArrayList<ArrayList<String>> waitingGames, IConnectionManager connectionManager) {
+        System.out.println("sending waiting games");
         String command = Protocol.CURRENT_OPENGAMES
                 + Protocol.SEPERATOR;
 
         for (ArrayList<String> waitingGame : waitingGames) {
-            command = waitingGame.get(0)
+            command += waitingGame.get(0)
                     + Protocol.SEPERATOR
                     + waitingGame.get(1)
                     + Protocol.SEPERATOR
@@ -75,13 +79,31 @@ public class Encoder {
 
         connectionManager.sendCommand(command);
     }
-    
+
+    public synchronized void sendWaitingGame(ArrayList<String> waitingGame) {
+        String command = Protocol.OPEN_GAME
+                + Protocol.SEPERATOR
+                + waitingGame.get(0)
+                + Protocol.SEPERATOR
+                + waitingGame.get(1)
+                + Protocol.SEPERATOR
+                + waitingGame.get(2)
+                + Protocol.SEPERATOR
+                + waitingGame.get(3)
+                + Protocol.SEPERATOR;
+
+        command += Protocol.PROTOCOL_ENDER;
+
+        sendCommand(command);
+    }
+
     public synchronized void sendBusyGames(ArrayList<ArrayList<String>> busyGames, IConnectionManager connectionManager) {
+        System.out.println("sending busy games");
         String command = Protocol.CURRENT_BUSYGAMES
                 + Protocol.SEPERATOR;
 
         for (ArrayList<String> busyGame : busyGames) {
-            command = busyGame.get(0)
+            command += busyGame.get(0)
                     + Protocol.SEPERATOR
                     + busyGame.get(1)
                     + Protocol.SEPERATOR

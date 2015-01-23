@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
@@ -35,13 +35,11 @@ public class Lobby {
 
     private Database database;
 
-    private ArrayList<SerializableGame> games;
-
     private LobbyClient lobbyClient;
 
     private LobbyEncoder encoder;
 
-    private HashMap<String, User> hashMapUsernameToUser;
+    private HashMap<Integer, SerializableGame> serializableGames;
 
     private Stage primaryStage;
 
@@ -53,16 +51,18 @@ public class Lobby {
 
     private int gameID;
 
+    public final ReentrantLock lock;
+
     public Lobby(Stage primaryStage, User user) throws NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
 
-        hashMapUsernameToUser = new HashMap();
+        serializableGames = new HashMap();
 
         this.user = user;
 
-        games = new ArrayList<>();
         users = new ArrayList<>();
+        this.lock = new ReentrantLock();
 
 //        games = new ArrayList<>();
         users = new ArrayList<>();
@@ -124,6 +124,7 @@ public class Lobby {
     }
 
     public void remoteUpdateWaitingGame(int id, String description, String portIP, String username) {
+        serializableGames.put(id, new SerializableGame(id, description, portIP, username));
         lobbyController.updateGameList(description, id + "");
     }
 
@@ -132,15 +133,18 @@ public class Lobby {
 
         encoder.createNewWaitingGame(description, iphost, this.user.getUsername());
 
-        while (gameID == -1) {
-            try {
-                // waiting from response from the server
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            do {
+                Thread.sleep(100);
+            } while (gameID == -1);
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        System.out.println("gameid has been procesed");
+
+        System.out.println(gameID);
         return gameID;
     }
 

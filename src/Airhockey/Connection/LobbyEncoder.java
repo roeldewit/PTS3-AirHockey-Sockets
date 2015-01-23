@@ -17,7 +17,7 @@ public class LobbyEncoder {
     }
 
     public synchronized void getCurrentOpenGames() {
-        String command = Protocol.GET_CURRENT_RUNNINGGAMES;
+        String command = Protocol.GET_CURRENT_OPENGAMES;
 
         sendCommand(command);
     }

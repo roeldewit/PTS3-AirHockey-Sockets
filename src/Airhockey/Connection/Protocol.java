@@ -51,4 +51,6 @@ class Protocol {
     protected static final String CURRENT_OPENGAMES = "current_opengames";
 
     protected static final String ADD_NEW_GAME = "add_new_game";
+
+    protected static final String OPEN_GAME = "open_game";
 }

@@ -128,6 +128,8 @@ public class MainLobby {
         nextGameID++;
 
         waitingGames.add(serializableGame);
+        
+        encoder.sendWaitingGame(ExtraArrayListFunctions.createNodeArrayListWithEntries(serializableGame.id + "", serializableGame.description, serializableGame.usernames.size() + "", serializableGame.hostIP));
     }
 
     /**
