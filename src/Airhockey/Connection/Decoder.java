@@ -106,7 +106,7 @@ public class Decoder {
 
             case Protocol.GAME_OVER:
                 Platform.runLater(() -> {
-                    game.gameOver();
+                    game.gameOver(splitter[1]);
                 });
                 break;
             case Protocol.GAME_CANCELLED:
@@ -114,7 +114,7 @@ public class Decoder {
                     game.gameCancelled();
                 });
                 break;
-            case Protocol.CLIENT_LEAVING_GAME:
+            case Protocol.CLIENT_LEFT_GAME:
                 Platform.runLater(() -> {
                     game.clientLeftGame(Integer.parseInt(splitter[1]));
                 });

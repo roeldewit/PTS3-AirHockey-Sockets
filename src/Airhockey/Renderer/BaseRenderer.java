@@ -15,8 +15,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -30,15 +28,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 
 /**
@@ -89,9 +86,6 @@ class BaseRenderer implements IRenderer {
     protected ParallelTransition parallelTransition;
     private ObservableList<String> chatBoxData;
 
-    double centerPointX;
-    double centerPointY;
-
     public BaseRenderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
         this.game = game;
@@ -126,9 +120,9 @@ class BaseRenderer implements IRenderer {
 
     protected void startCountDown() {
         Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(1000),
+                Duration.millis(1100),
                 new CountDownTimer()));
-        timeline.setCycleCount(3);
+        timeline.setCycleCount(4);
         timeline.play();
         timeline.setOnFinished((ActionEvent t) -> {
             startGameTimer();
@@ -144,8 +138,12 @@ class BaseRenderer implements IRenderer {
 
         @Override
         public void handle(ActionEvent event) {
-            textEffectTransition(String.valueOf(number));
-            number--;
+            if (number == 0) {
+                textEffectTransition("Go!", false);
+            } else {
+                textEffectTransition(String.valueOf(number), false);
+                number--;
+            }
         }
     }
 
@@ -166,19 +164,20 @@ class BaseRenderer implements IRenderer {
         }
     }
 
-    protected void createOtherItems() {
-        DropShadow shadow = new DropShadow();
-        shadow.setOffsetY(1.0);
-        shadow.setOffsetX(1.0);
-        shadow.setColor(Color.BLACK);
+    protected void createStaticItems() {
+        triangle = new TriangleLine(0, 4f, 5f, 81f, 5f, 45f, 95f);
+        triangleLeft = new TriangleLeftLine(0, 4f, 5f, 45f, 95f);
 
-        player1NameLabel = new Label();
-        player2NameLabel = new Label();
-        player3NameLabel = new Label();
-        player1ScoreLabel = new Label("20");
-        player2ScoreLabel = new Label("20");
-        player3ScoreLabel = new Label("20");
-        roundTextLabel = new Label("ROUND:");
+        redGoal = new Goal(Constants.COLOR_RED);
+        blueGoal = new Goal(Constants.COLOR_BLUE);
+        greenGoal = new Goal(Constants.COLOR_GREEN);
+
+        root.getChildren().addAll(redGoal.collisionNode,
+                blueGoal.collisionNode,
+                greenGoal.collisionNode);
+    }
+
+    protected void createOtherItems() {
         roundNumberLabel = new Label("1");
         if (playerNumber > 3) {
             spectatorLabel = new Label("SPECTATING");
@@ -186,55 +185,32 @@ class BaseRenderer implements IRenderer {
             spectatorLabel = new Label("");
         }
 
-        player1NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        player2NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        player3NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        player1ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        player2ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        player3ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        roundTextLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        roundNumberLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        spectatorLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        double textSize = 24.0;
 
-        player1NameLabel.setTextFill(Color.web(Constants.COLOR_RED));
-        player2NameLabel.setTextFill(Color.web(Constants.COLOR_BLUE));
-        player3NameLabel.setTextFill(Color.web(Constants.COLOR_GREEN));
-        player1ScoreLabel.setTextFill(Color.WHITE);
-        player2ScoreLabel.setTextFill(Color.WHITE);
-        player3ScoreLabel.setTextFill(Color.WHITE);
-        roundTextLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
-        roundNumberLabel.setTextFill(Color.WHITE);
-        spectatorLabel.setTextFill(Color.WHITE);
+        player1NameLabel = addTextEffects(new Label(), root, Color.web(Constants.COLOR_RED), 850, 10, textSize);
+        player2NameLabel = addTextEffects(new Label(), root, Color.web(Constants.COLOR_BLUE), 850, 40, textSize);
+        player3NameLabel = addTextEffects(new Label(), root, Color.web(Constants.COLOR_GREEN), 850, 70, textSize);
+        player1ScoreLabel = addTextEffects(new Label("20"), root, Color.WHITE, 970, 10, textSize);
+        player2ScoreLabel = addTextEffects(new Label("20"), root, Color.WHITE, 970, 40, textSize);
+        player3ScoreLabel = addTextEffects(new Label("20"), root, Color.WHITE, 970, 70, textSize);
+        roundTextLabel = addTextEffects(new Label("ROUND:"), root, Color.web(Constants.COLOR_ORANGE), 30, 10, textSize);
+        roundNumberLabel = addTextEffects(roundNumberLabel, root, Color.WHITE, 140, 10, textSize);
+        spectatorLabel = addTextEffects(spectatorLabel, root, Color.WHITE, 30, 40, textSize);
+    }
 
-        player1NameLabel.relocate(850, 10);
-        player2NameLabel.relocate(850, 40);
-        player3NameLabel.relocate(850, 70);
-        player1ScoreLabel.relocate(970, 10);
-        player2ScoreLabel.relocate(970, 40);
-        player3ScoreLabel.relocate(970, 70);
-        roundTextLabel.relocate(30, 10);
-        roundNumberLabel.relocate(140, 10);
-        spectatorLabel.relocate(30, 40);
+    private Label addTextEffects(Label label, Group group, Color color, int x, int y, double size) {
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetY(1.0);
+        shadow.setOffsetX(1.0);
+        shadow.setColor(Color.BLACK);
 
-        player1NameLabel.setEffect(shadow);
-        player2NameLabel.setEffect(shadow);
-        player3NameLabel.setEffect(shadow);
-        player1ScoreLabel.setEffect(shadow);
-        player2ScoreLabel.setEffect(shadow);
-        player3ScoreLabel.setEffect(shadow);
-        roundTextLabel.setEffect(shadow);
-        roundNumberLabel.setEffect(shadow);
-        spectatorLabel.setEffect(shadow);
+        label.setFont(Font.font("Roboto", FontWeight.BOLD, size));
+        label.setTextFill(color);
+        label.relocate(x, y);
+        label.setEffect(shadow);
+        group.getChildren().add(label);
 
-        root.getChildren().addAll(player1NameLabel,
-                player2NameLabel,
-                player3NameLabel,
-                player1ScoreLabel,
-                player2ScoreLabel,
-                player3ScoreLabel,
-                roundTextLabel,
-                roundNumberLabel,
-                spectatorLabel);
+        return label;
     }
 
     @Override
@@ -246,7 +222,6 @@ class BaseRenderer implements IRenderer {
 
     protected void drawShapes() {
         canvas = new Canvas(900, 740);
-        // playerNumber = 1;
 
         double rotation = 0;
         if (playerNumber == 2) {
@@ -262,13 +237,9 @@ class BaseRenderer implements IRenderer {
         graphicsContext = canvas.getGraphicsContext2D();
         mainRoot.getChildren().add(canvas);
 
-        centerPointX = Utils.WIDTH / 2;
-        centerPointY = Utils.HEIGHT / 2;
-
         graphicsContext.setFill(Color.WHITE);
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(3);
-        graphicsContext.strokeOval(centerPointX - 145.0, centerPointY - 6, 200, 200);
     }
 
     protected void updateFrame() {
@@ -276,10 +247,10 @@ class BaseRenderer implements IRenderer {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         //Draw traingle sides
-        graphicsContext.strokeOval(centerPointX - 145.0, centerPointY - 6, 200, 200);
-        graphicsContext.strokeLine(triangleLeft.positionXL - 22.0f, triangleLeft.positionYL + 12.0f, triangleLeft.positionXR - 22.0f, triangleLeft.positionYR + 12.0f);
-        graphicsContext.strokeLine(triangle.positionXL - 22.0f, triangle.positionYL + 12.0f, triangle.positionXR - 22.0f, triangle.positionYR + 12.0f);
-        graphicsContext.strokeLine(triangle.positionXC - 22.0f, triangle.positionYC + 12.0f, triangle.positionXR - 22.0f, triangle.positionYR + 12.0f);
+        graphicsContext.strokeOval(367.0, 378.0, 200.0, 200.0);
+        graphicsContext.strokeLine(triangleLeft.positionXL, triangleLeft.positionYL, triangleLeft.positionXR, triangleLeft.positionYR);
+        graphicsContext.strokeLine(triangle.positionXL, triangle.positionYL, triangle.positionXR, triangle.positionYR);
+        graphicsContext.strokeLine(triangle.positionXC, triangle.positionYC, triangle.positionXR, triangle.positionYR);
 
         //Draw Goals
         graphicsContext.drawImage(redGoal.imageNode, redGoal.topLeftX - 22, redGoal.topLeftY + 10);
@@ -295,31 +266,41 @@ class BaseRenderer implements IRenderer {
         graphicsContext.drawImage(greenBat.imageNode, greenBat.getImagePositionX(), greenBat.getImagePositionY(), (redBat.diameter + 4f), (redBat.diameter + 4f));
     }
 
-    protected void showPopupWindow(String message) {
+    private void clearFrame() {
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
+    protected void showGameOverPopupWindow(String reason) {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(primaryStage.getScene().getWindow());
-        dialogStage.centerOnScreen();
+        dialogStage.setResizable(false);
+        dialogStage.setOnCloseRequest((WindowEvent event) -> {
+            leave();
+        });
 
-        Button okButton = new Button("Close");
+        Group dialogRoot = new Group();
+
+        Button okButton = new Button("Exit");
+        okButton.relocate(260, 150);
         okButton.setOnAction((ActionEvent arg0) -> {
             dialogStage.close();
             leave();
         });
 
-        Label label = new Label(message.toUpperCase());
-        label.setFont(Font.font("Roboto", 24.0));
-        label.setTextFill(Color.web(Constants.COLOR_GREEN));
-        label.setPadding(new Insets(0, 0, 20, 0));
-        label.relocate(100, 10);
+        double textSize = 20.0;
 
-        VBox vBox = new VBox();
-        vBox.getChildren().add(label);
-        vBox.getChildren().add(okButton);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.setPadding(new Insets(20, 40, 20, 40));
+        addTextEffects(new Label(reason.toUpperCase()), dialogRoot, Color.web("#33CCFF"), 90, 20, 24.0);
+        addTextEffects(new Label(player1NameLabel.getText()), dialogRoot, Color.web(Constants.COLOR_RED), 100, 70, textSize);
+        addTextEffects(new Label(player2NameLabel.getText()), dialogRoot, Color.web(Constants.COLOR_BLUE), 100, 100, textSize);
+        addTextEffects(new Label(player3NameLabel.getText()), dialogRoot, Color.web(Constants.COLOR_GREEN), 100, 130, textSize);
+        addTextEffects(new Label(player1ScoreLabel.getText()), dialogRoot, Color.WHITE, 180, 70, textSize);
+        addTextEffects(new Label(player2ScoreLabel.getText()), dialogRoot, Color.WHITE, 180, 100, textSize);
+        addTextEffects(new Label(player3ScoreLabel.getText()), dialogRoot, Color.WHITE, 180, 130, textSize);
 
-        Scene dialogScene = new Scene(vBox);
+        dialogRoot.getChildren().add(okButton);
+
+        Scene dialogScene = new Scene(dialogRoot, 300, 180, Color.web(Constants.COLOR_GRAY));
         dialogStage.setScene(dialogScene);
         dialogStage.show();
     }
@@ -373,20 +354,29 @@ class BaseRenderer implements IRenderer {
         chatBox.setItems(chatBoxData);
     }
 
-    protected void textEffectTransition(String text) {
-        Label textLabel = new Label();
+    protected void textEffectTransition(String text, boolean isRoundTransition) {
+        int duration;
+        final Label textLabel = new Label();
+
         textLabel.setText(text);
         textLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         textLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
-        textLabel.relocate(460, 340);
+
+        if (isRoundTransition) {
+            textLabel.relocate(460, 340);
+            duration = 2000;
+        } else {
+            duration = 1000;
+            textLabel.relocate(480, 350);
+        }
 
         root.getChildren().add(textLabel);
 
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000), textLabel);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(duration), textLabel);
         fadeTransition.setFromValue(1.0);
         fadeTransition.setToValue(0.0);
 
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(2000), textLabel);
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(duration), textLabel);
         scaleTransition.setFromX(2f);
         scaleTransition.setFromY(2f);
         scaleTransition.setToX(8f);
@@ -399,51 +389,15 @@ class BaseRenderer implements IRenderer {
         );
 
         parallelTransition.playFromStart();
-    }
-
-    protected void createStaticItems() {
-        triangle = new TriangleLine(0, 4f, 5f, 81f, 5f, 45f, 95f);
-        triangleLeft = new TriangleLeftLine(0, 4f, 5f, 45f, 95f);
-
-        redGoal = new Goal(Constants.COLOR_RED);
-        blueGoal = new Goal(Constants.COLOR_BLUE);
-        greenGoal = new Goal(Constants.COLOR_GREEN);
-
-        root.getChildren().addAll(redGoal.collisionNode,
-                blueGoal.collisionNode,
-                greenGoal.collisionNode);
-    }
-
-    protected void correctPuckSpeed() {
-        Vec2 vec = puckBody.getLinearVelocity();
-        Vec2 puckBodyCenter = puckBody.getWorldCenter();
-
-        if (Math.abs(vec.x) > Math.abs(vec.y)) {
-            if (vec.x > 20) {
-                puckBody.applyLinearImpulse(new Vec2(-1.0f, 0.0f), puckBodyCenter);
-            } else if (vec.x >= 0 && vec.x < 12) {
-                puckBody.applyLinearImpulse(new Vec2(1.0f, 1.0f), puckBodyCenter);
-            } else if (vec.x > -12 && vec.x <= 0) {
-                puckBody.applyLinearImpulse(new Vec2(-1.0f, -1.0f), puckBodyCenter);
-            } else if (vec.x < -20) {
-                puckBody.applyLinearImpulse(new Vec2(1.0f, 0.0f), puckBodyCenter);
-            }
-        } else {
-            if (vec.y > 20) {
-                puckBody.applyLinearImpulse(new Vec2(0.0f, -1.0f), puckBodyCenter);
-            } else if (vec.y >= 0 && vec.y < 12) {
-                puckBody.applyLinearImpulse(new Vec2(1.0f, 1.0f), puckBodyCenter);
-            } else if (vec.y > -12 && vec.y <= 0) {
-                puckBody.applyLinearImpulse(new Vec2(-1.0f, -1.0f), puckBodyCenter);
-            } else if (vec.y < -20) {
-                puckBody.applyLinearImpulse(new Vec2(0.0f, 1.0f), puckBodyCenter);
-            }
-        }
+        parallelTransition.setOnFinished((ActionEvent t) -> {
+            root.getChildren().remove(textLabel);
+        });
     }
 
     @Override
     public void stop(String reason) {
-        showPopupWindow(reason);
+        showGameOverPopupWindow(reason);
+        clearFrame();
 
         Rectangle rect = new Rectangle(0, 0, 0, 0);
         rect.setWidth(Utils.WIDTH);

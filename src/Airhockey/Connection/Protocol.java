@@ -27,7 +27,7 @@ class Protocol {
 
     protected static final String GAME_OVER = "game_over";
 
-    protected static final String CLIENT_LEAVING_GAME = "client_leaving_game";
+    protected static final String CLIENT_LEFT_GAME = "client_leaving_game";
 
     protected static final String GAME_CANCELLED = "game_cancelled";
 

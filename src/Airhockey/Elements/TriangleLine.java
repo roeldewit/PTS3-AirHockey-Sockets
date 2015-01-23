@@ -1,10 +1,6 @@
 package Airhockey.Elements;
 
 import Airhockey.Utils.Utils;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import org.jbox2d.collision.shapes.ChainShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -32,8 +28,6 @@ public class TriangleLine {
     public final float positionXC;
     public final float positionYC;
 
-    public Node node;
-
     public TriangleLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR, float positionXC, float positionYC) {
         this.enginePositionXL = positionXL;
         this.enginePositionYL = positionYL;
@@ -42,36 +36,23 @@ public class TriangleLine {
         this.enginePositionXC = positionXC;
         this.enginePositionYC = positionYC;
 
-        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 47;
-        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 36;
-        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 45;
-        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 36;
-        this.positionXC = Utils.toPixelPosX(enginePositionXC) + 39;
-        this.positionYC = Utils.toPixelPosY(enginePositionYC) - 32;
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 25;
+        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 24;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 23;
+        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 24;
+        this.positionXC = Utils.toPixelPosX(enginePositionXC) + 17;
+        this.positionYC = Utils.toPixelPosY(enginePositionYC) - 20;
 
-        node = createLinePieceAB();
+        createLinePieceAB();
     }
 
-    private Node createLinePieceAB() {
+    private void createLinePieceAB() {
         Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
         Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
         Vec2 VecC = new Vec2(enginePositionXC, enginePositionYC);
         Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecC};
 
-        Line bottom = new Line(positionXL, positionYL, positionXR, positionYR);
-        bottom.setStroke(Color.BLACK);
-        bottom.setStrokeWidth(3.0);
-
-        Line right = new Line(positionXC, positionYC, positionXR, positionYR);
-        right.setStroke(Color.BLACK);
-        right.setStrokeWidth(3.0);
-
-        Group lineGroup = new Group();
-        lineGroup.getChildren().addAll(bottom, right);
-
         createJboxLinePiece(vecAbAB, 3);
-
-        return lineGroup;
     }
 
     private void createJboxLinePiece(Vec2[] vertices, int verticesSize) {

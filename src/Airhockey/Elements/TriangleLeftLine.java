@@ -1,9 +1,6 @@
 package Airhockey.Elements;
 
 import Airhockey.Utils.Utils;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -17,8 +14,7 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class TriangleLeftLine {
 
-    public Node node;
-
+    //public Node node;
     private final float enginePositionXL;
     private final float enginePositionYL;
     private final float enginePositionXR;
@@ -35,26 +31,20 @@ public class TriangleLeftLine {
         this.enginePositionXR = positionXR;
         this.enginePositionYR = positionYR;
 
-        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 44;
-        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 37;
-        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 38;
-        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 32;
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 22;
+        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 25;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 16;
+        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 20;
 
-        node = create();
+        create();
     }
 
-    private Node create() {
+    private void create() {
         Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
         Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
         Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecL, VecR};
 
-        Line left = new Line(positionXL, positionYL, positionXR, positionYR);
-        left.setStroke(Color.BLACK);
-        left.setStrokeWidth(3.0);
-
         createJboxLinePiece(vecAbAB, 4);
-
-        return left;
     }
 
     private void createJboxLinePiece(Vec2[] vertices, int verticesSize) {

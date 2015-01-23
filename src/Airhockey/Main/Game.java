@@ -33,8 +33,8 @@ public class Game {
 
     private final Stage primaryStage;
 
-    //private ArrayList<Spectator> spectators;
     private ScoreCalculator scoreCalculator;
+    private boolean isHost;
     private boolean isMultiplayer;
     private boolean isSpectator;
 
@@ -57,6 +57,7 @@ public class Game {
     public void startAsHost(User user) {
         this.user = user;
         addPlayer(user.getUsername());
+        isHost = true;
         isMultiplayer = true;
         isSpectator = false;
 
@@ -68,6 +69,7 @@ public class Game {
 
     public void startAsClient(User user, String ipAddress) {
         this.user = user;
+        isHost = false;
         isMultiplayer = true;
         isSpectator = false;
 
@@ -80,6 +82,7 @@ public class Game {
 
     public void startAsSpectator(User user, String ipAddress) {
         this.user = user;
+        isHost = false;
         isMultiplayer = true;
         isSpectator = true;
 
@@ -190,11 +193,8 @@ public class Game {
                 }
             }
 
-            if (round == 100) {
-                if (isMultiplayer) {
-                    encoder.sendGameOver();
-                }
-                gameOver();
+            if (round == 11) {
+                gameOver("Game Over");
             } else {
                 renderer.resetRound(round);
             }
@@ -202,7 +202,7 @@ public class Game {
     }
 
     public void clientLeftGame(int playerNumber) {
-
+        gameOver("Player" + playerNumber + " left");
     }
 
     public void leaveGame() {
@@ -218,9 +218,15 @@ public class Game {
         renderer.stop("Server Disconnected");
     }
 
-    public void gameOver() {
-        encoder.shutDownManagers();
-        renderer.stop("Game Over");
+    public void gameOver(String reason) {
+        if (isMultiplayer) {
+            if (isHost) {
+                connectionListener.cancel();
+                encoder.sendGameOver(reason);
+            }
+            encoder.shutDownManagers();
+        }
+        renderer.stop(reason);
     }
 
     public String getUsername() {
