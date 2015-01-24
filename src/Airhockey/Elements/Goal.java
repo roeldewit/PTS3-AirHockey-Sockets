@@ -1,9 +1,11 @@
 package Airhockey.Elements;
 
+import Airhockey.Renderer.Constants;
 import javafx.animation.RotateTransition;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -16,12 +18,8 @@ import org.jbox2d.common.Vec2;
  */
 public class Goal {
 
-    public static final String GOAL_BOTTOM = "bottom";
-    public static final String GOAL_LEFT = "left";
-    public static final String GOAL_RIGHT = "right";
-
-    private final int topLeftX;
-    private final int topLeftY;
+    public final int topLeftX;
+    public final int topLeftY;
     private final int width = 340;
     private final int height = 40;
     private final double rotation;
@@ -30,24 +28,28 @@ public class Goal {
 
     public Node node;
     public Node collisionNode;
+    public Image imageNode;
 
-    public Goal(String position, String colorCode) {
+    public Goal(String colorCode) {
 
-        switch (position) {
-            case GOAL_BOTTOM:
-                topLeftX = 340;
+        switch (colorCode) {
+            case Constants.COLOR_RED:
+                topLeftX = 320;
                 topLeftY = 670;
                 rotation = 0;
+                imageNode = new Image(getClass().getResourceAsStream("Images/RedGoal.png"), width, height, false, false);
                 break;
-            case GOAL_LEFT:
-                topLeftX = 124;
+            case Constants.COLOR_BLUE:
+                topLeftX = 125;
                 topLeftY = 330;
-                rotation = -57;
+                rotation = -59;
+                imageNode = new Image(getClass().getResourceAsStream("Images/BlueGoal.png"), 208, 310, false, false);
                 break;
             default:
-                topLeftX = 548;
+                topLeftX = 512;
                 topLeftY = 330;
-                rotation = 60;
+                rotation = 62;
+                imageNode = new Image(getClass().getResourceAsStream("Images/GreenGoal.png"), 192, 316, false, false);
                 break;
         }
 
@@ -67,7 +69,7 @@ public class Goal {
         shadow.setOffsetY(3.0);
         shadow.setOffsetX(2.0);
         shadow.setColor(Color.BLACK);
-        
+
         InnerShadow is = new InnerShadow();
         is.setOffsetX(0.5f);
         is.setOffsetY(0.5f);
@@ -96,7 +98,7 @@ public class Goal {
         Vec2 TopRight = new Vec2((float) (topLeftX + width) - 20, topLeftY + 20);
 
         Line line = new Line(TopLeft.x, TopLeft.y, TopRight.x, TopRight.y);
-        line.setStroke(Color.WHITE);
+        line.setStroke(Color.TRANSPARENT);
 
         RotateTransition t = new RotateTransition(Duration.millis(1), line);
         t.setByAngle(rotation);

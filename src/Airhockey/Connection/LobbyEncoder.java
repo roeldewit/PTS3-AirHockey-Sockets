@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Airhockey.Connection;
 
 /**
@@ -22,7 +17,7 @@ public class LobbyEncoder {
     }
 
     public synchronized void getCurrentOpenGames() {
-        String command = Protocol.GET_CURRENT_RUNNINGGAMES;
+        String command = Protocol.GET_CURRENT_OPENGAMES;
 
         sendCommand(command);
     }

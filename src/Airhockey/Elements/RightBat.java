@@ -35,7 +35,7 @@ public class RightBat extends Bat {
                 speed = 17.0f;
                 break;
         }
-        speedManipulation = speed * 0.55f;
+        speedManipulation = speed * 0.60f;
     }
 
     public void moveUp(Body puckBody) {

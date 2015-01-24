@@ -7,13 +7,16 @@ import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
+import java.net.URL;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -32,26 +35,34 @@ public class Lobby {
 
     private Database database;
 
-    private ArrayList<SerializableGame> games;
-
     private LobbyClient lobbyClient;
 
     private LobbyEncoder encoder;
 
-    private HashMap<String, User> hashMapUsernameToUser;
+    private HashMap<Integer, SerializableGame> serializableGames;
 
     private Stage primaryStage;
 
     private Thread lobbyClientThread;
 
-    public Lobby(Stage primaryStage) throws NotBoundException, IOException, SQLException {
+    private LobbyController lobbyController;
+
+    private User user;
+
+    private int gameID;
+
+    public final ReentrantLock lock;
+
+    public Lobby(Stage primaryStage, User user) throws NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
 
-        hashMapUsernameToUser = new HashMap();
+        serializableGames = new HashMap();
 
-        games = new ArrayList<>();
+        this.user = user;
+
         users = new ArrayList<>();
+        this.lock = new ReentrantLock();
 
 //        games = new ArrayList<>();
         users = new ArrayList<>();
@@ -62,6 +73,14 @@ public class Lobby {
 
         initialSetUpLobby();
         chatbox = new Chatbox();
+
+        this.gameID = -1;
+    }
+
+    public void setGameId(int gameID) {
+        if (this.gameID == -1) {
+            this.gameID = gameID;
+        }
     }
 
     public ArrayList<User> getUsers() {
@@ -96,14 +115,37 @@ public class Lobby {
         return null;
     }
 
-    public void writeLine(String text, User user) {
+    public void writeLine(String text) {
         encoder.writeLine(user.getUsername(), text);
     }
 
-    public void addWaitingGame(int id, String description, String portIP, String username) {
-        //SerializableGame serializableGame = new SerializableGame(id, description, portIP, username);
+    public void remoteChatboxUpdate(String person, String text) {
+        lobbyController.updateChatbox(person, text);
+    }
 
-        //games.add(serializableGame);
+    public void remoteUpdateWaitingGame(int id, String description, String portIP, String username) {
+        serializableGames.put(id, new SerializableGame(id, description, portIP, username));
+        lobbyController.updateGameList(description, id + "");
+    }
+
+    public int addWaitingGame(String description) {
+        String iphost = "localhost";
+
+        encoder.createNewWaitingGame(description, iphost, this.user.getUsername());
+
+        try {
+            do {
+                Thread.sleep(100);
+            } while (gameID == -1);
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println("gameid has been procesed");
+
+        System.out.println(gameID);
+        return gameID;
     }
 
     private void LobbySetUp(Stage primaryStage) {
@@ -111,7 +153,16 @@ public class Lobby {
         Parent root = null;
 
         try {
-            root = FXMLLoader.load(Lobby.class.getResource("LobbyLayout.fxml"));
+            URL location = getClass().getResource("LobbyLayout.fxml");
+
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(location);
+            fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+
+            root = (Parent) fxmlLoader.load(location.openStream());
+
+            lobbyController = fxmlLoader.getController();
+
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -124,6 +175,7 @@ public class Lobby {
         connectToMainServer();
         getInitialChatbox();
         encoder.getCurrentOpenGames();
+        lobbyController.setLobby(this);
     }
 
     private void connectToMainServer() {

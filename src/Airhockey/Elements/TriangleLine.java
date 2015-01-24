@@ -1,10 +1,6 @@
 package Airhockey.Elements;
 
 import Airhockey.Utils.Utils;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import org.jbox2d.collision.shapes.ChainShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -18,46 +14,45 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class TriangleLine {
 
-    private final float positionXL;
-    private final float positionYL;
-    private final float positionXR;
-    private final float positionYR;
-    private final float positionXC;
-    private final float positionYC;
+    private final float enginePositionXL;
+    private final float enginePositionYL;
+    private final float enginePositionXR;
+    private final float enginePositionYR;
+    private final float enginePositionXC;
+    private final float enginePositionYC;
 
-    public Node node;
+    public final float positionXL;
+    public final float positionYL;
+    public final float positionXR;
+    public final float positionYR;
+    public final float positionXC;
+    public final float positionYC;
 
     public TriangleLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR, float positionXC, float positionYC) {
-        this.positionXL = positionXL;
-        this.positionYL = positionYL;
-        this.positionXR = positionXR;
-        this.positionYR = positionYR;
-        this.positionXC = positionXC;
-        this.positionYC = positionYC;
+        this.enginePositionXL = positionXL;
+        this.enginePositionYL = positionYL;
+        this.enginePositionXR = positionXR;
+        this.enginePositionYR = positionYR;
+        this.enginePositionXC = positionXC;
+        this.enginePositionYC = positionYC;
 
-        node = createLinePieceAB();
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 25;
+        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 24;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 23;
+        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 24;
+        this.positionXC = Utils.toPixelPosX(enginePositionXC) + 17;
+        this.positionYC = Utils.toPixelPosY(enginePositionYC) - 20;
+
+        createLinePieceAB();
     }
 
-    private Node createLinePieceAB() {
-        Vec2 VecL = new Vec2(positionXL, positionYL);
-        Vec2 VecR = new Vec2(positionXR, positionYR);
-        Vec2 VecC = new Vec2(positionXC, positionYC);
+    private void createLinePieceAB() {
+        Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
+        Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
+        Vec2 VecC = new Vec2(enginePositionXC, enginePositionYC);
         Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecC};
 
-        Line bottom = new Line(Utils.toPixelPosX(positionXL) + 35, Utils.toPixelPosY(positionYL) - 36, Utils.toPixelPosX(positionXR) + 21, Utils.toPixelPosY(positionYR) - 36);
-        bottom.setStroke(Color.BLACK);
-        bottom.setStrokeWidth(3.0);
-
-        Line right = new Line(Utils.toPixelPosX(positionXC) + 28, Utils.toPixelPosY(positionYC) - 32, Utils.toPixelPosX(positionXR) + 22, Utils.toPixelPosY(positionYR) - 37);
-        right.setStroke(Color.BLACK);
-        right.setStrokeWidth(3.0);
-
-        Group lineGroup = new Group();
-        lineGroup.getChildren().addAll(bottom, right);
-
         createJboxLinePiece(vecAbAB, 3);
-
-        return lineGroup;
     }
 
     private void createJboxLinePiece(Vec2[] vertices, int verticesSize) {
@@ -79,18 +74,18 @@ public class TriangleLine {
     }
 
     public int getCenterTopY() {
-        return (int) Utils.toPixelPosY(positionYC) - 32;
+        return (int) Utils.toPixelPosY(enginePositionYC) - 32;
     }
 
     public int getBottomLeftY() {
-        return (int) Utils.toPixelPosY(positionYL) - 36;
+        return (int) Utils.toPixelPosY(enginePositionYL) - 36;
     }
 
     public int getBottomLeftX() {
-        return (int) Utils.toPixelPosX(positionXL) + 35;
+        return (int) Utils.toPixelPosX(enginePositionXL) + 35;
     }
 
     public int getBottomRightX() {
-        return (int) Utils.toPixelPosX(positionXR) + 22;
+        return (int) Utils.toPixelPosX(enginePositionXR) + 22;
     }
 }

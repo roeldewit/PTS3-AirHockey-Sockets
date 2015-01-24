@@ -5,7 +5,6 @@ import Airhockey.User.Player;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -24,41 +23,41 @@ public class Bat {
     private Player player;
     private final String type;
 
-    protected final float positionX;
-    protected final float positionY;
+    private float positionX;
+    private float positionY;
 
-    protected final float diameter;
+    public final float diameter;
     protected final float radius;
 
     public Node node;
-    public Node imageNode;
+    public Image imageNode;
 
     private final BodyType bodyType;
     private Body body;
 
-    public Bat(float positionX, float positionY, String type) {
+    public Bat(float enginePositionX, float enginePositionY, String type) {
         this.type = type;
-        this.positionX = positionX;
-        this.positionY = positionY;
+        this.positionX = Utils.toPixelPosX(enginePositionX);
+        this.positionY = Utils.toPixelPosY(enginePositionY);
         this.bodyType = BodyType.KINEMATIC;
         this.radius = Constants.BAT_RADIUS;
         this.diameter = radius * 2.0f;
-        this.node = create();
+        this.node = create(enginePositionX, enginePositionY);
         this.imageNode = createImageNode();
     }
 
-    private Node create() {
+    private Node create(float enginePositionX, float enginePositionY) {
         Circle bat = new Circle();
         bat.setRadius(radius);
         bat.setFill(Color.TRANSPARENT);
 
-        bat.setLayoutX(Utils.toPixelPosX(positionX));
-        bat.setLayoutY(Utils.toPixelPosY(positionY));
+        bat.setLayoutX(positionX);
+        bat.setLayoutY(positionY);
         bat.setCache(true);
 
         BodyDef bd = new BodyDef();
         bd.type = bodyType;
-        bd.position.set(positionX, positionY);
+        bd.position.set(enginePositionX, enginePositionY);
 
         CircleShape cs = new CircleShape();
         cs.m_radius = radius * 0.1f;
@@ -75,7 +74,7 @@ public class Bat {
         return bat;
     }
 
-    private Node createImageNode() {
+    private Image createImageNode() {
         Image image;
         switch (type) {
             case Constants.COLOR_RED:
@@ -88,16 +87,15 @@ public class Bat {
                 image = new Image(getClass().getResourceAsStream("Images/GreenBat.png"), diameter, diameter, false, false);
                 break;
         }
-        ImageView imageView = new ImageView(image);
-        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
-        return imageView;
+        return image;
     }
 
     public void setPosition(float xPosition, float yPosition) {
         node.setLayoutX(xPosition);
         node.setLayoutY(yPosition);
-        imageNode.setLayoutX(xPosition - radius);
-        imageNode.setLayoutY(yPosition - radius);
+
+        positionX = xPosition;
+        positionY = yPosition;
     }
 
     public float getPositionX() {
@@ -106,6 +104,14 @@ public class Bat {
 
     public float getPositionY() {
         return positionY;
+    }
+
+    public double getImagePositionX() {
+        return positionX - radius - 28f;
+    }
+
+    public float getImagePositionY() {
+        return positionY - radius + 7f;
     }
 
     public Fixture getFixture() {

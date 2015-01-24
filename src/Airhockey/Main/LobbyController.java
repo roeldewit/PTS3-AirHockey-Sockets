@@ -6,11 +6,11 @@ import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -60,15 +60,16 @@ public class LobbyController implements Initializable {
     ArrayList<User> users;
     Database database;
     User user;
+    Lobby lobby;
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setLobbyLists();
-
     }
 
     public LobbyController() {
-        database = new Database();
+//        database = new Database();
 
         chatItems = FXCollections.observableArrayList();
         ratingItems = FXCollections.observableArrayList();
@@ -76,13 +77,12 @@ public class LobbyController implements Initializable {
     }
 
     public void startGame() {
-        gameItems.add(tfDescription.getText());
-        lvOpenGames.setItems(gameItems);
+        lobby.addWaitingGame(tfDescription.getText());
 
 //        primaryStage = (Stage) btStartGame.getScene().getWindow();
 //        primaryStage.close();
-        try {
-            User user = database.getUser("TestUser5");
+//        try {
+//            User user = database.getUser("TestUser5");
             ArrayList<Player> playerList = new ArrayList();
             Player player = new Player(0, user);
             playerList.add(player);
@@ -91,17 +91,14 @@ public class LobbyController implements Initializable {
             //Game g = new Game(primaryStage, false, false);
             //Game multiGame = new Game(primaryStage, playerList, new ArrayList());
             //showPopupWindow("Under Construction", "Return to Lobby");
-        } catch (IOException | SQLException ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        } catch (IOException | SQLException ex) {
+//            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     public void chatboxSend() {
-        if (tfChatbox.getText() != "") {
-            chatItems.add(tfChatbox.getText());
-            lvChatbox.setItems(chatItems);
-            tfChatbox.clear();
-        }
+        lobby.writeLine(tfChatbox.getText());
+        tfChatbox.clear();
     }
 
     public void StartGameList() {
@@ -115,21 +112,31 @@ public class LobbyController implements Initializable {
         }
     }
 
-    public void updateChatbox(String text, String person) {
+    public void updateChatbox(String person, String text) {
+        chatItems.add(person + ":" + text);
+        lvChatbox.setItems(chatItems);
+    }
 
+    public void updateGameList(String description, String id) {
+        gameItems.add(id + ":" + description);
+        lvOpenGames.setItems(gameItems);
+    }
+
+    public void setLobby(Lobby lobby) {
+        this.lobby = lobby;
     }
 
     private void setLobbyLists() {
-        try {
-            users = database.getUsers();
-        } catch (IOException | SQLException ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        for (User user : users) {
-            ratingItems.add(user.getUsername() + " : " + user.getRating());
-        }
-        lvRatingTable.setItems(ratingItems);
+//        try {
+//            users = database.getUsers();
+//        } catch (IOException | SQLException ex) {
+//            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//        for (User user : users) {
+//            ratingItems.add(user.getUsername() + " : " + user.getRating());
+//        }
+//        lvRatingTable.setItems(ratingItems);
     }
 
     protected void showPopupWindow(String message, String buttonText) {

@@ -1,9 +1,6 @@
 package Airhockey.Elements;
 
 import Airhockey.Utils.Utils;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -17,34 +14,37 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class TriangleLeftLine {
 
-    public Node node;
+    //public Node node;
+    private final float enginePositionXL;
+    private final float enginePositionYL;
+    private final float enginePositionXR;
+    private final float enginePositionYR;
 
-    private final float positionXL;
-    private final float positionYL;
-    private final float positionXR;
-    private final float positionYR;
+    public final float positionXL;
+    public final float positionYL;
+    public final float positionXR;
+    public final float positionYR;
 
     public TriangleLeftLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR) {
-        this.positionXL = positionXL;
-        this.positionYL = positionYL;
-        this.positionXR = positionXR;
-        this.positionYR = positionYR;
+        this.enginePositionXL = positionXL;
+        this.enginePositionYL = positionYL;
+        this.enginePositionXR = positionXR;
+        this.enginePositionYR = positionYR;
 
-        node = create();
+        this.positionXL = Utils.toPixelPosX(enginePositionXL) + 22;
+        this.positionYL = Utils.toPixelPosY(enginePositionYL) - 25;
+        this.positionXR = Utils.toPixelPosX(enginePositionXR) + 16;
+        this.positionYR = Utils.toPixelPosY(enginePositionYR) - 20;
+
+        create();
     }
 
-    private Node create() {
-        Vec2 VecL = new Vec2(positionXL, positionYL);
-        Vec2 VecR = new Vec2(positionXR, positionYR);
+    private void create() {
+        Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
+        Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
         Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecL, VecR};
 
-        Line left = new Line(Utils.toPixelPosX(positionXL) + 34, Utils.toPixelPosY(positionYL) - 37, Utils.toPixelPosX(positionXR) + 28, Utils.toPixelPosY(positionYR) - 32);
-        left.setStroke(Color.BLACK);
-        left.setStrokeWidth(3.0);
-
         createJboxLinePiece(vecAbAB, 4);
-
-        return left;
     }
 
     private void createJboxLinePiece(Vec2[] vertices, int verticesSize) {
@@ -64,6 +64,5 @@ public class TriangleLeftLine {
         Body body = Utils.world.createBody(bd);
         body.createFixture(fd);
     }
-
 
 }

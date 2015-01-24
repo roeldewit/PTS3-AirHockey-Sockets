@@ -24,13 +24,12 @@ public class Decoder {
     }
 
     protected void receiveCommand(String command) {
-        System.out.println("recieved command: " + command);
         String[] splitter = command.split(Protocol.SEPERATOR);
 
         switch (splitter[0]) {
             case Protocol.CHAT_LINE:
                 Platform.runLater(() -> {
-                    mainLobby.writeline(splitter[0], splitter[1]);
+                    mainLobby.writeline(splitter[1], splitter[2]);
                 });
                 break;
 

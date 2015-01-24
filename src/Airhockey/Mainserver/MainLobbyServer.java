@@ -65,8 +65,9 @@ public class MainLobbyServer extends Thread implements IConnectionManager {
             Logger.getLogger(MainLobbyServer.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             try {
+                lobby.getEncoder().deleteManager(this);
                 objectOutputStream.close();
-                socket.close();
+                socket.close();                
             } catch (IOException ex) {
                 Logger.getLogger(MainLobbyServer.class.getName()).log(Level.SEVERE, null, ex);
             }

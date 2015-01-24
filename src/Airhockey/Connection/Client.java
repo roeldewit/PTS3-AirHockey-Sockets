@@ -48,7 +48,7 @@ public class Client extends Thread implements IConnectionManager {
 
             while (!interrupted) {
                 String command = (String) ois.readObject();
-                System.out.println("Command Received: " + command);
+                //System.out.println("Command Received: " + command);
                 decoder.receiveCommand(command);
             }
         } catch (IOException | ClassNotFoundException e) {

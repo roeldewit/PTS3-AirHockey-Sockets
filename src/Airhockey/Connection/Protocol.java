@@ -27,7 +27,7 @@ class Protocol {
 
     protected static final String GAME_OVER = "game_over";
 
-    protected static final String CLIENT_LEAVING_GAME = "client_leaving_game";
+    protected static final String CLIENT_LEFT_GAME = "client_leaving_game";
 
     protected static final String GAME_CANCELLED = "game_cancelled";
 
@@ -51,4 +51,6 @@ class Protocol {
     protected static final String CURRENT_OPENGAMES = "current_opengames";
 
     protected static final String ADD_NEW_GAME = "add_new_game";
+
+    protected static final String OPEN_GAME = "open_game";
 }
