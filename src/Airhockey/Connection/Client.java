@@ -1,14 +1,10 @@
 package Airhockey.Connection;
 
 import Airhockey.Main.Game;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
+
 
 /**
  * Thread used by a client computer to start a connection with the game's host.

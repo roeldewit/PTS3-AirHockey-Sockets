@@ -8,8 +8,7 @@ package Airhockey.Main;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.stage.Stage;
 
 /**

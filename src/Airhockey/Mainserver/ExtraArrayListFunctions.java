@@ -1,7 +1,6 @@
 package Airhockey.Mainserver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Extra functions for array list

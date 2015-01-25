@@ -3,10 +3,7 @@ package Airhockey.Elements;
 import Airhockey.Utils.Utils;
 import org.jbox2d.collision.shapes.ChainShape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.*;
 
 /**
  * Class that holds the data for the game's center and right side of the triangle.

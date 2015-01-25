@@ -1,7 +1,6 @@
 package Airhockey.Connection;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class used to encode any data that needs to be send to other players of the game.

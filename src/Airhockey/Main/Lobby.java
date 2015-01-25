@@ -1,7 +1,6 @@
 package Airhockey.Main;
 
-import Airhockey.Connection.LobbyClient;
-import Airhockey.Connection.LobbyEncoder;
+import Airhockey.Connection.*;
 import Airhockey.Serializable.SerializableGame;
 import Airhockey.Utils.ScoreCalculator;
 import Airhockey.User.User;
@@ -10,15 +9,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import java.util.logging.*;
+import javafx.fxml.*;
+import javafx.scene.*;
 import javafx.stage.Stage;
 
 /**

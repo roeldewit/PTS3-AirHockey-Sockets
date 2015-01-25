@@ -1,10 +1,6 @@
 package Airhockey.Main;
 
-import Airhockey.Connection.Client;
-import Airhockey.Connection.ConnectionListener;
-import Airhockey.Connection.Decoder;
-import Airhockey.Connection.Encoder;
-import Airhockey.Connection.IConnectionManager;
+import Airhockey.Connection.*;
 import Airhockey.Elements.Bat;
 import Airhockey.Renderer.*;
 import Airhockey.User.*;
@@ -13,8 +9,7 @@ import Airhockey.Utils.ScoreCalculator;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
