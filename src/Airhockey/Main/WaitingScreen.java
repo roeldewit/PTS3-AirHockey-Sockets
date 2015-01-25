@@ -5,6 +5,7 @@
  */
 package Airhockey.Main;
 
+import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,8 +20,11 @@ public class WaitingScreen {
 
     Database database = new Database();
     Game game;
+    private User CurrentUser;
 
-    public WaitingScreen(Stage stage, boolean isHost) throws Exception {
+    public WaitingScreen(Stage stage, boolean isHost, User currentUser) throws Exception {
+        this.CurrentUser = currentUser;
+
         if (isHost == true) {
             Parent root = FXMLLoader.load(getClass().getResource("WaitingScreenHost.fxml"));
 
@@ -28,7 +32,7 @@ public class WaitingScreen {
             stage.setScene(new Scene(root));
             stage.show();
             game = new Game(stage);
-            game.startAsHost(database.getUser("t"));
+            game.startAsHost(currentUser);
         } else {
             Parent root = FXMLLoader.load(getClass().getResource("WaitingScreenClient.fxml"));
 
@@ -36,8 +40,14 @@ public class WaitingScreen {
             stage.setScene(new Scene(root));
             stage.show();
             game = new Game(stage);
-            game.startAsClient(database.getUser("t"), "127.0.0.1");
+            game.startAsClient(currentUser, "127.0.0.1");
         }
     }
 
+    public WaitingScreen() {
+    }
+
+    public User getCurrentUser() {
+        return CurrentUser;
+    }
 }

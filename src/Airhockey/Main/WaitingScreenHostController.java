@@ -39,6 +39,7 @@ public class WaitingScreenHostController implements Initializable {
 
     public static final ObservableList items = FXCollections.observableArrayList();
     Database database = new Database();
+    WaitingScreen waitingScreen = new WaitingScreen();
 
     /**
      * Initializes the controller class.
@@ -49,18 +50,14 @@ public class WaitingScreenHostController implements Initializable {
     }
 
     public void screenSetup() {
-        try {
-            items.add(database.getUser("t"));
-            lvJoinedPlayers.setItems(items);
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(WaitingScreenHostController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        items.add(waitingScreen.getCurrentUser());
+        lvJoinedPlayers.setItems(items);
     }
 
     public void returnLobby() {
         try {
             Stage stage = (Stage) lvJoinedPlayers.getScene().getWindow();
-            Lobby lobby = new Lobby(stage);
+            Lobby lobby = new Lobby(stage,waitingScreen.getCurrentUser());
         } catch (NotBoundException | IOException | SQLException ex) {
             Logger.getLogger(WaitingScreenHostController.class.getName()).log(Level.SEVERE, null, ex);
         }

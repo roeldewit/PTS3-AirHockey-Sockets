@@ -61,7 +61,6 @@ public class LobbyController implements Initializable {
     Database database;
     User user;
     Lobby lobby;
-    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -78,22 +77,7 @@ public class LobbyController implements Initializable {
 
     public void startGame() {
         lobby.addWaitingGame(tfDescription.getText());
-
-//        primaryStage = (Stage) btStartGame.getScene().getWindow();
-//        primaryStage.close();
-//        try {
-//            User user = database.getUser("TestUser5");
-            ArrayList<Player> playerList = new ArrayList();
-            Player player = new Player(0, user);
-            playerList.add(player);
-            playerList.add(new Player(1, new User("TestUser6")));
-            playerList.add(new Player(2, new User("TestUser7")));
-            //Game g = new Game(primaryStage, false, false);
-            //Game multiGame = new Game(primaryStage, playerList, new ArrayList());
-            //showPopupWindow("Under Construction", "Return to Lobby");
-//        } catch (IOException | SQLException ex) {
-//            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        lobby.startGame();
     }
 
     public void chatboxSend() {
@@ -102,14 +86,7 @@ public class LobbyController implements Initializable {
     }
 
     public void StartGameList() {
-        primaryStage = (Stage) btStartGame.getScene().getWindow();
-        primaryStage.close();
-        
-        try {
-            WaitingScreen waitingScreen = new WaitingScreen(primaryStage,true);
-        } catch (Exception ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        lobby.startGameList();
     }
 
     public void updateChatbox(String person, String text) {

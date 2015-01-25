@@ -206,6 +206,22 @@ public class Lobby {
         return returnvalue;
     }
 
+    public void startGame() {
+        try {
+            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, true, this.getUser(user.getUsername()));
+        } catch (Exception ex) {
+            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void startGameList() {
+        try {
+            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, false, this.getUser(user.getUsername()));
+        } catch (Exception ex) {
+            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 //    private Game joinGame(int id, String usern) throws RemoteException {
 //        SerializableGame serializableGame = mainLobby.getWaitingGames().get(id);
 //        mainLobby.joinGame(id, usern);
