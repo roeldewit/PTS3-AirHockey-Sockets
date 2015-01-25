@@ -39,10 +39,12 @@ import javafx.util.Duration;
 import org.jbox2d.dynamics.Body;
 
 /**
+ * Deufault class providing basic methods for rendering of the game frame.
+ * This class alone is not enough to render the complete game and needs to be extended.
  *
  * @author Sam
  */
-class BaseRenderer implements IRenderer {
+abstract class BaseRenderer implements IRenderer {
 
     protected Label player1NameLabel;
     protected Label player2NameLabel;
@@ -68,8 +70,8 @@ class BaseRenderer implements IRenderer {
 
     protected Puck puck;
     protected Bat redBat;
-    protected LeftBat blueBat;
-    protected RightBat greenBat;
+    protected SideBat blueBat;
+    protected SideBat greenBat;
     protected TriangleLine triangle;
     protected TriangleLeftLine triangleLeft;
     protected Goal redGoal;
@@ -86,11 +88,26 @@ class BaseRenderer implements IRenderer {
     protected ParallelTransition parallelTransition;
     private ObservableList<String> chatBoxData;
 
+    /**
+     * Constructor
+     *
+     * @param primaryStage Used to create a window inside which the game will be displayed.
+     * @param game The game of the current player.
+     */
     public BaseRenderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
         this.game = game;
     }
 
+    /**
+     * Creates the window where the game is played in and adds all the visible
+     * items and listeners.
+     *
+     * @param encoder The enoder used to send game data to the clients if this
+     * is a multiplayer game.
+     * @param playerNumber The number assingned to each player in a game, used
+     * for item positioning.
+     */
     @Override
     public void start(Encoder encoder, int playerNumber) {
         this.encoder = encoder;
@@ -99,10 +116,10 @@ class BaseRenderer implements IRenderer {
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
         primaryStage.setWidth(Utils.WIDTH + 250);
-        primaryStage.setHeight(Utils.HEIGHT);
+        primaryStage.setHeight(Utils.HEIGHT + 20);
         primaryStage.centerOnScreen();
 
-        scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
+        scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT + 20, Color.web(Constants.COLOR_GRAY));
 
         mainBorderPane = new BorderPane();
         mainBorderPane.setCenter(root);
@@ -118,6 +135,10 @@ class BaseRenderer implements IRenderer {
         primaryStage.show();
     }
 
+    /**
+     * Starts a countdown animation on screen before the start of the game.
+     * Starts the game when the countdown has finished.
+     */
     protected void startCountDown() {
         Timeline timeline = new Timeline(new KeyFrame(
                 Duration.millis(1100),
@@ -130,7 +151,7 @@ class BaseRenderer implements IRenderer {
     }
 
     /**
-     * Class that initates each frame.
+     * Class that initates each frame for the countdown.
      */
     private class CountDownTimer implements EventHandler<ActionEvent> {
 
@@ -139,9 +160,9 @@ class BaseRenderer implements IRenderer {
         @Override
         public void handle(ActionEvent event) {
             if (number == 0) {
-                textEffectTransition("Go!", false);
+                textEffectAnimation("Go!", false);
             } else {
-                textEffectTransition(String.valueOf(number), false);
+                textEffectAnimation(String.valueOf(number), false);
                 number--;
             }
         }
@@ -164,9 +185,12 @@ class BaseRenderer implements IRenderer {
         }
     }
 
+    /**
+     * Creates the static non-movable items on screen.
+     */
     protected void createStaticItems() {
-        triangle = new TriangleLine(0, 4f, 5f, 81f, 5f, 45f, 95f);
-        triangleLeft = new TriangleLeftLine(0, 4f, 5f, 45f, 95f);
+        triangle = new TriangleLine(4f, 5f, 81f, 5f, 45f, 95f);
+        triangleLeft = new TriangleLeftLine(4f, 5f, 45f, 95f);
 
         redGoal = new Goal(Constants.COLOR_RED);
         blueGoal = new Goal(Constants.COLOR_BLUE);
@@ -177,7 +201,10 @@ class BaseRenderer implements IRenderer {
                 greenGoal.collisionNode);
     }
 
-    protected void createOtherItems() {
+    /**
+     * Creates the game's textFields.
+     */
+    protected void createTextFields() {
         roundNumberLabel = new Label("1");
         if (playerNumber > 3) {
             spectatorLabel = new Label("SPECTATING");
@@ -198,6 +225,17 @@ class BaseRenderer implements IRenderer {
         spectatorLabel = addTextEffects(spectatorLabel, root, Color.WHITE, 30, 40, textSize);
     }
 
+    /**
+     * Applies effects to a given textfield label.
+     *
+     * @param label Label the effects are applied to.
+     * @param group Group to add the label to.
+     * @param color Text color of the label.
+     * @param x x-axis position of the label.
+     * @param y y-axis position of the label.
+     * @param size Text size of the label.
+     * @return The label with all the effects applied to it.
+     */
     private Label addTextEffects(Label label, Group group, Color color, int x, int y, double size) {
         DropShadow shadow = new DropShadow();
         shadow.setOffsetY(1.0);
@@ -220,7 +258,10 @@ class BaseRenderer implements IRenderer {
         player3NameLabel.setText(p3Name.toUpperCase() + ": ");
     }
 
-    protected void drawShapes() {
+    /**
+     * Creates and sets up the canvas where all the items will be drawn on.
+     */
+    protected void createCanvas() {
         canvas = new Canvas(900, 740);
 
         double rotation = 0;
@@ -242,6 +283,9 @@ class BaseRenderer implements IRenderer {
         graphicsContext.setLineWidth(3);
     }
 
+    /**
+     * Updates the canvas with all the new item values.
+     */
     protected void updateFrame() {
         //Clear frame
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -254,7 +298,7 @@ class BaseRenderer implements IRenderer {
 
         //Draw Goals
         graphicsContext.drawImage(redGoal.imageNode, redGoal.topLeftX - 22, redGoal.topLeftY + 10);
-        graphicsContext.drawImage(blueGoal.imageNode, blueGoal.topLeftX + 35, blueGoal.topLeftY - 110);
+        graphicsContext.drawImage(blueGoal.imageNode, blueGoal.topLeftX + 35, blueGoal.topLeftY - 120);
         graphicsContext.drawImage(greenGoal.imageNode, greenGoal.topLeftX + 60, greenGoal.topLeftY - 120);
 
         //Draw puck
@@ -270,6 +314,11 @@ class BaseRenderer implements IRenderer {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
+    /**
+     * Shows a popup when the game has finished with all the scores of the player's and a reason why the game was stopped.
+     *
+     * @param reason Reason why the game was stopped.
+     */
     protected void showGameOverPopupWindow(String reason) {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -305,6 +354,11 @@ class BaseRenderer implements IRenderer {
         dialogStage.show();
     }
 
+    /**
+     * Creates a chatbox on the game screen.
+     *
+     * @return Group with all the chatbox scene items.
+     */
     protected Group createChatBox() {
         chatBoxData = FXCollections.observableArrayList();
 
@@ -331,9 +385,7 @@ class BaseRenderer implements IRenderer {
 
                 if (playerNumber == 1) {
                     addChatBoxLine(line);
-                }
-
-                if (isMultiplayer) {
+                } else if (isMultiplayer) {
                     encoder.sendChatBoxLine(line);
                 }
 
@@ -352,9 +404,19 @@ class BaseRenderer implements IRenderer {
     public void addChatBoxLine(String line) {
         chatBoxData.add(line);
         chatBox.setItems(chatBoxData);
+
+        if (playerNumber == 1 && isMultiplayer) {
+            encoder.sendChatBoxLine(line);
+        }
     }
 
-    protected void textEffectTransition(String text, boolean isRoundTransition) {
+    /**
+     * Displays a text animation with text expanding in the center of the screen.
+     *
+     * @param text Text that is displayed in this animation.
+     * @param isRoundTransition True if this is a animation for a new round.
+     */
+    protected void textEffectAnimation(String text, boolean isRoundTransition) {
         int duration;
         final Label textLabel = new Label();
 
@@ -410,10 +472,20 @@ class BaseRenderer implements IRenderer {
         ft.playFromStart();
     }
 
+    /**
+     * Closes the game screen and returns to the login screen.
+     */
     protected void leave() {
         primaryStage.close();
         Login login = new Login();
         login.Login();
+    }
+
+    /**
+     * Allows moving of the non-static game items on screen.
+     */
+    public void startGameTimer() {
+        //Implemented in child class.
     }
 
     @Override
@@ -456,7 +528,4 @@ class BaseRenderer implements IRenderer {
         //Implemented in child class.
     }
 
-    public void startGameTimer() {
-        //Implemented in child class.
-    }
 }

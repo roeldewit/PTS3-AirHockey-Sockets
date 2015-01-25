@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * This Thread runs on the hosts computer and listens to incoming client who want to join as a player or spectator.
  *
  * @author Sam
  */
@@ -19,11 +20,21 @@ public class ConnectionListener extends Thread {
     private final Decoder decoder;
     private final Game game;
 
+    /**
+     * Constructor
+     *
+     * @param game The host's game.
+     * @param decoder Decoder used to decode the incoming commands.
+     */
     public ConnectionListener(Game game, Decoder decoder) {
         this.decoder = decoder;
         this.game = game;
     }
 
+    /**
+     * Listen for client connections.
+     * When aforementioned is found starts a new connectionManager to communicate to the connected client.
+     */
     @Override
     public void run() {
         ServerSocket serverSocket = null;
@@ -55,6 +66,9 @@ public class ConnectionListener extends Thread {
         }
     }
 
+    /**
+     * Cancels the listener and shuts down this thread.
+     */
     public void cancel() {
         acceptMore = false;
         System.out.println("ConnectionListener cancelled");

@@ -13,7 +13,6 @@ import javafx.animation.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.*;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -27,6 +26,8 @@ import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.contacts.Contact;
 
 /**
+ * Class extending the BaseRenderer and adding functionallity for a game played by a by the game's host or for a singleplayer game.
+ * This class adds all the game's physics calculations. If this is used for a muliplayer game it also sends the game's information to the clients.
  *
  * @author Sam
  */
@@ -37,8 +38,6 @@ public class Renderer extends BaseRenderer {
     protected Body batBody;
     protected Body leftBatBody;
     protected Body rightBatBody;
-
-    private Button startButton;
 
     private Shape redGoalShape;
     private Shape blueGoalShape;
@@ -54,6 +53,13 @@ public class Renderer extends BaseRenderer {
     private Timeline timeline;
     private ExecutorService threadPool;
 
+    /**
+     * Constructor
+     *
+     * @param primaryStage Used to create a window inside which the game will be displayed.
+     * @param game The game of the current player.
+     * @param isMultiplayer True if this is a multiplayer game.
+     */
     public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
         this.batController = new BatController(this);
@@ -70,15 +76,6 @@ public class Renderer extends BaseRenderer {
         });
     }
 
-    /**
-     * Creates the window where the game is played in and adds all the visible
-     * items and listeners.
-     *
-     * @param encoder The enoder used to send game data to the clients if this
-     * is a multiplayer game.
-     * @param playerNumber The number assingned to each player in a game, used
-     * for item positioning.
-     */
     @Override
     public final void start(Encoder encoder, int playerNumber) {
         super.start(encoder, playerNumber);
@@ -100,11 +97,11 @@ public class Renderer extends BaseRenderer {
 
         PropertiesManager.saveProperty("REB-Difficulty", "HARD");
 
-        drawShapes();
+        createCanvas();
         createStaticItems();
         createMovableItems();
         linkPlayersToBats();
-        super.createOtherItems();
+        super.createTextFields();
 
         canUpdate = true;
         timeline.playFromStart();
@@ -117,32 +114,15 @@ public class Renderer extends BaseRenderer {
         canMoveItems = true;
     }
 
+    /**
+     * Assigns a bat to every player. This is used to determine the player after a bat has scored a goal.
+     */
     private void linkPlayersToBats() {
         game.addPlayerToBat(1, redBat);
         game.addPlayerToBat(2, blueBat);
         game.addPlayerToBat(3, greenBat);
     }
 
-//    @Override
-//    protected void createOtherItems() {
-//        super.createOtherItems();
-//
-//        startButton = new Button();
-////        startButton.setLayoutX(30);
-////        startButton.setLayoutY((45));
-//        startButton.setLayoutX(970);
-//        startButton.setLayoutY((100));
-//        startButton.setText("Start");
-//        startButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 2,2,1,1 );");
-//        startButton.setOnAction((ActionEvent event) -> {
-//            canUpdate = true;
-//            timeline.playFromStart();
-//            startButton.setDisable(true);
-//            startButton.setVisible(false);
-//        });
-//
-//        root.getChildren().add(startButton);
-//    }
     /**
      * Creates the movable items on the screen which include the puck and the
      * three bats.
@@ -151,21 +131,21 @@ public class Renderer extends BaseRenderer {
         puck = new Puck();
 
         if (batBody != null) {
-            redBat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
+            redBat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Bat.CENTER_BAT);
         } else {
-            redBat = new Bat(48f, 15f, Constants.COLOR_RED);
+            redBat = new Bat(48f, 15f, Bat.CENTER_BAT);
         }
 
         if (leftBatBody != null) {
-            blueBat = new LeftBat(leftBatBody.getPosition().x, leftBatBody.getPosition().y, Constants.COLOR_BLUE);
+            blueBat = new SideBat(leftBatBody.getPosition().x, leftBatBody.getPosition().y, Bat.LEFT_BAT);
         } else {
-            blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
+            blueBat = new SideBat(31f, 50f, Bat.LEFT_BAT);
         }
 
         if (rightBatBody != null) {
-            greenBat = new RightBat(rightBatBody.getPosition().x, rightBatBody.getPosition().y, Constants.COLOR_GREEN);
+            greenBat = new SideBat(rightBatBody.getPosition().x, rightBatBody.getPosition().y, Bat.RIGHT_BAT);
         } else {
-            greenBat = new RightBat(64.5f, 50f, Constants.COLOR_GREEN);
+            greenBat = new SideBat(64.5f, 50f, Bat.RIGHT_BAT);
         }
 
         root.getChildren().addAll(puck.node,
@@ -203,16 +183,16 @@ public class Renderer extends BaseRenderer {
         Shape greenGoalIntersect = Shape.intersect(greenGoalShape, puckShape);
 
         if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, redBat, encoder);
+            game.setGoal(lastHittedBat, redBat);
         } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, blueBat, encoder);
+            game.setGoal(lastHittedBat, blueBat);
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, greenBat, encoder);
+            game.setGoal(lastHittedBat, greenBat);
         }
     }
 
     /**
-     * Class that initates each frame.
+     * Class that initates each frame and commands the background threads.
      */
     private class FrameTimer implements EventHandler<ActionEvent> {
 
@@ -304,11 +284,6 @@ public class Renderer extends BaseRenderer {
 
     /**
      * Receives the calculated data from the background task
-     *
-     * @param puckX
-     * @param puckY
-     * @param batX
-     * @param batY
      */
     private synchronized void threadCallback(float puckX, float puckY, float batX, float batY, float leftBatX, float leftBatY, float rightBatX, float rightBatY) {
         if (canUpdate) {
@@ -400,30 +375,22 @@ public class Renderer extends BaseRenderer {
         }
     }
 
+    /**
+     * Checks the puck's speed and determines if it is going to slow or to fast.
+     * Adjusts the speed of the puck according to this.
+     */
     private void correctPuckSpeed() {
         Vec2 vec = puckBody.getLinearVelocity();
         Vec2 puckBodyCenter = puckBody.getWorldCenter();
 
-        if (Math.abs(vec.x) > Math.abs(vec.y)) {
-            if (vec.x > 20) {
-                puckBody.applyLinearImpulse(new Vec2(-1.0f, 0.0f), puckBodyCenter);
-            } else if (vec.x >= 0 && vec.x < 12) {
-                puckBody.applyLinearImpulse(new Vec2(1.0f, 1.0f), puckBodyCenter);
-            } else if (vec.x > -12 && vec.x <= 0) {
-                puckBody.applyLinearImpulse(new Vec2(-1.0f, -1.0f), puckBodyCenter);
-            } else if (vec.x < -20) {
-                puckBody.applyLinearImpulse(new Vec2(1.0f, 0.0f), puckBodyCenter);
-            }
-        } else {
-            if (vec.y > 20) {
-                puckBody.applyLinearImpulse(new Vec2(0.0f, -1.0f), puckBodyCenter);
-            } else if (vec.y >= 0 && vec.y < 12) {
-                puckBody.applyLinearImpulse(new Vec2(1.0f, 1.0f), puckBodyCenter);
-            } else if (vec.y > -12 && vec.y <= 0) {
-                puckBody.applyLinearImpulse(new Vec2(-1.0f, -1.0f), puckBodyCenter);
-            } else if (vec.y < -20) {
-                puckBody.applyLinearImpulse(new Vec2(0.0f, 1.0f), puckBodyCenter);
-            }
+        if ((Math.abs(vec.x) + Math.abs(vec.y)) > 60) {
+            puckBody.applyLinearImpulse(new Vec2(-(vec.x / 8.0f), -(vec.y / 8.0f)), puckBodyCenter);
+        } else if ((Math.abs(vec.x) + Math.abs(vec.y)) > 50) {
+            puckBody.applyLinearImpulse(new Vec2(-(vec.x / 10.0f), -(vec.y / 10.0f)), puckBodyCenter);
+        } else if ((Math.abs(vec.x) + Math.abs(vec.y)) > 40) {
+            puckBody.applyLinearImpulse(new Vec2(-(vec.x / 15.0f), -(vec.y / 15.0f)), puckBodyCenter);
+        } else if ((Math.abs(vec.x) + Math.abs(vec.y)) < 20) {
+            puckBody.applyLinearImpulse(new Vec2((vec.x / 20.0f), (vec.y / 20.0f)), puckBodyCenter);
         }
     }
 
@@ -450,7 +417,7 @@ public class Renderer extends BaseRenderer {
                 greenBat.node);
 
         roundNumberLabel.setText(String.valueOf(round));
-        textEffectTransition("Round " + round, true);
+        textEffectAnimation("Round " + round, true);
 
         createMovableItems();
         linkPlayersToBats();
@@ -461,13 +428,12 @@ public class Renderer extends BaseRenderer {
     /**
      * Displays an animation with the number of the new round.
      *
-     * @param text
-     * @param isRoundTransition
-     * @param round The number of the new round.
+     * @param text The string of text displayed in the animation.
+     * @param isRoundTransition True if this is a transition into a new round.
      */
     @Override
-    protected void textEffectTransition(String text, boolean isRoundTransition) {
-        super.textEffectTransition(text, isRoundTransition);
+    protected void textEffectAnimation(String text, boolean isRoundTransition) {
+        super.textEffectAnimation(text, isRoundTransition);
         if (isRoundTransition) {
             parallelTransition.setOnFinished(new OnAnimationCompletionListener());
         }
@@ -489,9 +455,9 @@ public class Renderer extends BaseRenderer {
     }
 
     /**
-     * Shows a popup on the screen with the reason the game was stopped
+     * Stops the game
      *
-     * @param reason
+     * @param reason A string with information for the user why the game was stopped.
      */
     @Override
     public void stop(String reason) {
@@ -544,15 +510,6 @@ public class Renderer extends BaseRenderer {
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
             //Not used
-        }
-    }
-
-    @Override
-    public void addChatBoxLine(String line) {
-        super.addChatBoxLine(line);
-        if (isMultiplayer) {
-            System.out.println("O HELL NO");
-            encoder.sendChatBoxLine(line);
         }
     }
 }

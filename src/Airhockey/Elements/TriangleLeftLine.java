@@ -9,6 +9,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
 /**
+ * Class that holds the data for the game's left side of the triangle.
  *
  * @author Sam
  */
@@ -25,7 +26,15 @@ public class TriangleLeftLine {
     public final float positionXR;
     public final float positionYR;
 
-    public TriangleLeftLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR) {
+    /**
+     * Constructor
+     *
+     * @param positionXL x-axis position of the line's left point.
+     * @param positionYL y-axis position of the line's left point.
+     * @param positionXR x-axis position of the line's right point.
+     * @param positionYR y-axis position of the line's right point.
+     */
+    public TriangleLeftLine(float positionXL, float positionYL, float positionXR, float positionYR) {
         this.enginePositionXL = positionXL;
         this.enginePositionYL = positionYL;
         this.enginePositionXR = positionXR;
@@ -39,21 +48,20 @@ public class TriangleLeftLine {
         create();
     }
 
+    /**
+     * Creates the JBox2D engine collision node for this object.
+     */
     private void create() {
         Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
         Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
-        Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecL, VecR};
+        Vec2[] vecCombined = new Vec2[]{VecL, VecR, VecL, VecR};
 
-        createJboxLinePiece(vecAbAB, 4);
-    }
-
-    private void createJboxLinePiece(Vec2[] vertices, int verticesSize) {
         BodyDef bd = new BodyDef();
         bd.type = BodyType.KINEMATIC;
-        bd.position.set(vertices[0].x, vertices[0].y);
+        bd.position.set(vecCombined[0].x, vecCombined[0].y);
 
         PolygonShape line = new PolygonShape();
-        line.set(vertices, verticesSize);
+        line.set(vecCombined, 4);
 
         FixtureDef fd = new FixtureDef();
         fd.shape = line;
@@ -64,5 +72,4 @@ public class TriangleLeftLine {
         Body body = Utils.world.createBody(bd);
         body.createFixture(fd);
     }
-
 }

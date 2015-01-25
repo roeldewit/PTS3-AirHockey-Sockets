@@ -9,6 +9,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
 /**
+ * Class that holds the data for the game's center and right side of the triangle.
  *
  * @author Sam
  */
@@ -28,7 +29,17 @@ public class TriangleLine {
     public final float positionXC;
     public final float positionYC;
 
-    public TriangleLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR, float positionXC, float positionYC) {
+    /**
+     * Constructor
+     *
+     * @param positionXL x-axis position of the line's left point.
+     * @param positionYL y-axis position of the line's left point.
+     * @param positionXR x-axis position of the line's right point.
+     * @param positionYR y-axis position of the line's right point.
+     * @param positionXC x-axis position of the line's center point.
+     * @param positionYC y-axis position of the line's center point.
+     */
+    public TriangleLine(float positionXL, float positionYL, float positionXR, float positionYR, float positionXC, float positionYC) {
         this.enginePositionXL = positionXL;
         this.enginePositionYL = positionYL;
         this.enginePositionXR = positionXR;
@@ -46,22 +57,21 @@ public class TriangleLine {
         createLinePieceAB();
     }
 
+    /**
+     * Creates the JBox2D engine collision node for this object.
+     */
     private void createLinePieceAB() {
         Vec2 VecL = new Vec2(enginePositionXL, enginePositionYL);
         Vec2 VecR = new Vec2(enginePositionXR, enginePositionYR);
         Vec2 VecC = new Vec2(enginePositionXC, enginePositionYC);
-        Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecC};
+        Vec2[] vecCombined = new Vec2[]{VecL, VecR, VecC};
 
-        createJboxLinePiece(vecAbAB, 3);
-    }
-
-    private void createJboxLinePiece(Vec2[] vertices, int verticesSize) {
         BodyDef bd = new BodyDef();
         bd.type = BodyType.KINEMATIC;
-        bd.position.set(vertices[0].x, vertices[0].y);
+        bd.position.set(vecCombined[0].x, vecCombined[0].y);
 
         ChainShape s = new ChainShape();
-        s.createChain(vertices, verticesSize);
+        s.createChain(vecCombined, 3);
 
         FixtureDef fd = new FixtureDef();
         fd.shape = s;
@@ -71,21 +81,5 @@ public class TriangleLine {
 
         Body body = Utils.world.createBody(bd);
         body.createFixture(fd);
-    }
-
-    public int getCenterTopY() {
-        return (int) Utils.toPixelPosY(enginePositionYC) - 32;
-    }
-
-    public int getBottomLeftY() {
-        return (int) Utils.toPixelPosY(enginePositionYL) - 36;
-    }
-
-    public int getBottomLeftX() {
-        return (int) Utils.toPixelPosX(enginePositionXL) + 35;
-    }
-
-    public int getBottomRightX() {
-        return (int) Utils.toPixelPosX(enginePositionXR) + 22;
     }
 }

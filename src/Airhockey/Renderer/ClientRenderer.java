@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
+ * Class extending the BaseRenderer and adding functionallity for a game played by a client.
+ * This class does not have any game physics calculations. Only used do execute any commands received from the host.
  *
  * @author Sam
  */
@@ -15,6 +17,13 @@ public final class ClientRenderer extends BaseRenderer {
 
     private final boolean isSpectator;
 
+    /**
+     * Constructor
+     *
+     * @param primaryStage Used to create a window inside which the game will be displayed.
+     * @param game The game of the current client player.
+     * @param isSpectator True if the current player is a spectator and therefore doesn't participate in this game.
+     */
     public ClientRenderer(Stage primaryStage, Game game, boolean isSpectator) {
         super(primaryStage, game);
         this.isSpectator = isSpectator;
@@ -43,21 +52,28 @@ public final class ClientRenderer extends BaseRenderer {
             scene.setOnKeyReleased(keyListener);
         }
 
-        drawShapes();
+        createCanvas();
         createStaticItems();
         createMovableItems(false);
-        createOtherItems();
+        createTextFields();
     }
 
+    /**
+     * Creates the movable items on the screen which include the puck and the
+     * three bats.
+     *
+     * @param itemsAlreadyOnScreen True if the items are already show on the screen
+     * and therefore do not have to be created again.
+     */
     private void createMovableItems(boolean itemsAlreadyOnScreen) {
         puck = new Puck();
         root.getChildren().addAll(puck.node);
 
         if (!itemsAlreadyOnScreen) {
-            redBat = new Bat(48f, 15f, Constants.COLOR_RED);
+            redBat = new Bat(48f, 15f, Bat.CENTER_BAT);
 
-            blueBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
-            greenBat = new RightBat(64.5f, 50f, Constants.COLOR_GREEN);
+            blueBat = new SideBat(31f, 50f, Bat.LEFT_BAT);
+            greenBat = new SideBat(64.5f, 50f, Bat.RIGHT_BAT);
 
             root.getChildren().addAll(redBat.node);
             root.getChildren().addAll(blueBat.node);
@@ -107,7 +123,7 @@ public final class ClientRenderer extends BaseRenderer {
     public void resetRound(int round) {
         root.getChildren().removeAll(puck.node);
         roundNumberLabel.setText(Integer.toString(round));
-        textEffectTransition("Round " + round, true);
+        textEffectAnimation("Round " + round, true);
         createMovableItems(true);
     }
 }

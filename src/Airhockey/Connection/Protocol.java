@@ -1,6 +1,7 @@
 package Airhockey.Connection;
 
 /**
+ * Class used to define all command that are send over the connection between the host and it's clients.
  *
  * @author Sam
  */

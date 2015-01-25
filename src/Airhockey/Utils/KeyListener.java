@@ -7,7 +7,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 /**
- * Class containing the key listener
+ * Class used to catch the players key-inputs.
+ * Uses this information to control the players bat.
  *
  * @author Sam
  */
@@ -21,9 +22,9 @@ public class KeyListener implements EventHandler<KeyEvent> {
     /**
      * Constructor
      *
-     * @param batController BatController
-     * @param playerNumber
-     * @param encoder
+     * @param batController BatController object
+     * @param playerNumber Number of the player
+     * @param encoder Encoder to send data to the server if this is a client.
      */
     public KeyListener(BatController batController, int playerNumber, Encoder encoder) {
         this.batController = batController;
@@ -32,7 +33,8 @@ public class KeyListener implements EventHandler<KeyEvent> {
     }
 
     /**
-     * Handle a key event
+     * Handle a key press or release.
+     * Key pressed or releases of the left and right arrow keys are caught.
      *
      * @param event Key event
      */

@@ -89,31 +89,31 @@ public class Login extends Application {
     }
 
     public void startSingleGame() {
-        Scanner input = new Scanner(System.in);
-        System.out.print("HOST: yes/no");
-        String levelString = input.next();
+//        Scanner input = new Scanner(System.in);
+//        System.out.print("HOST: yes/no");
+//        String levelString = input.next();
+//
+//        if (levelString.equals("yes")) {
+//            primaryStage = (Stage) btLogin.getScene().getWindow();
+//            //primaryStage.close();
+//            Game game = new Game(primaryStage);
+//            game.startAsHost(new User("SERVER"));
+//        } else if (levelString.equals("s")) {
+//            primaryStage = (Stage) btLogin.getScene().getWindow();
+//            //primaryStage.close();
+//            Game game = new Game(primaryStage);
+//            game.startAsSpectator(new User("SPECTATOR"), "localhost");
+//        } else {
+//            primaryStage = (Stage) btLogin.getScene().getWindow();
+//            //primaryStage.close();
+//            Game game = new Game(primaryStage);
+//            game.startAsClient(new User("CLIENT"), "localhost");
+//        }
 
-        if (levelString.equals("yes")) {
-            primaryStage = (Stage) btLogin.getScene().getWindow();
-            //primaryStage.close();
-            Game game = new Game(primaryStage);
-            game.startAsHost(new User("SERVER"));
-        } else if (levelString.equals("s")) {
-            primaryStage = (Stage) btLogin.getScene().getWindow();
-            //primaryStage.close();
-            Game game = new Game(primaryStage);
-            game.startAsSpectator(new User("SPECTATOR"), "localhost");
-        } else {
-            primaryStage = (Stage) btLogin.getScene().getWindow();
-            //primaryStage.close();
-            Game game = new Game(primaryStage);
-            game.startAsClient(new User("CLIENT"), "localhost");
-        }
-
-//        primaryStage = (Stage) btLogin.getScene().getWindow();
-//        //primaryStage.close();
-//        Game game = new Game(primaryStage);
-//        game.startSinglePlayer();
+        primaryStage = (Stage) btLogin.getScene().getWindow();
+        //primaryStage.close();
+        Game game = new Game(primaryStage);
+        game.startSinglePlayer();
     }
 
     public void actionlogin() {

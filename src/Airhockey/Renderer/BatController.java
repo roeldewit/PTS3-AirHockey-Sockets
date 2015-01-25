@@ -3,6 +3,7 @@ package Airhockey.Renderer;
 import org.jbox2d.common.Vec2;
 
 /**
+ * Class used to move all the bats that are controlled by a player.
  *
  * @author Sam
  */
@@ -43,12 +44,13 @@ public class BatController {
     }
 
     /**
-     * CenterBat
+     * Deterimines if the center bat is allowed to move in a certain direction.
+     * If true moves the center bat in that direction.
      *
-     * @param batPositionX Xpostion of the center bat
+     * @param batPositionX x-axis postion of the center bat
      */
     protected void controlCenterBat(float batPositionX) {
-        if (batPositionX > Constants.CENTER_BAT_MIN_Y) {
+        if (batPositionX > Constants.CENTER_BAT_MIN_X) {
             canStopBatLeft = true;
             if (batSideMovementLeft) {
                 renderer.batBody.setLinearVelocity(new Vec2(-25.0f, 0.0f));
@@ -61,7 +63,7 @@ public class BatController {
                 canStopBatLeft = false;
             }
         }
-        if (batPositionX < Constants.CENTER_BAT_MAX_Y) {
+        if (batPositionX < Constants.CENTER_BAT_MAX_X) {
             canStopBatRight = true;
             if (batSideMovementRight) {
                 renderer.batBody.setLinearVelocity(new Vec2(25.0f, 0.0f));
@@ -76,6 +78,11 @@ public class BatController {
         }
     }
 
+    /**
+     * Allows the center bat to move in the given direction.
+     *
+     * @param direction The requested direction.
+     */
     public void startBatMovement(int direction) {
         if (direction == LEFT) {
             batSideMovementLeft = true;
@@ -86,6 +93,9 @@ public class BatController {
         }
     }
 
+    /**
+     * Stops the movement of the center bat and disallows it to move any further.
+     */
     public void stopBatMovement() {
         batSideMovementLeft = false;
         batSideMovementRight = false;
@@ -93,9 +103,11 @@ public class BatController {
     }
 
     /**
-     * Left Bat
+     * Deterimines if the left bat is allowed to move in a certain direction.
+     * If true moves the left bat in that direction.
      *
-     * @param leftBatPositionY
+     *
+     * @param leftBatPositionY y-axis position of the left bat.
      */
     protected void controlLeftBat(float leftBatPositionY) {
         if (leftBatPositionY > Constants.SIDE_BAT_MAX_Y) {
@@ -126,6 +138,11 @@ public class BatController {
         }
     }
 
+    /**
+     * Allows the left bat to move in the given direction.
+     *
+     * @param direction The requested direction.
+     */
     public void startLeftBatMovement(int direction) {
         if (direction == UP) {
             leftBatMovementUp = true;
@@ -136,6 +153,9 @@ public class BatController {
         }
     }
 
+    /**
+     * Stops the movement of the right bat and disallows it to move any further.
+     */
     public void stopLeftBatMovement() {
         leftBatMovementUp = false;
         leftBatMovementDown = false;
@@ -143,9 +163,11 @@ public class BatController {
     }
 
     /**
-     * Right Bat
+     * Deterimines if the rigth bat is allowed to move in a certain direction.
+     * If true moves the right bat in that direction.
      *
-     * @param rightBatPositionY
+     *
+     * @param rightBatPositionY y-axis position of the right bat.
      */
     protected void controlRightBat(float rightBatPositionY) {
         if (rightBatPositionY > Constants.SIDE_BAT_MAX_Y) {
@@ -176,6 +198,11 @@ public class BatController {
         }
     }
 
+    /**
+     * Allows the rigth bat to move in the given direction.
+     *
+     * @param direction The requested direction.
+     */
     public void startRightBatMovement(int direction) {
         if (direction == UP) {
             rightBatMovementUp = true;
@@ -186,6 +213,9 @@ public class BatController {
         }
     }
 
+    /**
+     * Stops the movement of the rigth bat and disallows it to move any further.
+     */
     public void stopRightBatMovement() {
         rightBatMovementUp = false;
         rightBatMovementDown = false;

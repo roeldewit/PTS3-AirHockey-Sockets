@@ -3,16 +3,14 @@ package Airhockey.Elements;
 import Airhockey.Renderer.Constants;
 import javafx.animation.RotateTransition;
 import javafx.scene.Node;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.jbox2d.common.Vec2;
 
 /**
+ * Class that holds all the information about the game's goal item.
  *
  * @author Sam
  */
@@ -24,14 +22,15 @@ public class Goal {
     private final int height = 40;
     private final double rotation;
 
-    private final Color color;
-
-    public Node node;
     public Node collisionNode;
     public Image imageNode;
 
+    /**
+     * Constructor
+     *
+     * @param colorCode Determines the color and position of this goal.
+     */
     public Goal(String colorCode) {
-
         switch (colorCode) {
             case Constants.COLOR_RED:
                 topLeftX = 320;
@@ -53,46 +52,14 @@ public class Goal {
                 break;
         }
 
-        color = Color.web(colorCode);
-
-        this.node = createRect();
         this.collisionNode = createCollisionNode();
     }
 
     /**
-     * Creates the visible part of the goal
+     * Creates collision detection part of this goal.
      *
-     * @return
+     * @return The collision node;
      */
-    private Node createRect() {
-        DropShadow shadow = new DropShadow();
-        shadow.setOffsetY(3.0);
-        shadow.setOffsetX(2.0);
-        shadow.setColor(Color.BLACK);
-
-        InnerShadow is = new InnerShadow();
-        is.setOffsetX(0.5f);
-        is.setOffsetY(0.5f);
-
-        Rectangle goal = new Rectangle();
-        goal.setWidth(width);
-        goal.setHeight(height);
-        goal.setFill(color);
-        goal.setLayoutX(topLeftX);
-        goal.setLayoutY(topLeftY);
-        goal.setArcWidth(10);
-        goal.setArcHeight(10);
-        //goal.setEffect(shadow);
-        goal.setEffect(is);
-
-        RotateTransition t = new RotateTransition(Duration.millis(1), goal);
-        t.setByAngle(rotation);
-        t.setAutoReverse(false);
-        t.play();
-
-        return goal;
-    }
-
     private Node createCollisionNode() {
         Vec2 TopLeft = new Vec2(topLeftX + 20, topLeftY + 20);
         Vec2 TopRight = new Vec2((float) (topLeftX + width) - 20, topLeftY + 20);

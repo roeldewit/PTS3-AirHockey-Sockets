@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Thread used by the host computer to start a connection with the client of the game.s
  *
  * @author Sam
  */
@@ -24,6 +25,14 @@ public class Server extends Thread implements IConnectionManager {
     private final Decoder decoder;
     private final Game game;
 
+    /**
+     * Constructor
+     *
+     * @param socket The socket used for communication.
+     * @param decoder Decoder used to decode the incoming commands.
+     * @param game The host's game.
+     * @param clientNumber The number of the client this class' socket is connected to.
+     */
     public Server(Socket socket, Decoder decoder, Game game, int clientNumber) {
         this.socket = socket;
         this.decoder = decoder;
@@ -31,6 +40,10 @@ public class Server extends Thread implements IConnectionManager {
         this.clientNumber = clientNumber;
     }
 
+    /**
+     * Tries to create a connection with the client.
+     * Keeps listening for incoming commands.
+     */
     @Override
     public void run() {
         try {

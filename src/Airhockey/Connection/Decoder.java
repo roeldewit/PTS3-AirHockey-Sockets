@@ -5,6 +5,7 @@ import Airhockey.Renderer.IRenderer;
 import javafx.application.Platform;
 
 /**
+ * Class used to decode any received messages by the connectionManagers.
  *
  * @author Sam
  */
@@ -13,11 +14,22 @@ public class Decoder {
     private final IRenderer renderer;
     private final Game game;
 
+    /**
+     * Constructor
+     *
+     * @param renderer The renderer used for this game.
+     * @param game The game.
+     */
     public Decoder(IRenderer renderer, Game game) {
         this.renderer = renderer;
         this.game = game;
     }
 
+    /**
+     * Decodes any received command and forwards the information to the renderer or game classes.
+     *
+     * @param command Received command by the connectionManager.
+     */
     protected void receiveCommand(String command) {
         String[] splitter = command.split(Protocol.SEPERATOR);
 
@@ -106,7 +118,7 @@ public class Decoder {
 
             case Protocol.GAME_OVER:
                 Platform.runLater(() -> {
-                    game.gameOver(splitter[1]);
+                    game.gameOver(splitter[1], -1);
                 });
                 break;
             case Protocol.GAME_CANCELLED:

@@ -1,16 +1,17 @@
 package Airhockey.Renderer;
 
 /**
+ * Used to store static rendering values used by classes all over this project
  *
  * @author Sam
  */
 public class Constants {
 
-    protected static final int SIDE_BAT_MAX_Y = 270;
+    protected static final int SIDE_BAT_MAX_Y = 255;
     protected static final int SIDE_BAT_MIN_Y = 490;
     protected static final int CENTER_BAT_Y = 652;
-    protected static final int CENTER_BAT_MAX_Y = 620;
-    protected static final int CENTER_BAT_MIN_Y = 360;
+    protected static final int CENTER_BAT_MAX_X = 620;
+    protected static final int CENTER_BAT_MIN_X = 360;
 
     public static final float BAT_RADIUS = 40;
 

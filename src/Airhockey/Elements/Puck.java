@@ -19,8 +19,8 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class Puck {
 
-    private static final int DEFAULT_ENGINE_X_POS = 48;
-    private static final int DEFAULT_ENGINE_Y_POS = 40;
+    private static final float DEFAULT_ENGINE_X_POS = 47.5f;
+    private static final float DEFAULT_ENGINE_Y_POS = 39.0f;
 
     public Node node;
     public Image imageNode;
