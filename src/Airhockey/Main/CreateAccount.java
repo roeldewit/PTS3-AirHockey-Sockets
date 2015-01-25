@@ -18,7 +18,9 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 /**
- *
+ * Starts up the create account frame.
+ * Actions are handled in the controller.
+ * 
  * @author martijn
  */
 public class CreateAccount {
