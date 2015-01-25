@@ -18,6 +18,7 @@ import javafx.scene.text.Font;
 import javafx.stage.*;
 
 /**
+ * FXML Controller class for creating a account.
  *
  * @author martijn
  */
@@ -35,6 +36,9 @@ public class CreateAccountController implements Initializable {
     Database database;
     Stage primaryStage;
 
+    /**
+     * Constuctor sets up the database.
+     */
     public CreateAccountController() {
         database = new Database();
     }
@@ -42,9 +46,11 @@ public class CreateAccountController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         primaryStage = new Stage();
-        //sbtCreate = new Button();
     }
 
+    /**
+     * New account gets created after, and put into the database.
+     */
     public void actionCreateNewAccount() {
         try {
             if (database.insertUser(tfUsername.getText(), tfPassword.getText())) {
@@ -62,6 +68,11 @@ public class CreateAccountController implements Initializable {
         }
     }
 
+    /**
+     * Returns the player to the login frame.
+     * This method is called after the player pressed
+     * the button Cancel.
+     */
     public void actionCancel() {
         Stage primaryStage = (Stage) tfPassword.getScene().getWindow();
         primaryStage.close();
@@ -69,6 +80,12 @@ public class CreateAccountController implements Initializable {
         login.Login();
     }
 
+    /**
+     * Custom messagebox.
+     * 
+     * @param message that will be shown.
+     * @param buttonText Text that wil be on the button.
+     */
     protected void showPopupWindow(String message, String buttonText) {
         final Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);

@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 
 /**
  * FXML Controller class
+ * Designed for the client.
  *
  * @author martijn
  */
@@ -29,21 +30,21 @@ public class WaitingScreenClientController implements Initializable {
     private ListView lvJoinedPlayersClient;
 
     private Database database = new Database();
+    WaitingScreen waitingScreen = new WaitingScreen();
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        screenSetup();
     }
 
+    /**
+     * List with users that are joined gets filled.
+     */
     public void screenSetup() {
-        try {
-            items.add(database.getUser("t"));
-            lvJoinedPlayersClient.setItems(items);
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(WaitingScreenHostController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        items.add(waitingScreen.getCurrentUser());
+        lvJoinedPlayersClient.setItems(items);
     }
 }

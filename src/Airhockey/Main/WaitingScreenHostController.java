@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 
 /**
  * FXML Controller class
+ * Designed for the host.
  *
  * @author martijn
  */
@@ -43,11 +44,18 @@ public class WaitingScreenHostController implements Initializable {
         screenSetup();
     }
 
+    /**
+     * List with users that are joined gets filled.
+     */
     public void screenSetup() {
         items.add(waitingScreen.getCurrentUser());
         lvJoinedPlayers.setItems(items);
     }
 
+    /**
+     * Gets called after pressing the return to lobby button.
+     * It returns the player to the lobby.
+     */
     public void returnLobby() {
         try {
             Stage stage = (Stage) lvJoinedPlayers.getScene().getWindow();
