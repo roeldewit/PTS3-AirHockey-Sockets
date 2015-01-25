@@ -24,7 +24,7 @@ public class Decoder {
     }
 
     /**
-     * decodes the the recieved message
+     * decodes the the recieved messages
      * @param command 
      */
     protected void receiveCommand(String command) {
