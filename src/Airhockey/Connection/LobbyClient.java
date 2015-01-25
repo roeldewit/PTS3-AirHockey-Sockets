@@ -27,6 +27,11 @@ public class LobbyClient extends Thread implements IConnectionManager {
 
     private LobbyEncoder encoder;
 
+    /**
+     * manages the communication between the MainServer and the lobby
+     *
+     * @param lobby
+     */
     public LobbyClient(Lobby lobby) {
         decoder = new LobbyDecoder(lobby);
     }
@@ -39,8 +44,8 @@ public class LobbyClient extends Thread implements IConnectionManager {
             System.out.println("Starting client....");
             socket = new Socket("localhost", 8190);
             System.out.println(socket.getInetAddress());
-            
-            encoder = new LobbyEncoder(this);            
+
+            encoder = new LobbyEncoder(this);
 
             System.out.println("Client bound");
 
@@ -68,10 +73,19 @@ public class LobbyClient extends Thread implements IConnectionManager {
         }
     }
 
+    /**
+     * gets the #Encoder
+     *
+     * @return the #Encoder
+     */
     public synchronized LobbyEncoder getEncoder() {
         return encoder;
     }
 
+    /**
+     * send the given command using the connected socket
+     * @param command 
+     */
     @Override
     public synchronized void sendCommand(String command) {
         try {
@@ -82,6 +96,9 @@ public class LobbyClient extends Thread implements IConnectionManager {
         }
     }
 
+    /**
+     * the client stops listening to the server
+     */
     public void cancel() {
         interrupted = false;
     }

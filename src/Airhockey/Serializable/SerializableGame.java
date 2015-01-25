@@ -26,6 +26,13 @@ public class SerializableGame implements Serializable {
 
     public ArrayList<String> usernames;
 
+    /**
+     * contains all data for a game
+     * @param id
+     * @param description
+     * @param hostIP
+     * @param username 
+     */
     public SerializableGame(int id, String description, String hostIP, String username) {
         this.id = id;
         this.description = description;

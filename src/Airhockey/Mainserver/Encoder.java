@@ -17,14 +17,27 @@ public class Encoder {
         this.connectionMangerList = new ArrayList<>();
     }
 
+    /**
+     * adds a #IConnectionManager to the list of connectionManagers
+     * @param connectionManager 
+     */
     public synchronized void addManager(IConnectionManager connectionManager) {
         connectionMangerList.add(connectionManager);
     }
 
+    /**
+     * deletes a #IConnectionManager from the list of connectionManagers
+     * @param connecitonManager 
+     */
     public synchronized void deleteManager(IConnectionManager connecitonManager) {
         connectionMangerList.remove(connecitonManager);
     }
 
+    /**
+     * sends a chatboxLine
+     * @param username
+     * @param text 
+     */
     public synchronized void sendChatBoxLine(String username, String text) {
         String command = Protocol.CHAT_LINE
                 + Protocol.SEPERATOR
@@ -35,6 +48,11 @@ public class Encoder {
         sendCommand(command);
     }
 
+    /**
+     * sends the initial chatbox
+     * @param chatboxlines
+     * @param connectionManager 
+     */
     public synchronized void sendInitialChatBox(ArrayList<ArrayList<String>> chatboxlines, IConnectionManager connectionManager) {
         String command = Protocol.CHATBOX_LINES
                 + Protocol.SEPERATOR;
@@ -51,6 +69,11 @@ public class Encoder {
         connectionManager.sendCommand(command);
     }
 
+    /**
+     * send a GameID
+     * @param gameID
+     * @param connectionManager 
+     */
     public synchronized void sendGameID(int gameID, IConnectionManager connectionManager) {
         String command = Protocol.GAME_ID
                 + Protocol.SEPERATOR
@@ -59,6 +82,11 @@ public class Encoder {
         connectionManager.sendCommand(command);
     }
 
+    /**
+     * sends all waiting games
+     * @param waitingGames
+     * @param connectionManager 
+     */
     public synchronized void sendWaitingGames(ArrayList<ArrayList<String>> waitingGames, IConnectionManager connectionManager) {
         System.out.println("sending waiting games");
         String command = Protocol.CURRENT_OPENGAMES
@@ -80,6 +108,10 @@ public class Encoder {
         connectionManager.sendCommand(command);
     }
 
+    /**
+     * sends a waiting game
+     * @param waitingGame 
+     */
     public synchronized void sendWaitingGame(ArrayList<String> waitingGame) {
         String command = Protocol.OPEN_GAME
                 + Protocol.SEPERATOR
@@ -97,6 +129,11 @@ public class Encoder {
         sendCommand(command);
     }
 
+    /**
+     * sends all busy games
+     * @param busyGames
+     * @param connectionManager 
+     */
     public synchronized void sendBusyGames(ArrayList<ArrayList<String>> busyGames, IConnectionManager connectionManager) {
         System.out.println("sending busy games");
         String command = Protocol.CURRENT_BUSYGAMES
@@ -118,6 +155,10 @@ public class Encoder {
         connectionManager.sendCommand(command);
     }
 
+    /**
+     * sends a command
+     * @param command 
+     */
     public synchronized void sendCommand(String command) {
         for (IConnectionManager manager : connectionMangerList) {
             manager.sendCommand(command);

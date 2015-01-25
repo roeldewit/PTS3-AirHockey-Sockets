@@ -15,6 +15,11 @@ public class LobbyDecoder {
         this.lobby = lobby;
     }
 
+    /**
+     * decodes the the recieved messages
+     *
+     * @param command
+     */
     protected void receiveCommand(String command) {
         String[] splitter = command.split(Protocol.SEPERATOR);
 

@@ -23,6 +23,10 @@ public class Decoder {
         this.connectionManager = connectionManager;
     }
 
+    /**
+     * decodes the the recieved message
+     * @param command 
+     */
     protected void receiveCommand(String command) {
         String[] splitter = command.split(Protocol.SEPERATOR);
 

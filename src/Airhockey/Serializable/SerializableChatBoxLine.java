@@ -19,6 +19,11 @@ public class SerializableChatBoxLine implements Serializable {
     
     public String text;
 
+    /**
+     * contains all data of a chatboxLine
+     * @param player
+     * @param text 
+     */
     public SerializableChatBoxLine(String player, String text) {
         this.player = player;
         this.text = text;
