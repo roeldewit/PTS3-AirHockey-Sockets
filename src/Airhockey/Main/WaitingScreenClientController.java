@@ -16,8 +16,7 @@ import javafx.fxml.*;
 import javafx.scene.control.*;
 
 /**
- * FXML Controller class
- * Designed for the client.
+ * FXML Controller class Designed for the client.
  *
  * @author martijn
  */
@@ -29,11 +28,14 @@ public class WaitingScreenClientController implements Initializable {
     @FXML
     private ListView lvJoinedPlayersClient;
 
-    private Database database = new Database();
+    private final Database database = new Database();
     WaitingScreen waitingScreen = new WaitingScreen();
 
     /**
      * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
