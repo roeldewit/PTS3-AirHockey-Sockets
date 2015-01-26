@@ -307,6 +307,20 @@ public class Game {
     }
 
     /**
+     * Closes the game window and returns to the previous window.
+     */
+    public void leave() {
+        primaryStage.close();
+
+        if (isMultiplayer) {
+            //Lobby lobby = new Lobby(primaryStage, user);
+        } else {
+            Login login = new Login();
+            login.Login();
+        }
+    }
+
+    /**
      * Gets called when this players game has disconnected.
      */
     public void connectionLost() {
