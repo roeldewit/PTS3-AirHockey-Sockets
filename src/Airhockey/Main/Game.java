@@ -66,7 +66,8 @@ public class Game {
     }
 
     /**
-     * Sets this game up as a multiplayer game, with the current user as the host.
+     * Sets this game up as a multiplayer game, with the current user as the
+     * host.
      *
      * @param user The current user.
      */
@@ -84,7 +85,8 @@ public class Game {
     }
 
     /**
-     * Sets this game up as a multiplayer game, with the current user as a client.
+     * Sets this game up as a multiplayer game, with the current user as a
+     * client.
      *
      * @param user The current user.
      * @param ipAddress The ip-adress of the host.
@@ -103,7 +105,8 @@ public class Game {
     }
 
     /**
-     * Sets this game up as a multiplayer game, with the current user as a spectator.
+     * Sets this game up as a multiplayer game, with the current user as a
+     * spectator.
      *
      * @param user The current user.
      * @param ipAddress The ip-adress of the host.
@@ -134,8 +137,8 @@ public class Game {
     }
 
     /**
-     * Called on the server (host) side after a client has connected to it.
-     * Adds the connecion manager to the data encoder.
+     * Called on the server (host) side after a client has connected to it. Adds
+     * the connecion manager to the data encoder.
      *
      * @param manager The connection-manger used to send and receive game data.
      */
@@ -154,9 +157,9 @@ public class Game {
     }
 
     /**
-     * Called on the server side to add a client to the game.
-     * This method keeps track of how many client players have joined the game.
-     * When two other players have joined it starts the game.
+     * Called on the server side to add a client to the game. This method keeps
+     * track of how many client players have joined the game. When two other
+     * players have joined it starts the game.
      *
      * @param userName Name of the client player.
      */
@@ -228,9 +231,9 @@ public class Game {
     }
 
     /**
-     * Called on the server side when a goal has been made.
-     * Informs all clients that a goal has been made and changes the players scores accordingly.
-     * If 10 rounds have been played this method cancels the game.
+     * Called on the server side when a goal has been made. Informs all clients
+     * that a goal has been made and changes the players scores accordingly. If
+     * 10 rounds have been played this method cancels the game.
      *
      * @param scorer Bat of the player that has scored a goal.
      * @param against Bat of the player who had a goal made against him.
@@ -281,7 +284,8 @@ public class Game {
     /**
      * Sets the scores of all the players who participated in this game.
      *
-     * @param playerNumberWhoDisconnected Number of the player who disconnected. -1 if nobody disconnected.
+     * @param playerNumberWhoDisconnected Number of the player who disconnected.
+     * -1 if nobody disconnected.
      */
     private void setScores(int playerNumberWhoDisconnected) {
         try {
@@ -307,6 +311,20 @@ public class Game {
     }
 
     /**
+     * Closes the game window and returns to the previous window.
+     */
+    public void leave() {
+        primaryStage.close();
+
+        if (isMultiplayer) {
+            //Lobby lobby = new Lobby(primaryStage, user);
+        } else {
+            Login login = new Login();
+            login.Login();
+        }
+    }
+
+    /**
      * Gets called when this players game has disconnected.
      */
     public void connectionLost() {
@@ -322,10 +340,13 @@ public class Game {
     }
 
     /**
-     * Stops the renderer and the connection manager, and if this game is the host notifies the clients that the game has finished and updates the players scores in the database.
+     * Stops the renderer and the connection manager, and if this game is the
+     * host notifies the clients that the game has finished and updates the
+     * players scores in the database.
      *
      * @param reason Reason the game has stopped.
-     * @param playerNumberWhoDisconnected Number of the player who disconnected. -1 if nobody disconnected.
+     * @param playerNumberWhoDisconnected Number of the player who disconnected.
+     * -1 if nobody disconnected.
      */
     public void gameOver(String reason, int playerNumberWhoDisconnected) {
         if (isMultiplayer) {

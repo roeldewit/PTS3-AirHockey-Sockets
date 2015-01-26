@@ -84,6 +84,19 @@ public class LobbyEncoder {
     }
 
     /**
+     * notify the server that a game has started
+     *
+     * @param id
+     */
+    public synchronized void startGame(int id) {
+        String command = Protocol.START_GAME
+                + Protocol.SEPERATOR
+                + id;
+
+        sendCommand(command);
+    }
+
+    /**
      * send the given command to the server
      *
      * @param command

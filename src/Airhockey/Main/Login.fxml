@@ -16,9 +16,19 @@
                         <Font size="43.0" />
                     </font>
                 </Label>
-                <Label layoutX="80.0" layoutY="133.0" text="DIFFICULTY">
+                <Label layoutX="40.0" layoutY="100.0" text="ENEMY DIFFICULTY">
                     <font>
                         <Font size="20.0" />
+                    </font>
+                </Label>
+                <Label layoutX="65.0" layoutY="140.0" text="LEFT">
+                    <font>
+                        <Font size="1.0" />
+                    </font>
+                </Label>
+                <Label layoutX="170.0" layoutY="140.0" text="RIGHT">
+                    <font>
+                        <Font size="1.0" />
                     </font>
                 </Label>
                 <fx:define>  

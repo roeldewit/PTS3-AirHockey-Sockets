@@ -3,6 +3,7 @@ package Airhockey.Renderer;
 import Airhockey.Connection.Encoder;
 import Airhockey.Elements.*;
 import Airhockey.Main.Game;
+import Airhockey.Main.Lobby;
 import Airhockey.Main.Login;
 import Airhockey.Utils.Utils;
 import javafx.animation.FadeTransition;
@@ -39,7 +40,7 @@ import javafx.util.Duration;
 import org.jbox2d.dynamics.Body;
 
 /**
- * Deufault class providing basic methods for rendering of the game frame.
+ * Default class providing basic methods for rendering of the game frame.
  * This class alone is not enough to render the complete game and needs to be extended.
  *
  * @author Sam
@@ -473,12 +474,10 @@ abstract class BaseRenderer implements IRenderer {
     }
 
     /**
-     * Closes the game screen and returns to the login screen.
+     * Closes the game screen and returns to the login or lobby screen.
      */
     protected void leave() {
-        primaryStage.close();
-        Login login = new Login();
-        login.Login();
+        game.leave();
     }
 
     /**

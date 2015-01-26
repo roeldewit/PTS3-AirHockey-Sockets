@@ -18,9 +18,13 @@ public class SideBat extends Bat {
     public SideBat(float postionX, float postionY, int type) {
         super(postionX, postionY, type);
 
-        String difficulty = PropertiesManager.loadProperty("LEB-Difficulty");
+        String difficulty;
+        if (type == LEFT_BAT) {
+            difficulty = PropertiesManager.loadProperty("LEB-Difficulty");
+        } else {
+            difficulty = PropertiesManager.loadProperty("REB-Difficulty");
+        }
         System.out.println("L:" + difficulty);
-        difficulty = "EASY";
 
         switch (difficulty) {
             case "EASY":

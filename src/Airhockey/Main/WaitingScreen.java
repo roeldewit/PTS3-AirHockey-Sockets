@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 /**
  * Gets decided which fxml contoller gets loaded.
- * 
+ *
  * @author martijn
  */
 public class WaitingScreen {
@@ -24,15 +24,15 @@ public class WaitingScreen {
 
     /**
      * Constructor
-     * 
+     *
      * Gets decided which FXML controller gets loaded.
-     * 
+     *
      * @param stage is the current stage
      * @param isHost if host or not
      * @param currentUser of the session
-     * @throws Exception 
+     * @throws Exception
      */
-    public WaitingScreen(Stage stage, boolean isHost, User currentUser) throws Exception {
+    public WaitingScreen(Stage stage, boolean isHost, User currentUser, Lobby lobby, String ipHost) throws Exception {
         this.CurrentUser = currentUser;
 
         if (isHost == true) {
@@ -50,7 +50,7 @@ public class WaitingScreen {
             stage.setScene(new Scene(root));
             stage.show();
             game = new Game(stage);
-            game.startAsClient(currentUser, "127.0.0.1");
+            game.startAsClient(currentUser, ipHost);
         }
     }
 
@@ -61,7 +61,7 @@ public class WaitingScreen {
     }
 
     /**
-     * 
+     *
      * @return the current user of the session.
      */
     public User getCurrentUser() {

@@ -3,7 +3,8 @@ package Airhockey.Connection;
 import java.util.*;
 
 /**
- * Class used to encode any data that needs to be send to other players of the game.
+ * Class used to encode any data that needs to be send to other players of the
+ * game.
  *
  * @author Sam
  */
@@ -16,7 +17,7 @@ public class Encoder {
     }
 
     /**
-     * Adds a connectionmanager to the encoders list.
+     * Adds a #IConnectionManager to the encoders list.
      *
      * @param connectionManager ConnectionManager to add.
      * @param ready True if other end is ready to receive commands.
@@ -152,7 +153,8 @@ public class Encoder {
     }
 
     /**
-     * Called on client side. Send to host that player with the given number has quit.
+     * Called on client side. Send to host that player with the given number has
+     * quit.
      *
      * @param playerNumber
      */
@@ -165,7 +167,8 @@ public class Encoder {
     }
 
     /**
-     * Called on the clients side to send a command to move the client player's bat.
+     * Called on the clients side to send a command to move the client player's
+     * bat.
      *
      * @param playerNumber Number of the player ordering the command.
      * @param direction Requested direction of the players bat.
@@ -181,11 +184,13 @@ public class Encoder {
     }
 
     /**
-     * Used to send a command to only one client instead of all clients in this encoders list.
+     * Used to send a command to only one client instead of all clients in this
+     * encoders list.
      *
      * @param clientNumber Number of the client player to send the command to.
      * @param command The command to send.
-     * @param force True if the command has to be send even if the client isn't ready yet.
+     * @param force True if the command has to be send even if the client isn't
+     * ready yet.
      */
     private synchronized void sendCommandToOneClient(int clientNumber, String command, boolean force) {
         int i = 0;
