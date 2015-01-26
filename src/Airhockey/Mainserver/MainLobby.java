@@ -1,6 +1,7 @@
 package Airhockey.Mainserver;
 
 import Airhockey.Serializable.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -44,13 +45,17 @@ public class MainLobby {
         connectionListenerThread = new Thread(connectionListener);
         connectionListenerThread.start();
 
-        try {
-            FileInputStream fileInputStream = new FileInputStream("games.bin");
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            waitingGames = (ArrayList<SerializableGame>) objectInputStream.readObject();
-            objectInputStream.close();
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        File file = new File("games.bin");
+
+        if (file.exists() && !file.isDirectory()) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                waitingGames = (ArrayList<SerializableGame>) objectInputStream.readObject();
+                objectInputStream.close();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
         }
     }
 
