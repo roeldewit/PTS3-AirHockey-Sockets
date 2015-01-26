@@ -2,12 +2,11 @@ package Airhockey.Main;
 
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Renderer.Constants;
-import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
-import java.rmi.NotBoundException;
 import java.sql.SQLException;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.*;
 import javafx.fxml.*;
@@ -82,27 +81,6 @@ public class Login extends Application {
     }
 
     public void startSingleGame() {
-//        Scanner input = new Scanner(System.in);
-//        System.out.print("HOST: yes/no");
-//        String levelString = input.next();
-//
-//        if (levelString.equals("yes")) {
-//            primaryStage = (Stage) btLogin.getScene().getWindow();
-//            //primaryStage.close();
-//            Game game = new Game(primaryStage);
-//            game.startAsHost(new User("SERVER"));
-//        } else if (levelString.equals("s")) {
-//            primaryStage = (Stage) btLogin.getScene().getWindow();
-//            //primaryStage.close();
-//            Game game = new Game(primaryStage);
-//            game.startAsSpectator(new User("SPECTATOR"), "localhost");
-//        } else {
-//            primaryStage = (Stage) btLogin.getScene().getWindow();
-//            //primaryStage.close();
-//            Game game = new Game(primaryStage);
-//            game.startAsClient(new User("CLIENT"), "localhost");
-//        }
-
         primaryStage = (Stage) btLogin.getScene().getWindow();
         //primaryStage.close();
         Game game = new Game(primaryStage);
@@ -110,32 +88,32 @@ public class Login extends Application {
     }
 
     public void actionlogin() {
+        try {
+            database = new Database();
+            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
+                primaryStage = (Stage) btLogin.getScene().getWindow();
+                primaryStage.close();
+                Lobby lobby = new Lobby(primaryStage,database.getUser(tfUsername.getText()));
+                System.out.println("User: " + tfUsername.getText() + " logged in!");
+            } else {
+                showPopupWindow("Invalid login combination!", "Ok");
+                System.out.println("Logged in (no user)!");
+            }
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            showPopupWindow("Field is empty!", "Ok");
+        }
 
-        primaryStage = (Stage) btLogin.getScene().getWindow();
-        primaryStage.close();
-        Lobby lobby = new Lobby(primaryStage, new User("Jan"));
 
-//        try {
-//            database = new Database();
-//            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
-//                primaryStage = (Stage) btLogin.getScene().getWindow();
-//                primaryStage.close();
-//                Lobby lobby = new Lobby(primaryStage);
-//                System.out.println("User: " + tfUsername.getText() + " logged in!");
-//            } else {
-////                primaryStage = (Stage) btLogin.getScene().getWindow();
-////                primaryStage.close();
-////                Lobby lobby = new Lobby(primaryStage);
-//                showPopupWindow("Invalid login combination!", "Ok");
-//                System.out.println("Logged in (no user)!");
-//            }
-//        } catch (SQLException | IOException ex) {
-//            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (NotBoundException ex) {
-//            // to do add a proper notification
-//        } catch (IllegalArgumentException ex) {
-//            showPopupWindow("Field is empty!", "Ok");
-//        }
+
+
+
+
+
+
+
+
     }
 
     public void actionCreateAccount() {
@@ -148,26 +126,24 @@ public class Login extends Application {
         if (rbEasyLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
         }
-
-//        else if (rbNormalLeft.isSelected()) {
-//            PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
-//        } else if (rbHardLeft.isSelected()) {
-//            PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
-//        } else if (rbVeryHardLeft.isSelected()) {
-//            PropertiesManager.saveProperty("LEB-Difficulty", "VERY_HARD");
-//            System.out.println("vh");
-//        }
+        else if (rbNormalLeft.isSelected()) {
+            PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
+        } else if (rbHardLeft.isSelected()) {
+            PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
+        } else if (rbVeryHardLeft.isSelected()) {
+            PropertiesManager.saveProperty("LEB-Difficulty", "VERY_HARD");
+            System.out.println("vh");
+        }
         if (rbEasyRight.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
         }
-
-//        else if (rbNormalRight.isSelected()) {
-//            PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
-//        } else if (rbHardRight.isSelected()) {
-//            PropertiesManager.saveProperty("REB-Difficulty", "HARD");
-//        } else if (rbVeryHardRight.isSelected()) {
-//            PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
-//        }
+        else if (rbNormalRight.isSelected()) {
+            PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
+        } else if (rbHardRight.isSelected()) {
+            PropertiesManager.saveProperty("REB-Difficulty", "HARD");
+        } else if (rbVeryHardRight.isSelected()) {
+            PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
+        }
     }
 
     protected void showPopupWindow(String message, String buttonText) {
