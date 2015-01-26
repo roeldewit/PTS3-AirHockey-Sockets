@@ -89,32 +89,22 @@ public class Login extends Application {
     }
 
     public void actionlogin() {
-//        try {
-//            database = new Database();
-//            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
+        try {
+            database = new Database();
+            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
                 primaryStage = (Stage) btLogin.getScene().getWindow();
                 primaryStage.close();
-                Lobby lobby = new Lobby(primaryStage,new User("Martijn"));
-//                System.out.println("User: " + tfUsername.getText() + " logged in!");
-//            } else {
-//                showPopupWindow("Invalid login combination!", "Ok");
-//                System.out.println("Logged in (no user)!");
-//            }
-//        } catch (SQLException | IOException ex) {
-//            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IllegalArgumentException ex) {
-//            showPopupWindow("Field is empty!", "Ok");
-//        }
-
-
-
-
-
-
-
-
-
-
+                Lobby lobby = new Lobby(primaryStage, new User("Martijn"));
+                System.out.println("User: " + tfUsername.getText() + " logged in!");
+            } else {
+                showPopupWindow("Invalid login combination!", "Ok");
+                System.out.println("Logged in (no user)!");
+            }
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            showPopupWindow("Field is empty!", "Ok");
+        }
     }
 
     public void actionCreateAccount() {
@@ -126,8 +116,7 @@ public class Login extends Application {
     private void setDifficulty() {
         if (rbEasyLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
-        }
-        else if (rbNormalLeft.isSelected()) {
+        } else if (rbNormalLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
         } else if (rbHardLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
@@ -137,8 +126,7 @@ public class Login extends Application {
         }
         if (rbEasyRight.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
-        }
-        else if (rbNormalRight.isSelected()) {
+        } else if (rbNormalRight.isSelected()) {
             PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
         } else if (rbHardRight.isSelected()) {
             PropertiesManager.saveProperty("REB-Difficulty", "HARD");

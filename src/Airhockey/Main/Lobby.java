@@ -28,7 +28,7 @@ public class Lobby {
 
     private ScoreCalculator scoreCalculator;
 
-    //private final Database database;
+    private final Database database;
 
     private LobbyClient lobbyClient;
 
@@ -56,7 +56,7 @@ public class Lobby {
 
         users = new ArrayList<>();
 
-        //database = new Database();
+        database = new Database();
 
         initialSetUpLobby();
         chatbox = new Chatbox();
@@ -92,18 +92,16 @@ public class Lobby {
     public Chatbox getChatbox() {
         return chatbox;
     }
-    
+
     /**
-     * 
+     *
      * @return the current user.
      */
-    public User getCurrentUser()
-    {
+    public User getCurrentUser() {
         return this.user;
     }
-    
-    public HashMap<Integer, SerializableGame> getSerializableGames()
-    {
+
+    public HashMap<Integer, SerializableGame> getSerializableGames() {
         return this.serializableGames;
     }
 
@@ -131,13 +129,13 @@ public class Lobby {
         }
 
         if (returnvalue == null) {
-//            try {
-//                returnvalue = database.getUser(username);
-//            } catch (SQLException | IOException ex) {
-//                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+            try {
+                returnvalue = database.getUser(username);
+            } catch (SQLException | IOException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        return new User("Martijn");
+        return returnvalue;
     }
 
     /**

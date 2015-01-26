@@ -66,7 +66,7 @@ public class LobbyController implements Initializable {
     }
 
     public LobbyController() {
-//        database = new Database();
+        database = new Database();
 
         chatItems = FXCollections.observableArrayList();
         ratingItems = FXCollections.observableArrayList();
