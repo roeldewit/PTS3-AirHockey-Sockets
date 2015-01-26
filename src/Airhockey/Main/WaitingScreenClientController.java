@@ -53,7 +53,8 @@ public class WaitingScreenClientController implements Initializable {
      * List with users that are joined gets filled.
      */
     public void screenSetup() {
-        items.add(waitingScreen.getCurrentUser());
+        
+        items.add(waitingScreen.getSerGameUsernames());
         lvJoinedPlayersClient.setItems(items);
     }
 }

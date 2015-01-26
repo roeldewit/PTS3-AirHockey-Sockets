@@ -92,6 +92,20 @@ public class Lobby {
     public Chatbox getChatbox() {
         return chatbox;
     }
+    
+    /**
+     * 
+     * @return the current user.
+     */
+    public User getCurrentUser()
+    {
+        return this.user;
+    }
+    
+    public HashMap<Integer, SerializableGame> getSerializableGames()
+    {
+        return this.serializableGames;
+    }
 
     /**
      * get scoreCalculator
@@ -183,11 +197,11 @@ public class Lobby {
         }
     }
 
-    public void startGameList(int id) {
+    public void startGameList(SerializableGame serGame) {
         try {
-            SerializableGame serGame = (SerializableGame) serializableGames.get(id);
             String iphost = serGame.hostIP;
             WaitingScreen waitingScreen = new WaitingScreen(primaryStage, false, this.getUser(user.getUsername()), this, iphost);
+            waitingScreen.setSerGame(serGame);
         } catch (Exception ex) {
             Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }

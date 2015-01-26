@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import java.net.*?> 
+<?import java.net.*?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="812.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Airhockey.Main.LobbyController">
     <children>
@@ -12,7 +12,7 @@
         <Button fx:id="btStartGame" layoutX="369.0" layoutY="12.0" mnemonicParsing="false" onAction="#startGame" prefHeight="31.0" prefWidth="146.0" text="Start new game" />
         <ListView fx:id="lvOpenGames" layoutX="14.0" layoutY="100.0" onMouseClicked="#StartGameList" prefHeight="286.0" prefWidth="287.0" />
         <ListView fx:id="lvRatingTable" layoutX="314.0" layoutY="100.0" prefHeight="141.0" prefWidth="270.0" />
-        <ListView layoutX="314.0" layoutY="268.0" prefHeight="118.0" prefWidth="270.0" />
+        <ListView fx:id="lvBusyGames" layoutX="314.0" layoutY="268.0" onMouseClicked="#StartGameSpectator" prefHeight="118.0" prefWidth="270.0" />
         <Label layoutX="350.0" layoutY="66.0" text="Rating Table (Last 5 games)" />
         <Label layoutX="400.0" layoutY="240.0" text="Busy games" />
         <Separator layoutY="56.0" prefHeight="3.0" prefWidth="812.0" />

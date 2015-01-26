@@ -41,7 +41,7 @@ public class WaitingScreenHostController implements Initializable {
      * List with users that are joined gets filled.
      */
     public void screenSetup() {
-        items.add(waitingScreen.getCurrentUser());
+        items.add(waitingScreen.getSerGameUsernames());
         lvJoinedPlayers.setItems(items);
     }
 

@@ -5,8 +5,10 @@
  */
 package Airhockey.Main;
 
+import Airhockey.Serializable.SerializableGame;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
+import java.util.ArrayList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.Stage;
@@ -21,6 +23,7 @@ public class WaitingScreen {
     Database database = new Database();
     Game game;
     private User CurrentUser;
+    SerializableGame SerGame;
 
     /**
      * Constructor
@@ -34,7 +37,7 @@ public class WaitingScreen {
      */
     public WaitingScreen(Stage stage, boolean isHost, User currentUser, Lobby lobby, String ipHost) throws Exception {
         this.CurrentUser = currentUser;
-
+        
         if (isHost == true) {
             Parent root = FXMLLoader.load(getClass().getResource("WaitingScreenHost.fxml"));
 
@@ -52,6 +55,23 @@ public class WaitingScreen {
             game = new Game(stage);
             game.startAsClient(currentUser, ipHost);
         }
+    }
+    
+    /**
+     * Sets the new serializable game
+     * @param sergame
+     */
+    public void setSerGame(SerializableGame sergame)
+    {
+        this.SerGame = sergame;
+    }
+    
+    /**
+     * @return list of users
+     */
+    public ArrayList getSerGameUsernames()
+    {
+        return this.SerGame.usernames;
     }
 
     /**

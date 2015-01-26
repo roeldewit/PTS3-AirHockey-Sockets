@@ -1,6 +1,7 @@
 package Airhockey.Main;
 
 import Airhockey.Renderer.Constants;
+import Airhockey.Serializable.SerializableGame;
 import Airhockey.User.*;
 import Airhockey.Utils.Database;
 import java.io.IOException;
@@ -45,14 +46,19 @@ public class LobbyController implements Initializable {
     @FXML
     ListView lvOpenGames;
 
+    @FXML
+    ListView lvBusyGames;
+
     Stage primaryStage;
     ObservableList<String> chatItems;
     ObservableList<String> ratingItems;
     ObservableList<String> gameItems;
+    ObservableList<String> busyGameItems;
     ArrayList<User> users;
     Database database;
     User user;
     Lobby lobby;
+    Game game;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -65,6 +71,7 @@ public class LobbyController implements Initializable {
         chatItems = FXCollections.observableArrayList();
         ratingItems = FXCollections.observableArrayList();
         gameItems = FXCollections.observableArrayList();
+        busyGameItems = FXCollections.observableArrayList();
     }
 
     public void startGame() {
@@ -78,8 +85,29 @@ public class LobbyController implements Initializable {
     }
 
     public void StartGameList() {
-        String[] gameLine = lvOpenGames.getSelectionModel().getSelectedItem().toString().split(":");
-        lobby.startGameList(Integer.parseInt(gameLine[0]));
+        if (lvOpenGames.getSelectionModel().getSelectedItem() != null) {
+            String[] gameLine = lvOpenGames.getSelectionModel().getSelectedItem().toString().split(":");
+            SerializableGame serGame = (SerializableGame) lobby.getSerializableGames().get(Integer.parseInt(gameLine[0]));
+            lobby.startGameList(serGame);
+
+            if (serGame.usernames.size() == 3) {
+                String openGame = lvOpenGames.getSelectionModel().getSelectedItem().toString();
+                busyGameItems.add(openGame);
+                lvBusyGames.setItems(busyGameItems);
+                gameItems.remove(lvOpenGames.getSelectionModel().getSelectedItem());
+                lvOpenGames.setItems(gameItems);
+            }
+        }
+    }
+
+    public void StartGameSpectator() {
+        if (lvBusyGames.getSelectionModel().getSelectedItem() != null) {
+            String[] gameLine = lvBusyGames.getSelectionModel().getSelectedItem().toString().split(":");
+            SerializableGame serGame = (SerializableGame) lobby.getSerializableGames().get(Integer.parseInt(gameLine[0]));
+
+            game = new Game(primaryStage);
+            game.startAsSpectator(lobby.getCurrentUser(), serGame.hostIP);
+        }
     }
 
     public void updateChatbox(String person, String text) {
