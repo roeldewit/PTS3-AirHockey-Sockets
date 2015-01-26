@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Airhockey.Connection;
 
 import Airhockey.Main.Lobby;
@@ -79,7 +74,8 @@ public class LobbyClient extends Thread implements IConnectionManager {
 
     /**
      * send the given command using the connected socket
-     * @param command 
+     *
+     * @param command
      */
     @Override
     public synchronized void sendCommand(String command) {

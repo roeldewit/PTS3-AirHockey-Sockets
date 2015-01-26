@@ -7,10 +7,8 @@ import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.NotBoundException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 import javafx.fxml.*;
 import javafx.scene.*;
@@ -22,33 +20,31 @@ import javafx.stage.Stage;
  */
 public class Lobby {
 
-    private ArrayList<User> users;
+    private final ArrayList<User> users;
 
-    private Chatbox chatbox;
+    private final Chatbox chatbox;
 
     private ScoreCalculator scoreCalculator;
 
-    private Database database;
+    private final Database database;
 
     private LobbyClient lobbyClient;
 
     private LobbyEncoder encoder;
 
-    private HashMap<Integer, SerializableGame> serializableGames;
+    private final HashMap<Integer, SerializableGame> serializableGames;
 
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
     private Thread lobbyClientThread;
 
     private LobbyController lobbyController;
 
-    private User user;
+    private final User user;
 
     private int gameID;
 
-    public final ReentrantLock lock;
-
-    public Lobby(Stage primaryStage, User user) throws NotBoundException, IOException, SQLException {
+    public Lobby(Stage primaryStage, User user) {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
 
@@ -57,14 +53,8 @@ public class Lobby {
         this.user = user;
 
         users = new ArrayList<>();
-        this.lock = new ReentrantLock();
 
-//        games = new ArrayList<>();
-        users = new ArrayList<>();
-
-        users.add(new User("Jan"));
-        users.add(new User("Piet"));
-        users.add(new User("Henk"));
+        database = new Database();
 
         initialSetUpLobby();
         chatbox = new Chatbox();
@@ -101,13 +91,11 @@ public class Lobby {
         if (returnvalue == null) {
             try {
                 returnvalue = database.getUser(username);
-            } catch (SQLException ex) {
-                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (SQLException | IOException ex) {
                 Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return null;
+        return returnvalue;
     }
 
     public void writeLine(String text) {
@@ -141,6 +129,26 @@ public class Lobby {
 
         System.out.println(gameID);
         return gameID;
+    }
+
+    public void startGame() {
+        try {
+            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, true, this.getUser(user.getUsername()));
+        } catch (Exception ex) {
+            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void startGameList() {
+        try {
+            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, false, this.getUser(user.getUsername()));
+        } catch (Exception ex) {
+            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void deleteGame(int id) {
+        encoder.deleteGame(id);
     }
 
     private void LobbySetUp(Stage primaryStage) {
@@ -199,22 +207,6 @@ public class Lobby {
         }
 
         return returnvalue;
-    }
-
-    public void startGame() {
-        try {
-            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, true, this.getUser(user.getUsername()));
-        } catch (Exception ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void startGameList() {
-        try {
-            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, false, this.getUser(user.getUsername()));
-        } catch (Exception ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
 //    private Game joinGame(int id, String usern) throws RemoteException {

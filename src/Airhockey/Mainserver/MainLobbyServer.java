@@ -1,12 +1,11 @@
 package Airhockey.Mainserver;
 
-import com.sun.corba.se.spi.activation.Server;
 import java.io.*;
 import java.net.Socket;
 import java.util.logging.*;
 
 /**
- * 
+ *
  * @author stijn
  */
 public class MainLobbyServer extends Thread implements IConnectionManager {
@@ -57,7 +56,7 @@ public class MainLobbyServer extends Thread implements IConnectionManager {
             try {
                 lobby.getEncoder().deleteManager(this);
                 objectOutputStream.close();
-                socket.close();                
+                socket.close();
             } catch (IOException ex) {
                 Logger.getLogger(MainLobbyServer.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -70,7 +69,7 @@ public class MainLobbyServer extends Thread implements IConnectionManager {
             System.out.println("Sending Command: " + command);
             objectOutputStream.writeObject(command);
         } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -111,17 +111,10 @@ public class Login extends Application {
 
     public void actionlogin() {
 
-        try {
-            primaryStage = (Stage) btLogin.getScene().getWindow();
-            primaryStage.close();
-            Lobby lobby = new Lobby(primaryStage, new User("Jan"));
-        } catch (NotBoundException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        primaryStage = (Stage) btLogin.getScene().getWindow();
+        primaryStage.close();
+        Lobby lobby = new Lobby(primaryStage, new User("Jan"));
+
 //        try {
 //            database = new Database();
 //            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
@@ -143,7 +136,6 @@ public class Login extends Application {
 //        } catch (IllegalArgumentException ex) {
 //            showPopupWindow("Field is empty!", "Ok");
 //        }
-
     }
 
     public void actionCreateAccount() {

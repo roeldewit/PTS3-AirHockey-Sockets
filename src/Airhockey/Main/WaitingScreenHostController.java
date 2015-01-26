@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Airhockey.Main;
 
 import Airhockey.Utils.Database;
@@ -14,13 +9,11 @@ import java.util.ResourceBundle;
 import java.util.logging.*;
 import javafx.collections.*;
 import javafx.fxml.*;
-import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 /**
- * FXML Controller class
- * Designed for the host.
+ * FXML Controller class Designed for the host.
  *
  * @author martijn
  */
@@ -53,16 +46,14 @@ public class WaitingScreenHostController implements Initializable {
     }
 
     /**
-     * Gets called after pressing the return to lobby button.
-     * It returns the player to the lobby.
+     * Gets called after pressing the return to lobby button. It returns the
+     * player to the lobby.
      */
     public void returnLobby() {
-        try {
-            Stage stage = (Stage) lvJoinedPlayers.getScene().getWindow();
-            Lobby lobby = new Lobby(stage,waitingScreen.getCurrentUser());
-        } catch (NotBoundException | IOException | SQLException ex) {
-            Logger.getLogger(WaitingScreenHostController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        Stage stage = (Stage) lvJoinedPlayers.getScene().getWindow();
+        Lobby lobby = new Lobby(stage, waitingScreen.getCurrentUser());
+
     }
 
 }
