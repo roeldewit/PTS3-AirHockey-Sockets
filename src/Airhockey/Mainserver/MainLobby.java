@@ -1,10 +1,14 @@
 package Airhockey.Mainserver;
 
 import Airhockey.Serializable.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
+ * Class containing the Main Lobby
  *
  * @author pieper126
  */
@@ -12,15 +16,13 @@ public class MainLobby {
 
     private final ArrayList<SerializableGame> busyGames;
 
-    private final ArrayList<SerializableGame> waitingGames;
+    private ArrayList<SerializableGame> waitingGames;
 
     private final SerializableChatBox1 chatbox;
 
     private final Encoder encoder;
 
     private int nextGameID;
-
-    private final ArrayList<IConnectionManager> connectionManagers;
 
     private final ConnectionListener connectionListener;
 
@@ -36,12 +38,20 @@ public class MainLobby {
 
         nextGameID = 0;
         this.encoder = new Encoder();
-        this.connectionManagers = new ArrayList<>();
 
         connectionListener = new ConnectionListener(this);
 
         connectionListenerThread = new Thread(connectionListener);
         connectionListenerThread.start();
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream("games.bin");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            waitingGames = (ArrayList<SerializableGame>) objectInputStream.readObject();
+            objectInputStream.close();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     /**
@@ -121,8 +131,10 @@ public class MainLobby {
         nextGameID++;
 
         waitingGames.add(serializableGame);
-        
+
         encoder.sendWaitingGame(ExtraArrayListFunctions.createNodeArrayListWithEntries(serializableGame.id + "", serializableGame.description, serializableGame.usernames.size() + "", serializableGame.hostIP));
+
+        writeGamesToFile();
     }
 
     /**
@@ -138,6 +150,8 @@ public class MainLobby {
                 break;
             }
         }
+
+        writeGamesToFile();
     }
 
     /**
@@ -159,6 +173,8 @@ public class MainLobby {
                 break;
             }
         }
+
+        writeGamesToFile();
     }
 
     /**
@@ -186,6 +202,17 @@ public class MainLobby {
      * Write games to file
      */
     private void writeGamesToFile() {
-        throw new NotImplementedException();
+        ArrayList<SerializableGame> games = new ArrayList<>();
+        games.addAll(waitingGames);
+        games.addAll(busyGames);
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream("games.bin");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(games);
+            objectOutputStream.close();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 }
