@@ -42,7 +42,7 @@ public class Client extends Thread implements IConnectionManager {
 
         try {
             System.out.println("Starting client....");
-            socket = new Socket(ipAddress, 8189);
+            socket = new Socket("192.168.1.127", 8189);
             socket.setTcpNoDelay(true);
 
             System.out.println("Client bound");

@@ -60,7 +60,7 @@ public class LobbyController implements Initializable {
     }
 
     public LobbyController() {
-        database = new Database();
+//        database = new Database();
 
         chatItems = FXCollections.observableArrayList();
         ratingItems = FXCollections.observableArrayList();
@@ -97,16 +97,16 @@ public class LobbyController implements Initializable {
     }
 
     private void setLobbyLists() {
-        try {
-            users = database.getUsers();
-        } catch (IOException | SQLException ex) {
-            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        for (User user : users) {
-            ratingItems.add(user.getUsername() + " : " + user.getRating());
-        }
-        lvRatingTable.setItems(ratingItems);
+//        try {
+//            users = database.getUsers();
+//        } catch (IOException | SQLException ex) {
+//            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//        for (User user : users) {
+//            ratingItems.add(user.getUsername() + " : " + user.getRating());
+//        }
+//        lvRatingTable.setItems(ratingItems);
     }
 
     protected void showPopupWindow(String message, String buttonText) {

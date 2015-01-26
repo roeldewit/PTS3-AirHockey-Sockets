@@ -288,19 +288,19 @@ public class Game {
      * -1 if nobody disconnected.
      */
     private void setScores(int playerNumberWhoDisconnected) {
-        try {
-            for (int i = 0; i < 3; i++) {
-                int playerScore = players.get(playerNumber).getScore();
-
-                if ((playerNumberWhoDisconnected - 1) == i) {
-                    database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, true));
-                } else {
-                    database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, false));
-                }
-            }
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            for (int i = 0; i < 3; i++) {
+//                int playerScore = players.get(playerNumber).getScore();
+//
+//                if ((playerNumberWhoDisconnected - 1) == i) {
+//                    database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, true));
+//                } else {
+//                    database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, false));
+//                }
+//            }
+//        } catch (SQLException | IOException ex) {
+//            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     /**

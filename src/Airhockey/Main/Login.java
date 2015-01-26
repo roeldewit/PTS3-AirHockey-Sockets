@@ -2,6 +2,7 @@ package Airhockey.Main;
 
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Renderer.Constants;
+import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -88,22 +89,22 @@ public class Login extends Application {
     }
 
     public void actionlogin() {
-        try {
-            database = new Database();
-            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
+//        try {
+//            database = new Database();
+//            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
                 primaryStage = (Stage) btLogin.getScene().getWindow();
                 primaryStage.close();
-                Lobby lobby = new Lobby(primaryStage,database.getUser(tfUsername.getText()));
-                System.out.println("User: " + tfUsername.getText() + " logged in!");
-            } else {
-                showPopupWindow("Invalid login combination!", "Ok");
-                System.out.println("Logged in (no user)!");
-            }
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            showPopupWindow("Field is empty!", "Ok");
-        }
+                Lobby lobby = new Lobby(primaryStage,new User("Martijn"));
+//                System.out.println("User: " + tfUsername.getText() + " logged in!");
+//            } else {
+//                showPopupWindow("Invalid login combination!", "Ok");
+//                System.out.println("Logged in (no user)!");
+//            }
+//        } catch (SQLException | IOException ex) {
+//            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (IllegalArgumentException ex) {
+//            showPopupWindow("Field is empty!", "Ok");
+//        }
 
 
 
