@@ -41,7 +41,6 @@ public class Database {
         try (FileInputStream in = new FileInputStream("database.properties")) {
             props.load(in);
         }
-
         this.properties = props;
         configure(props);
     }
@@ -175,8 +174,8 @@ public class Database {
 
         //String query = "SELECT username, password FROM DBI296122.USERS";
         String query = String.format("SELECT \"username\", \"password\" FROM \"USERS\" WHERE \"username\" = '%s'", username);
-        
-        try{
+
+        try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {

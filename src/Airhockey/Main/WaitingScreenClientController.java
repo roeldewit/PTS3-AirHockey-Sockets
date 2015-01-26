@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.logging.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class Designed for the client.
@@ -35,6 +36,17 @@ public class WaitingScreenClientController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         screenSetup();
+    }
+
+    /**
+     * Gets called after pressing the return to lobby button. It returns the
+     * player to the lobby.
+     */
+    public void returnLobby() {
+
+        Stage stage = (Stage) lvJoinedPlayersClient.getScene().getWindow();
+        Lobby lobby = new Lobby(stage, waitingScreen.getCurrentUser());
+
     }
 
     /**
