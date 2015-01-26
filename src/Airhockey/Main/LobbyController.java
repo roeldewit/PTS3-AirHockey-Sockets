@@ -3,8 +3,12 @@ package Airhockey.Main;
 import Airhockey.Renderer.Constants;
 import Airhockey.User.*;
 import Airhockey.Utils.Database;
+import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.*;
 import javafx.event.*;
 import javafx.fxml.*;
@@ -56,7 +60,7 @@ public class LobbyController implements Initializable {
     }
 
     public LobbyController() {
-//        database = new Database();
+        database = new Database();
 
         chatItems = FXCollections.observableArrayList();
         ratingItems = FXCollections.observableArrayList();
@@ -93,16 +97,16 @@ public class LobbyController implements Initializable {
     }
 
     private void setLobbyLists() {
-//        try {
-//            users = database.getUsers();
-//        } catch (IOException | SQLException ex) {
-//            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//        for (User user : users) {
-//            ratingItems.add(user.getUsername() + " : " + user.getRating());
-//        }
-//        lvRatingTable.setItems(ratingItems);
+        try {
+            users = database.getUsers();
+        } catch (IOException | SQLException ex) {
+            Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        for (User user : users) {
+            ratingItems.add(user.getUsername() + " : " + user.getRating());
+        }
+        lvRatingTable.setItems(ratingItems);
     }
 
     protected void showPopupWindow(String message, String buttonText) {
