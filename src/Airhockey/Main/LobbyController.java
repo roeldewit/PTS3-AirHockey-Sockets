@@ -1,7 +1,7 @@
 package Airhockey.Main;
 
 import Airhockey.Renderer.Constants;
-import Airhockey.User.*; 
+import Airhockey.User.*;
 import Airhockey.Utils.Database;
 import java.net.URL;
 import java.util.*;
@@ -74,7 +74,8 @@ public class LobbyController implements Initializable {
     }
 
     public void StartGameList() {
-        lobby.startGameList();
+        String[] gameLine = lvOpenGames.getSelectionModel().getSelectedItem().toString().split(":");
+        lobby.startGameList(Integer.parseInt(gameLine[0]));
     }
 
     public void updateChatbox(String person, String text) {
