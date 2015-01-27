@@ -94,7 +94,7 @@ public class Login extends Application {
             if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
                 primaryStage = (Stage) btLogin.getScene().getWindow();
                 primaryStage.close();
-                Lobby lobby = new Lobby(primaryStage, new User("Martijn"));
+                Lobby lobby = new Lobby(primaryStage, database.getUser(tfUsername.getText()));
                 System.out.println("User: " + tfUsername.getText() + " logged in!");
             } else {
                 showPopupWindow("Invalid login combination!", "Ok");
