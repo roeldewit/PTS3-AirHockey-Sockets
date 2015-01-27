@@ -245,6 +245,7 @@ public class Lobby {
         connectToMainServer();
         getInitialChatbox();
         encoder.getCurrentOpenGames();
+        encoder.getCurrentRunningGames();
         lobbyController.setLobby(this);
     }
 
