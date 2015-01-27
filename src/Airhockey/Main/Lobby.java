@@ -162,6 +162,11 @@ public class Lobby {
         lobbyController.updateGameList(description, id + "");
     }
 
+    public void remoteToBusyGame(int id) {
+        SerializableGame serGame = serializableGames.get(id);
+        lobbyController.SetWaitingGameToBusyGame(serGame.description, serGame.id + "");
+    }
+
     public int addWaitingGame(String description) {
         String iphost = "";
         try {

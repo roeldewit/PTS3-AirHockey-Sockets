@@ -100,6 +100,18 @@ public class LobbyDecoder {
 
                 });
                 break;
+            case Protocol.TO_BUSY_GAME:
+                Platform.runLater(() -> {
+                    if (splitter.length < 4) {
+                        return;
+                    }
+
+                    int ID = 1;
+
+                    lobby.remoteToBusyGame(Integer.parseInt(splitter[ID]));
+
+                });
+                break;
 
         }
 

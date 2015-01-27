@@ -90,14 +90,19 @@ public class LobbyController implements Initializable {
             SerializableGame serGame = (SerializableGame) lobby.getSerializableGames().get(Integer.parseInt(gameLine[0]));
             lobby.startGameList(serGame);
 
-            if (serGame.usernames.size() == 3) {
-                String openGame = lvOpenGames.getSelectionModel().getSelectedItem().toString();
-                busyGameItems.add(openGame);
-                lvBusyGames.setItems(busyGameItems);
-                gameItems.remove(lvOpenGames.getSelectionModel().getSelectedItem());
-                lvOpenGames.setItems(gameItems);
-            }
+//            if (serGame.usernames.size() == 3) {
+//                String openGame = lvOpenGames.getSelectionModel().getSelectedItem().toString();
+//                busyGameItems.add(openGame);
+//                lvBusyGames.setItems(busyGameItems);
+//                gameItems.remove(lvOpenGames.getSelectionModel().getSelectedItem());
+//                lvOpenGames.setItems(gameItems);
+//            }
         }
+    }
+
+    public void SetWaitingGameToBusyGame(String description, String id) {
+        lvOpenGames.getItems().remove(id + ":" + description);
+        busyGameItems.add(id + ":" + description);
     }
 
     public void StartGameSpectator() {

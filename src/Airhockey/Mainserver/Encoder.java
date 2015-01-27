@@ -165,6 +165,21 @@ public class Encoder {
     }
 
     /**
+     * sends a command to clients to set the given game to a busy game
+     *
+     * @param id
+     */
+    public synchronized void setToBusyGame(int id) {
+        System.out.println("set to busy games");
+
+        String command = Protocol.TO_BUSY_GAME
+                + Protocol.SEPERATOR
+                + id;
+
+        sendCommand(command);
+    }
+
+    /**
      * sends a command
      *
      * @param command

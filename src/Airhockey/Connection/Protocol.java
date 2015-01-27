@@ -51,10 +51,12 @@ public class Protocol {
     public static final String DELETE_GAME = "delete_game";
 
     public static final String CURRENT_OPENGAMES = "current_opengames";
-    
+
     public static final String CURRENT_BUSYGAMES = "current_busygames";
 
     public static final String ADD_NEW_GAME = "add_new_game";
 
     public static final String OPEN_GAME = "open_game";
+
+    public static final String TO_BUSY_GAME = "to_busy_game";
 }

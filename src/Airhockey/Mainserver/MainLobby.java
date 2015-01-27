@@ -156,6 +156,8 @@ public class MainLobby {
             }
         }
 
+        encoder.setToBusyGame(id);
+
         writeGamesToFile();
     }
 
