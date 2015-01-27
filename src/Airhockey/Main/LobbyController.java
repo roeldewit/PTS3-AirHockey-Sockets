@@ -116,7 +116,7 @@ public class LobbyController implements Initializable {
     }
 
     public void updateGameList(String description, String id) {
-        gameItems.add(id + ":" + description);
+        gameItems.add(id + ": " + description);
         lvOpenGames.setItems(gameItems);
     }
 
