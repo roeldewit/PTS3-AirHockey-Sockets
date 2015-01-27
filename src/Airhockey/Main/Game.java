@@ -254,7 +254,6 @@ public class Game {
 
                 //System.out.println("Scorer: " + scorer.getPlayer().user.getUsername());
                 //System.out.println("Against: " + against.getPlayer().user.getUsername());
-
                 Player playerAgainst = against.getPlayer();
                 playerAgainst.downScore();
                 renderer.setTextFields(playerAgainst.getId(), playerAgainst.getScore());
@@ -334,6 +333,7 @@ public class Game {
         primaryStage.close();
 
         if (isMultiplayer) {
+            primaryStage.close();
             Lobby lobby = new Lobby(primaryStage, user);
         } else {
             Login login = new Login();
