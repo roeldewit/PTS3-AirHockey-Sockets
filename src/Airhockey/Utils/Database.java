@@ -93,14 +93,15 @@ public class Database {
         }
 
         String url = this.properties.getProperty("url");
-        String username = this.properties.getProperty("username");
-        String password = this.properties.getProperty("password");
+//        String username = this.properties.getProperty("username");
+//        String password = this.properties.getProperty("password");
 
         //this.conn = DriverManager.getConnection(url, username, password);
         OracleDataSource dataSource;
         dataSource = new OracleDataSource();
-        dataSource.setURL(url);
-        this.connection = dataSource.getConnection(username, password);
+        dataSource.setURL("jdbc:oracle:thin:SYSTEM/something@192.168.1.101:1521:DBS21");
+        this.connection = dataSource.getConnection();
+//        this.connection = dataSource.getConnection(username, password);
     }
 
     /**
