@@ -20,6 +20,7 @@ import javafx.stage.Stage;
  */
 public class Game {
 
+    private int id;
     private int round = 1;
     private User user;
     private int playerNumber;
@@ -39,15 +40,18 @@ public class Game {
     private boolean canSetGoal = true;
 
     private Database database;
+    private final Lobby lobby;
 
     /**
      * Constructor
      *
      * @param primaryStage Used to create a window.
      */
-    public Game(Stage primaryStage) {
+    public Game(Stage primaryStage, Lobby lobby) {
         this.primaryStage = primaryStage;
+        this.lobby = lobby;
         players = new ArrayList<>();
+
     }
 
     /**
@@ -71,12 +75,14 @@ public class Game {
      *
      * @param user The current user.
      */
-    public void startAsHost(User user) {
+    public void startAsHost(User user, int id) {
         this.user = user;
+        this.id = id;
         addPlayer(user.getUsername());
         isHost = true;
         isMultiplayer = true;
         isSpectator = false;
+        database = new Database();
 
         encoder = new Encoder();
         renderer = new Renderer(primaryStage, this, isMultiplayer);
@@ -173,13 +179,14 @@ public class Game {
                 String p2Name = players.get(1).user.getUsername();
                 String p3Name = players.get(2).user.getUsername();
 
+                lobby.gameHasStarted(id);
+
                 for (int i = 2; i < 4; i++) {
                     encoder.sendSetUpGameAsClient(i, p1Name, p2Name, p3Name);
                 }
                 renderer.start(encoder, 1);
                 renderer.setLabelNames(p1Name, p2Name, p3Name);
             });
-            //connectionListener.cancel();
         }
     }
 
@@ -245,13 +252,19 @@ public class Game {
             Platform.runLater(() -> {
                 round++;
 
+                System.out.println("Scorer: " + scorer.getPlayer().user.getUsername());
+                System.out.println("Against: " + against.getPlayer().user.getUsername());
+
                 Player playerAgainst = against.getPlayer();
                 playerAgainst.downScore();
                 renderer.setTextFields(playerAgainst.getId(), playerAgainst.getScore());
 
                 if (scorer != null) {
                     Player playerScorer = scorer.getPlayer();
-                    playerScorer.upScore();
+                    if (scorer.getPlayer() != against.getPlayer()) {
+                        playerScorer.upScore();
+                    }
+
                     renderer.setTextFields(playerScorer.getId(), playerScorer.getScore());
                     if (isMultiplayer) {
                         encoder.sendGoalMade(round, playerScorer.getId(), playerScorer.getScore(), playerAgainst.getId(), playerAgainst.getScore());
@@ -354,6 +367,7 @@ public class Game {
                 setScores(playerNumberWhoDisconnected);
                 connectionListener.cancel();
                 encoder.sendGameOver(reason);
+                lobby.deleteGame(id);
             }
             encoder.shutDownManagers();
         }

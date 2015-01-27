@@ -97,12 +97,12 @@ public class LobbyController implements Initializable {
 //                gameItems.remove(lvOpenGames.getSelectionModel().getSelectedItem());
 //                lvOpenGames.setItems(gameItems);
 //            }
+            }
         }
-    }
 
     public void SetWaitingGameToBusyGame(String description, String id) {
-        lvOpenGames.getItems().remove(id + ":" + description);
-        busyGameItems.add(id + ":" + description);
+        lvOpenGames.getItems().remove(id + ": " + description);
+        busyGameItems.add(id + ": " + description);
     }
 
     public void StartGameSpectator() {
@@ -110,7 +110,7 @@ public class LobbyController implements Initializable {
             String[] gameLine = lvBusyGames.getSelectionModel().getSelectedItem().toString().split(":");
             SerializableGame serGame = (SerializableGame) lobby.getSerializableGames().get(Integer.parseInt(gameLine[0]));
 
-            game = new Game(primaryStage);
+            game = new Game(primaryStage, lobby);
             game.startAsSpectator(lobby.getCurrentUser(), serGame.hostIP);
         }
     }
@@ -121,7 +121,7 @@ public class LobbyController implements Initializable {
     }
 
     public void updateGameList(String description, String id) {
-        gameItems.add(id + ":" + description);
+        gameItems.add(id + ": " + description);
         lvOpenGames.setItems(gameItems);
     }
 
