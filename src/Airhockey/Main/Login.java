@@ -173,4 +173,8 @@ public class Login extends Application {
         dialogStage.setScene(dialogScene);
         dialogStage.show();
     }
+
+    public static void main(String[] args) {
+        launch(Login.class, args);
+    }
 }
