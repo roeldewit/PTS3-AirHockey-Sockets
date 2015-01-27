@@ -32,7 +32,7 @@ public class LobbyClient extends Thread implements IConnectionManager {
 
         try {
             System.out.println("Starting client....");
-            socket = new Socket("192.168.1.127", 8190);
+            socket = new Socket("192.168.101", 8190);
             System.out.println(socket.getInetAddress());
 
             encoder = new LobbyEncoder(this);
