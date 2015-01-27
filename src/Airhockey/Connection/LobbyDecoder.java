@@ -78,7 +78,7 @@ public class LobbyDecoder {
                         int description = ++i;
                         int amoundOfPlayers = ++i;
                         int hostIP = ++i;
-                        lobby.remoteUpdateWaitingGame(Integer.parseInt(splitter[ID]), splitter[description], splitter[amoundOfPlayers], splitter[hostIP]);
+                        lobby.remoteUpdateWaitingGame(Integer.parseInt(splitter[ID]), splitter[description], splitter[hostIP], splitter[amoundOfPlayers]);
                         i++;
                     }
                 });
@@ -95,7 +95,8 @@ public class LobbyDecoder {
                     int description = ++i;
                     int amoundOfPlayers = ++i;
                     int hostIP = ++i;
-                    lobby.remoteUpdateWaitingGame(Integer.parseInt(splitter[ID]), splitter[description], splitter[amoundOfPlayers], splitter[hostIP]);
+                    System.out.println("SPLITTER:::::  " + splitter[hostIP]);
+                    lobby.remoteUpdateWaitingGame(Integer.parseInt(splitter[ID]), splitter[description], splitter[hostIP], splitter[amoundOfPlayers]);
 
                 });
                 break;
