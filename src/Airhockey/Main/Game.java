@@ -252,9 +252,8 @@ public class Game {
             Platform.runLater(() -> {
                 round++;
 
-                System.out.println("Scorer: " + scorer.getPlayer().user.getUsername());
-                System.out.println("Against: " + against.getPlayer().user.getUsername());
-
+                //System.out.println("Scorer: " + scorer.getPlayer().user.getUsername());
+                //System.out.println("Against: " + against.getPlayer().user.getUsername());
                 Player playerAgainst = against.getPlayer();
                 playerAgainst.downScore();
                 renderer.setTextFields(playerAgainst.getId(), playerAgainst.getScore());
@@ -305,10 +304,14 @@ public class Game {
             for (int i = 0; i < 3; i++) {
                 int playerScore = players.get(playerNumber).getScore();
 
-                if ((playerNumberWhoDisconnected - 1) == i) {
-                    database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, true));
+                if (playerNumberWhoDisconnected == -1) {
+                    database.updateRating(players.get(i).user, playerScore);
                 } else {
-                    database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, false));
+                    if ((playerNumberWhoDisconnected - 1) == i) {
+                        database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, true));
+                    } else {
+                        database.updateRating(players.get(i).user, ScoreCalculator.calculateAdjustedGameScore(playerScore, round - 1, false));
+                    }
                 }
             }
         } catch (SQLException | IOException ex) {
@@ -330,7 +333,8 @@ public class Game {
         primaryStage.close();
 
         if (isMultiplayer) {
-            //Lobby lobby = new Lobby(primaryStage, user);
+            primaryStage.close();
+            Lobby lobby = new Lobby(primaryStage, user);
         } else {
             Login login = new Login();
             login.Login();
