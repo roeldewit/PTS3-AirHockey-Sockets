@@ -5,7 +5,9 @@ import Airhockey.Renderer.Constants;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -82,9 +84,10 @@ public class Login extends Application {
     }
 
     public void startSingleGame() {
+        setDifficulty();
         primaryStage = (Stage) btLogin.getScene().getWindow();
-        //primaryStage.close();
-        Game game = new Game(primaryStage);
+        primaryStage.close();
+        Game game = new Game(primaryStage, null);
         game.startSinglePlayer();
     }
 
@@ -115,22 +118,30 @@ public class Login extends Application {
 
     private void setDifficulty() {
         if (rbEasyLeft.isSelected()) {
+            System.out.println("1");
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
         } else if (rbNormalLeft.isSelected()) {
+            System.out.println("2");
             PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
         } else if (rbHardLeft.isSelected()) {
+            System.out.println("3");
             PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
         } else if (rbVeryHardLeft.isSelected()) {
+            System.out.println("4");
             PropertiesManager.saveProperty("LEB-Difficulty", "VERY_HARD");
             System.out.println("vh");
         }
         if (rbEasyRight.isSelected()) {
-            PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
+            System.out.println("5");
+            PropertiesManager.saveProperty("REB-Difficulty", "EASY");
         } else if (rbNormalRight.isSelected()) {
+            System.out.println("6");
             PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
         } else if (rbHardRight.isSelected()) {
+            System.out.println("7");
             PropertiesManager.saveProperty("REB-Difficulty", "HARD");
         } else if (rbVeryHardRight.isSelected()) {
+            System.out.println("8");
             PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
         }
     }
@@ -142,12 +153,8 @@ public class Login extends Application {
         dialogStage.centerOnScreen();
 
         Button okButton = new Button(buttonText);
-        okButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent arg0) {
-                dialogStage.close();
-            }
+        okButton.setOnAction((ActionEvent arg0) -> {
+            dialogStage.close();
         });
 
         Label label = new Label(message);

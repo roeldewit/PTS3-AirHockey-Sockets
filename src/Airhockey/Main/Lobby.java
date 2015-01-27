@@ -189,7 +189,7 @@ public class Lobby {
 
     public void startGame() {
         try {
-            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, true, this.getUser(user.getUsername()), this, "");
+            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, true, this.getUser(user.getUsername()), this, "", gameID);
         } catch (Exception ex) {
             Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -198,11 +198,15 @@ public class Lobby {
     public void startGameList(SerializableGame serGame) {
         try {
             String iphost = serGame.hostIP;
-            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, false, this.getUser(user.getUsername()), this, iphost);
+            WaitingScreen waitingScreen = new WaitingScreen(primaryStage, false, this.getUser(user.getUsername()), this, iphost, gameID);
             waitingScreen.setSerGame(serGame);
         } catch (Exception ex) {
             Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void gameHasStarted(int gameId) {
+        encoder.startGame(gameId);
     }
 
     public void deleteGame(int id) {

@@ -35,7 +35,7 @@ public class WaitingScreen {
      * @param currentUser of the session
      * @throws Exception
      */
-    public WaitingScreen(Stage stage, boolean isHost, User currentUser, Lobby lobby, String ipHost) throws Exception {
+    public WaitingScreen(Stage stage, boolean isHost, User currentUser, Lobby lobby, String ipHost, int gameID) throws Exception {
         this.CurrentUser = currentUser;
         
         if (isHost == true) {
@@ -44,15 +44,15 @@ public class WaitingScreen {
             stage.setTitle("Host");
             stage.setScene(new Scene(root));
             stage.show();
-            game = new Game(stage);
-            game.startAsHost(currentUser);
+            game = new Game(stage, lobby);
+            game.startAsHost(currentUser, gameID);
         } else {
             Parent root = FXMLLoader.load(getClass().getResource("WaitingScreenClient.fxml"));
 
             stage.setTitle("Client");
             stage.setScene(new Scene(root));
             stage.show();
-            game = new Game(stage);
+            game = new Game(stage, lobby);
             game.startAsClient(currentUser, ipHost);
         }
     }

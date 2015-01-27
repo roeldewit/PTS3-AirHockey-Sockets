@@ -33,7 +33,6 @@
                 </Label>
                 <fx:define>  
                     <ToggleGroup fx:id="RB_LEFT_Group" /> 
-                    <ToggleGroup fx:id="RB_Group" />  
                 </fx:define> 
                 <RadioButton fx:id="rbEasyLeft" layoutX="80.0" layoutY="180.0" mnemonicParsing="false"      text="      EASY" selected="true" toggleGroup="$RB_LEFT_Group" />
                 <RadioButton fx:id="rbNormalLeft" layoutX="80.0" layoutY="215.0" mnemonicParsing="false"    text="   NORMAL" toggleGroup="$RB_LEFT_Group"/>
@@ -41,8 +40,11 @@
                 <RadioButton fx:id="rbVeryHardLeft" layoutX="80.0" layoutY="285.0" mnemonicParsing="false"  text=" VERY HARD" toggleGroup="$RB_LEFT_Group" />
                 
  
+                <fx:define>  
+                    <ToggleGroup fx:id="RB_Group" />  
+                </fx:define> 
                 <RadioButton fx:id="rbEasyRight" layoutX="190.0" layoutY="180.0" mnemonicParsing="false" text=" "  selected="true" toggleGroup="$RB_Group" />
-                <RadioButton fx:id="rbNormaRight" layoutX="190.0" layoutY="215.0" mnemonicParsing="false" text=" "  toggleGroup="$RB_Group"/>
+                <RadioButton fx:id="rbNormalRight" layoutX="190.0" layoutY="215.0" mnemonicParsing="false" text=" "  toggleGroup="$RB_Group"/>
                 <RadioButton fx:id="rbHardRight" layoutX="190.0" layoutY="250.0" mnemonicParsing="false" text=" "  toggleGroup="$RB_Group" />
                 <RadioButton fx:id="rbVeryHardRight" layoutX="190.0" layoutY="285.0" mnemonicParsing="false" text=" "   toggleGroup="$RB_Group" />
                 

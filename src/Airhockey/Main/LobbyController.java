@@ -105,7 +105,7 @@ public class LobbyController implements Initializable {
             String[] gameLine = lvBusyGames.getSelectionModel().getSelectedItem().toString().split(":");
             SerializableGame serGame = (SerializableGame) lobby.getSerializableGames().get(Integer.parseInt(gameLine[0]));
 
-            game = new Game(primaryStage);
+            game = new Game(primaryStage, lobby);
             game.startAsSpectator(lobby.getCurrentUser(), serGame.hostIP);
         }
     }

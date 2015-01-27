@@ -95,8 +95,8 @@ public class Renderer extends BaseRenderer {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.getKeyFrames().add(frame);
 
-        PropertiesManager.saveProperty("REB-Difficulty", "HARD");
-        PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
+        //PropertiesManager.saveProperty("REB-Difficulty", "HARD");
+        //PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
 
         createCanvas();
         createStaticItems();
