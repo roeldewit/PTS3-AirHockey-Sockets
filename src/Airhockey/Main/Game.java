@@ -333,7 +333,8 @@ public class Game {
         primaryStage.close();
 
         if (isMultiplayer) {
-            primaryStage.close();
+            primaryStage.setHeight(450);
+            primaryStage.setWidth(812);
             Lobby lobby = new Lobby(primaryStage, user);
         } else {
             Login login = new Login();
