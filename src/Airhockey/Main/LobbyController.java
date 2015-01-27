@@ -111,7 +111,7 @@ public class LobbyController implements Initializable {
     }
 
     public void updateChatbox(String person, String text) {
-        chatItems.add(person + ":" + text);
+        chatItems.add(person + ": " + text);
         lvChatbox.setItems(chatItems);
     }
 
