@@ -15,15 +15,18 @@ public class SideBat extends Bat {
     private float speed;
     private final float speedManipulation;
 
-    public SideBat(float postionX, float postionY, int type) {
+    public SideBat(float postionX, float postionY, int type, boolean isAI) {
         super(postionX, postionY, type);
 
         String difficulty = "EASY";
-//        if (type == LEFT_BAT) {
-//            difficulty = PropertiesManager.loadProperty("LEB-Difficulty");
-//        } else {
-//            difficulty = PropertiesManager.loadProperty("REB-Difficulty");
-//        }
+        if (isAI) {
+            if (type == LEFT_BAT) {
+                difficulty = PropertiesManager.loadProperty("LEB-Difficulty");
+            } else {
+                difficulty = PropertiesManager.loadProperty("REB-Difficulty");
+            }
+        }
+
         System.out.println("L:" + difficulty);
 
         switch (difficulty) {

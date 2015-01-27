@@ -138,15 +138,15 @@ public class Renderer extends BaseRenderer {
         }
 
         if (leftBatBody != null) {
-            blueBat = new SideBat(leftBatBody.getPosition().x, leftBatBody.getPosition().y, Bat.LEFT_BAT);
+            blueBat = new SideBat(leftBatBody.getPosition().x, leftBatBody.getPosition().y, Bat.LEFT_BAT, !isMultiplayer);
         } else {
-            blueBat = new SideBat(31f, 50f, Bat.LEFT_BAT);
+            blueBat = new SideBat(31f, 50f, Bat.LEFT_BAT, !isMultiplayer);
         }
 
         if (rightBatBody != null) {
-            greenBat = new SideBat(rightBatBody.getPosition().x, rightBatBody.getPosition().y, Bat.RIGHT_BAT);
+            greenBat = new SideBat(rightBatBody.getPosition().x, rightBatBody.getPosition().y, Bat.RIGHT_BAT, !isMultiplayer);
         } else {
-            greenBat = new SideBat(64.5f, 50f, Bat.RIGHT_BAT);
+            greenBat = new SideBat(64.5f, 50f, Bat.RIGHT_BAT, !isMultiplayer);
         }
 
         root.getChildren().addAll(puck.node,
