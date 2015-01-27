@@ -72,8 +72,8 @@ public final class ClientRenderer extends BaseRenderer {
         if (!itemsAlreadyOnScreen) {
             redBat = new Bat(48f, 15f, Bat.CENTER_BAT);
 
-            blueBat = new SideBat(31f, 50f, Bat.LEFT_BAT);
-            greenBat = new SideBat(64.5f, 50f, Bat.RIGHT_BAT);
+            blueBat = new SideBat(31f, 50f, Bat.LEFT_BAT, false);
+            greenBat = new SideBat(64.5f, 50f, Bat.RIGHT_BAT, false);
 
             root.getChildren().addAll(redBat.node);
             root.getChildren().addAll(blueBat.node);

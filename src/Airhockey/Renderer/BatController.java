@@ -32,7 +32,7 @@ public class BatController {
     private boolean canStopRightBatTop;
     private boolean canStopRightBatBottom;
 
-    private final float speed = 25.0f;
+    private final float speed = 30.0f;
     private final float leftSpeedManipulation;
     private final float rightSpeedManipulation;
 
