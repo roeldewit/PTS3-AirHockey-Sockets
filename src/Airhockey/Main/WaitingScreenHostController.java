@@ -34,7 +34,7 @@ public class WaitingScreenHostController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        screenSetup();
+        //screenSetup();
     }
 
     /**
