@@ -97,12 +97,13 @@ public class LobbyController implements Initializable {
 //                gameItems.remove(lvOpenGames.getSelectionModel().getSelectedItem());
 //                lvOpenGames.setItems(gameItems);
 //            }
-            }
         }
+    }
 
     public void SetWaitingGameToBusyGame(String description, String id) {
         lvOpenGames.getItems().remove(id + ": " + description);
         busyGameItems.add(id + ": " + description);
+        lvBusyGames.setItems(busyGameItems);
     }
 
     public void StartGameSpectator() {

@@ -12,8 +12,13 @@ public class LobbyEncoder {
         this.connectionManager = connectionManager;
     }
 
+    /**
+     * requests the current running games from the server
+     */
     public synchronized void getCurrentRunningGames() {
+        String command = Protocol.GET_CURRENT_RUNNINGGAMES;
 
+        sendCommand(command);
     }
 
     /**
